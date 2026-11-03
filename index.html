@@ -23,6 +23,7 @@
 :root[data-theme="dark"]{ --bg:#17120F; --canvas:#1C1612; --surface:#261E19; --surface2:#30261F; --fg:#F3E9DC; --muted:#B5A595; --rule:#5A4C40; --rule2:#3A3029; --line:#4E4238; --line2:#8A7A6B; --brick:#E07A57; --ochre:#E0A64F; --glaze:#5FA084; --vistula:#86AED0; --lk:#D9704F; --ld:#D39A3C; --lp:#6E9CC4; --lz:#5E9E80; --family:#86AED0; --verified:#62B882; --probable:#E0A64F; --possible:#C49AC9; --unknown:#7D7268; color-scheme:dark }
 *{box-sizing:border-box}
 html{font-size:var(--fs)}
+html,body{overflow-x:hidden;max-width:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased}
 button{font-family:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--brick);outline-offset:2px}
@@ -820,7 +821,7 @@ function kinship(a,b,viaM){ if(a===b) return null; if((P[a].sp||[]).includes(b))
   if(up===1) return pl?(down===2?(sx==="M"?"bratanek / siostrzeniec":"bratanica / siostrzenica"):(sx==="M"?"wnuk rodzeństwa":"wnuczka rodzeństwa")):(down===2?(sx==="M"?"nephew":"niece"):(sx==="M"?"grand-nephew":"grand-niece"));
   const deg=Math.min(up,down)-1, rem=Math.abs(up-down);
   return pl?`${sx==="M"?"kuzyn":"kuzynka"} ${deg}. stopnia${rem?` (${rem} pok. różnicy)`:""}`:`${["","first","second","third","fourth","fifth"][deg]||deg+"th"} cousin${rem?" "+rem+"× removed":""}`; }
-function wheelHandler(svg,zb){ return e=>{ e.preventDefault(); if(e.ctrlKey||e.metaKey||(typeof isMouseWheel==="function"&&isMouseWheel(e))){ if(!e.ctrlKey&&!e.metaKey){ const r=svg.node().getBoundingClientRect(); svg.call(zb.scaleBy,e.deltaY<0?1.2:1/1.2,[e.clientX-r.left,e.clientY-r.top]); return; } const f=Math.exp(-e.deltaY*0.01); const r=svg.node().getBoundingClientRect(); svg.call(zb.scaleBy,f,[e.clientX-r.left,e.clientY-r.top]); } else { const t=d3.zoomTransform(svg.node()); svg.call(zb.translateBy,-e.deltaX/t.k,-e.deltaY/t.k); } }; }
+function wheelHandler(svg,zb){ return e=>{ e.preventDefault(); { const r=svg.node().getBoundingClientRect(); svg.call(zb.scaleBy,typeof wheelFactor==="function"?wheelFactor(e):(e.deltaY<0?1.2:1/1.2),[e.clientX-r.left,e.clientY-r.top]); return; } if(e.ctrlKey||e.metaKey){ const f=Math.exp(-e.deltaY*0.01); const r=svg.node().getBoundingClientRect(); svg.call(zb.scaleBy,f,[e.clientX-r.left,e.clientY-r.top]); } else { const t=d3.zoomTransform(svg.node()); svg.call(zb.translateBy,-e.deltaX/t.k,-e.deltaY/t.k); } }; }
 // ================= LIGHTBOX =================
 let LBlist=[], LBi=0, LBz=1, LBpan={x:0,y:0};
 const lb=document.getElementById("lb");
@@ -982,7 +983,7 @@ Object.assign(T,{
  home_lines:{pl:"Cztery linie rodziny",en:"Four family lines"}, home_start:{pl:"Zacznij od",en:"Start with"}, home_found:{pl:"Najważniejsze odkrycia",en:"Key discoveries"}, home_open:{pl:"Czego jeszcze szukamy",en:"What we are still looking for"},
  see_all:{pl:"Wszystkie odkrycia",en:"All discoveries"}, oldest:{pl:"Najstarszy przodek",en:"Oldest ancestor"}, gens_back:{pl:"pokoleń",en:"generations"}, since:{pl:"od roku",en:"since"}, ppl_line:{pl:"osób",en:"people"},
  couple_gb:{pl:"Grzegorz i Barbara",en:"Greg and Barbara"}, couple_sub:{pl:"rodzeństwo, rodzice, dziadkowie",en:"siblings, parents, grandparents"}, story:{pl:"Opowieść",en:"Guided story"}, story_sub:{pl:"8 kroków przez drzewo",en:"8 steps through the tree"},
- hint_tree:{pl:"Kliknij osobę. Kółko myszy przybliża, przeciąganie przesuwa.",en:"Click a person. Mouse wheel zooms, drag to move."},
+ hint_tree:{pl:"Kółko myszy przybliża i oddala · przeciągnij, aby przesunąć · ⤢ wraca do widoku",en:"Mouse wheel zooms in and out · drag to move · ⤢ returns to the view"},
  status_open:{pl:"Pochodzenie w trakcie ustalania",en:"Origin still being traced"},
  notconn:{pl:"Ta rodzina nie jest jeszcze połączona z Twoją linią.",en:"This family is not yet connected to your line."}, notconn2:{pl:"To ci sami ludzie tego nazwiska z tych samych parafii, zapisani w aktach; więź z Twoją linią potwierdzi dopiero kolejny akt.",en:"Same surname, same parishes, verified records; the tie to your line awaits one more document."},
  tree_of:{pl:"drzewo",en:"tree"}, unk_title:{pl:"Rodzeństwo jeszcze nieznane",en:"Siblings not yet known"},
@@ -1096,6 +1097,7 @@ function descLayout(){
   return {nodes,edges,W:maxX+PAD,H:maxY+PAD,focus:pos[root]}; }
 
 // a physical mouse wheel zooms; trackpad swipes pan natively
+function wheelFactor(e){ let dy=e.deltaY*(e.deltaMode===1?33:e.deltaMode===2?400:1); if(e.ctrlKey) dy*=3; return Math.min(1.22,Math.max(1/1.22,Math.exp(-dy*0.0022))); }
 function isMouseWheel(e){ if(e.deltaMode===1||e.deltaMode===2) return true; const wd=e.wheelDeltaY; if(wd&&!e.deltaX&&Math.abs(wd)>=120&&wd%120===0) return true; return !e.deltaX&&Math.abs(e.deltaY)>=100&&Number.isInteger(e.deltaY)&&e.deltaY%100===0; }
 // ===================== RENDER TREE =====================
 const scroller=()=>document.getElementById("scroller");
@@ -1149,15 +1151,14 @@ function fitScale(){ const sc=scroller(); const cw=sc.clientWidth, ch=sc.clientH
 function applyScale(){ const sc=scroller(); const cw=sc.clientWidth, ch=sc.clientHeight; const w=natW*S, h=natH*S; offX=Math.max(0,(cw-w)/2); offY=Math.max(0,(ch-h)/2);
   const sz=document.getElementById("sizer"); sz.style.width=Math.max(w,cw)+"px"; sz.style.height=Math.max(h,ch)+"px";
   document.getElementById("canvas").style.transform=`translate(${offX}px,${offY}px) scale(${S})`; document.getElementById("zpct").textContent=Math.round(S*100)+"%"; }
-function zoomAt(ns,fx,fy){ const sc=scroller(); ns=Math.max(.3,Math.min(1.8,ns)); if(Math.abs(ns-S)<1e-4) return; const cx=(sc.scrollLeft+fx-offX)/S, cy=(sc.scrollTop+fy-offY)/S; S=ns; applyScale(); sc.scrollLeft=cx*S+offX-fx; sc.scrollTop=cy*S+offY-fy; }
-function zoomBtn(f){ const sc=scroller(); const steps=6; const s0=S, s1=Math.max(.3,Math.min(1.8,S*f)); let i=0; const fx=sc.clientWidth/2, fy=sc.clientHeight/2; const tick=()=>{ i++; const e=1-Math.pow(1-i/steps,2); zoomAt(s0+(s1-s0)*e,fx,fy); if(i<steps) requestAnimationFrame(tick); }; tick(); }
+const ZMIN=.45, ZMAX=2;
+function zoomAt(ns,fx,fy){ const sc=scroller(); ns=Math.max(ZMIN,Math.min(ZMAX,ns)); if(Math.abs(ns-S)<1e-4) return; const cx=(sc.scrollLeft+fx-offX)/S, cy=(sc.scrollTop+fy-offY)/S; S=ns; applyScale(); sc.scrollLeft=cx*S+offX-fx; sc.scrollTop=cy*S+offY-fy; }
+function zoomBtn(f){ const sc=scroller(); const steps=6; const s0=S, s1=Math.max(ZMIN,Math.min(ZMAX,S*f)); let i=0; const fx=sc.clientWidth/2, fy=sc.clientHeight/2; const tick=()=>{ i++; const e=1-Math.pow(1-i/steps,2); zoomAt(s0+(s1-s0)*e,fx,fy); if(i<steps) requestAnimationFrame(tick); }; tick(); }
 function scrollToNode(n,instant){ const sc=scroller(); if(!n||!isFinite(n.x)) return; n={w:CW,h:CH,...n}; const dw=(innerWidth>900&&document.getElementById("v-tree").classList.contains("open"))?430:0; const dh=(innerWidth<=900&&document.getElementById("v-tree").classList.contains("open"))?sc.clientHeight*.55:0;
   const left=offX+(n.x+n.w/2)*S-(sc.clientWidth-dw)/2, top=offY+(n.y+n.h/2)*S-(sc.clientHeight-dh)/2; sc.scrollTo({left:Math.max(0,left),top:Math.max(0,top),behavior:instant?"auto":"smooth"}); }
 // interactions on the scroller
 (function(){ const sc=scroller();
-  sc.addEventListener("wheel",e=>{ const r=sc.getBoundingClientRect();
-    if(e.ctrlKey||e.metaKey){ e.preventDefault(); zoomAt(S*Math.exp(-e.deltaY*0.012),e.clientX-r.left,e.clientY-r.top); return; }
-    if(isMouseWheel(e)){ e.preventDefault(); zoomAt(S*(e.deltaY<0?1.15:1/1.15),e.clientX-r.left,e.clientY-r.top); } },{passive:false});
+  sc.addEventListener("wheel",e=>{ e.preventDefault(); const r=sc.getBoundingClientRect(); zoomAt(S*wheelFactor(e),e.clientX-r.left,e.clientY-r.top); },{passive:false});
   let g0=null; sc.addEventListener("gesturestart",e=>{ e.preventDefault(); g0=S; }); sc.addEventListener("gesturechange",e=>{ e.preventDefault(); const r=sc.getBoundingClientRect(); zoomAt(g0*e.scale,e.clientX-r.left,e.clientY-r.top); });
   let pin=null; sc.addEventListener("touchstart",e=>{ if(e.touches.length===2){ const [a,b]=e.touches; pin={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),s:S}; } },{passive:true});
   sc.addEventListener("touchmove",e=>{ if(e.touches.length===2&&pin){ e.preventDefault(); const [a,b]=e.touches; const d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY); const r=sc.getBoundingClientRect(); zoomAt(pin.s*d/pin.d,(a.clientX+b.clientX)/2-r.left,(a.clientY+b.clientY)/2-r.top); } },{passive:false});
@@ -1197,7 +1198,7 @@ function renderWho(){ const p=P[root]; const w=document.getElementById("who"); w
 function renderBanner(){ const b=document.getElementById("banner"); if(DIRECT.has(root)){ b.hidden=true; return; } b.hidden=false; const p=P[root]; const anc=ancList(root).map(o=>o.id); const desc=new Set(); const walk=x=>(kids[x]||[]).forEach(c=>{ if(!desc.has(c)){ desc.add(c); walk(c);} }); walk(root);
   const conn=[...desc].find(x=>DIRECT.has(x));
   b.innerHTML=`${mode!=="desc"?`<button class="btn pri" id="bDesc">${t("show_desc")} →</button>`:""}<span style="flex:1;min-width:0"><b>${t("notconn")}</b> ${t("notconn2")}</span>`; const bd=document.getElementById("bDesc"); if(bd) bd.onclick=()=>{ mode="desc"; S=null; renderModes(); renderTree({refit:true}); }; }
-function renderLegend(){ const w=document.getElementById("legendw"); if(w._closed){ w.innerHTML=`<button class="legbtn" id="legOpen">${t("legend")}</button>`; document.getElementById("legOpen").onclick=()=>{ w._closed=false; renderLegend(); }; return; }
+function renderLegend(){ const w=document.getElementById("legendw"); if(w._closed===undefined) w._closed=true; if(w._closed){ w.innerHTML=`<button class="legbtn" id="legOpen">${t("legend")}</button>`; document.getElementById("legOpen").onclick=()=>{ w._closed=false; renderLegend(); }; return; }
   w.innerHTML=`<div class="legend">${Object.entries(LINEC).map(([k,c])=>`<span><i style="background:${c}"></i>${t("ln_"+k)}</span>`).join("")}<span><i class="ln"></i>${t("lg_direct")}</span><span><i class="ld"></i>${t("lg_dash")}</span><span><i style="background:${STC.verified}"></i>${t("st_verified")}</span><span><i style="background:${STC.family}"></i>${t("st_family")}</span><span><i style="background:${STC.probable}"></i>${t("st_probable")}</span><span><i style="background:${STC.possible}"></i>${t("st_possible")}</span><button class="x" id="legX">✕</button></div>`; document.getElementById("legX").onclick=()=>{ w._closed=true; renderLegend(); }; }
 // ===================== DRAWER =====================
 function mini(id,role){ const p=P[id]; return `<button class="mini" data-go="${id}"><span class="mono" style="background:${lc(p)}">${esc(initials(p))}</span><span class="t"><b>${esc(p.g.split(" (")[0]+" "+(p.m||p.s))}</b><small>${esc([role,years(p)].filter(Boolean).join(" · "))}</small></span></button>`; }
@@ -1293,14 +1294,14 @@ function go(v,o={}){ view=v; ["start","tree","stories","docs","map","time","abou
   if(v==="start") drawStart(); if(v==="stories") drawStories(); if(v==="docs") drawDocs(); if(v==="map") drawMap(); if(v==="time") drawTime(); if(v==="about") drawAbout();
   if(v==="tree"){ renderModes(); renderTree({refit:!!o.refit||firstTree,instant:true}); if(!sel) closeDrawer(); showHint(); }
   updHash(); }
-function showHint(){ const h=document.getElementById("hintc"); try{ if(localStorage.getItem("ft-hint")) return; localStorage.setItem("ft-hint","1"); }catch(e){} h.textContent=t("hint_tree"); h.hidden=false; h.style.opacity=1; setTimeout(()=>{ h.style.opacity=0; setTimeout(()=>h.hidden=true,500); },5200); }
+function showHint(){ const h=document.getElementById("hintc"); try{ if(sessionStorage.getItem("ft-hint2")) return; sessionStorage.setItem("ft-hint2","1"); }catch(e){} h.textContent=t("hint_tree"); h.hidden=false; h.style.opacity=1; setTimeout(()=>{ h.style.opacity=0; setTimeout(()=>h.hidden=true,500); },5200); }
 function updHash(){ try{ const h=view==="tree"?`t-${root}-${mode}-${depth[mode]}${sel&&sel!==root?"-"+sel:""}`:view; history.replaceState(null,"","#"+h); }catch(e){} }
 function readHash(){ const h=(location.hash||"").slice(1); if(!h) return; if(h.startsWith("t-")||h.startsWith("p-")){ const a=h.split("-"); if(P[a[1]]) root=a[1]; const m=a[2]; if(["family","anc","desc","fan"].includes(m)) mode=m; if(m==="tree") mode="family"; if(a[3]&&+a[3]) depth[mode]=+a[3]; if(a[4]&&P[a[4]]) sel=a[4]; view="tree"; } else if(["start","stories","docs","map","time","about"].includes(h)) view=h; }
 // ===================== TOUR =====================
 let ti=-1; const tourEl=document.getElementById("tour");
 function tourGo(i){ if(i<0||i>=TOUR.length){ tourEl.hidden=true; ti=-1; return; } ti=i; const s=TOUR[i]; mode=s.mode==="fan"?"fan":"family"; if(mode==="family") depth.family=Math.max(depth.family,2); root=s.p; sel=s.p; expanded.clear(); if(view!=="tree") go("tree",{refit:true}); else { renderModes(); renderTree({refit:true,from:"p:"+s.p}); } drawDrawer(); if(innerWidth>900) openDrawer(); document.getElementById("tourK").textContent=`${t("tour_of")} ${i+1} / ${TOUR.length}`; document.getElementById("tourP").textContent=tx(s.t); tourEl.hidden=false; }
 document.getElementById("tourNext").onclick=()=>tourGo(ti+1); document.getElementById("tourPrev").onclick=()=>tourGo(Math.max(0,ti-1)); document.getElementById("tourX").onclick=()=>tourGo(-1);
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!lb.open){ if(ti>=0) tourGo(-1); else closeDrawer(); } if(ti>=0&&!lb.open){ if(e.key==="ArrowRight") tourGo(ti+1); if(e.key==="ArrowLeft") tourGo(Math.max(0,ti-1)); } });
+document.addEventListener("keydown",e=>{ if(view==="tree"&&!lb.open&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||"")){ if(e.key==="+"||e.key==="="){ zoomBtn(1.25); return; } if(e.key==="-"||e.key==="_"){ zoomBtn(1/1.25); return; } if(e.key==="0"){ document.getElementById("zfit").click(); return; } } if(e.key==="Escape"&&!lb.open){ if(ti>=0) tourGo(-1); else closeDrawer(); } if(ti>=0&&!lb.open){ if(e.key==="ArrowRight") tourGo(ti+1); if(e.key==="ArrowLeft") tourGo(Math.max(0,ti-1)); } });
 // ===================== LANG / SIZE / BOOT =====================
 function applyStatic(){ document.querySelectorAll("[data-i]").forEach(el=>el.textContent=t(el.dataset.i)); document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph)); document.documentElement.lang=L; document.getElementById("lang-pl").setAttribute("aria-pressed",L==="pl"); document.getElementById("lang-en").setAttribute("aria-pressed",L==="en"); }
 function setLang(l){ L=l; try{localStorage.setItem("ft-lang",l);}catch(e){} applyStatic(); go(view); if(sel&&view==="tree") drawDrawer(); }
