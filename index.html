@@ -83,7 +83,7 @@ nav button[aria-pressed="true"]{background:var(--brick);border-color:var(--brick
 .banner b{color:var(--ochre)}
 @media (max-width:760px){.banner{top:110px}}
 .mar{stroke:var(--brick);stroke-width:2.2;fill:none}
-.gen{font-family:var(--mono);font-size:13px;fill:var(--muted);letter-spacing:.08em}
+.gen{font-family:var(--mono);font-size:13px;fill:var(--muted);letter-spacing:.08em;paint-order:stroke;stroke:var(--surface);stroke-width:4px}
 .wedge{cursor:pointer;stroke:var(--surface);stroke-width:1.5}
 .wedge.gap{fill:var(--bg);stroke:var(--rule);stroke-dasharray:4 3;cursor:default}
 .wedge:hover{filter:brightness(1.12)}
@@ -589,7 +589,7 @@ const PLN=(n,f)=>n;
 function kinship(a,b,viaM){ if(a===b) return null; if((P[a].sp||[]).includes(b)) return L==="pl"?(P[b].x==="M"?"mąż":"żona"):(P[b].x==="M"?"husband":"wife"); const A=ancMap(a),B=ancMap(b); let best=null; for(const x in A){ if(B[x]!==undefined){ const s=A[x]+B[x]; if(!best||s<best.s) best={x,up:A[x],down:B[x],s}; } }
   const pb=P[b], sx=pb.x;
   if(!best){ if(viaM) return null;
-    const sp=(pb.sp||[]); for(const s of sp){ const k=kinship(a,s,true); if(k) return (L==="pl"?(sx==="M"?"mąż: ":"żona: ")+k:(sx==="M"?"husband of ":"wife of ")+k); }
+    const sp=(pb.sp||[]); for(const s of sp){ const k=kinship(a,s,true); if(k){ const pl=L==="pl"; const inlaw={ "córka":"zięć","syn":"synowa","siostra":"szwagier","brat":"bratowa","daughter":"son-in-law","son":"daughter-in-law","sister":"brother-in-law","brother":"sister-in-law","matka":"ojczym","ojciec":"macocha","mother":"stepfather","father":"stepmother" }[k]; if(inlaw) return inlaw; return pl?(sx==="M"?"mąż: ":"żona: ")+k:(sx==="M"?"husband of ":"wife of ")+k; } }
     const spA=(P[a].sp||[]); for(const s of spA){ const k=kinship(s,b,true); if(k) return (L==="pl"?k+" (ze strony małżonka)":k+" (by marriage)"); }
     return L==="pl"?"pokrewieństwo nieustalone":"relationship not established"; }
   const {up,down}=best; const pl=L==="pl";
@@ -627,8 +627,8 @@ function drawChart(){
   document.getElementById("stepUp").hidden=false; document.getElementById("stepDown").hidden=mode!=="tree"; document.getElementById("upN").textContent=upDepth; document.getElementById("downN").textContent=downDepth;
   const svg=d3.select("#svg"); svg.selectAll("*").remove();
   const W=svg.node().clientWidth||1000, H=svg.node().clientHeight||700; svg.attr("viewBox",`0 0 ${W} ${H}`);
-  const g=svg.append("g");
-  zoomBeh=d3.zoom().scaleExtent([.25,3]).filter(e=>{ if(e.type==="wheel") return true; if(e.type.startsWith("touch")) return e.touches&&e.touches.length>1; return !e.ctrlKey&&!e.button; }).on("zoom",e=>g.attr("transform",e.transform)); svg.call(zoomBeh).on("dblclick.zoom",null);
+  const g=svg.append("g"); const gl=svg.append("g").attr("class","glabels").style("pointer-events","none");
+  zoomBeh=d3.zoom().scaleExtent([.25,3]).filter(e=>{ if(e.type==="wheel") return true; if(e.type.startsWith("touch")) return e.touches&&e.touches.length>1; return !e.ctrlKey&&!e.button; }).on("zoom",e=>{ g.attr("transform",e.transform); gl.attr("transform",`translate(10,${e.transform.y}) scale(${e.transform.k})`); }); svg.call(zoomBeh).on("dblclick.zoom",null);
   zoomBy=f=>svg.transition().duration(250).call(zoomBeh.scaleBy,f);
   if(mode==="fan") return drawFan(svg,g,W,H);
   // ancestors (above) and descendants (below)
@@ -640,9 +640,9 @@ function drawChart(){
   // spouse of main beside
   const mp=P[main]; const spId=(mp.sp||[])[0]; let spNode=null; if(spId){ spNode={x:CW+GX,y:0,id:spId}; }
   // generation labels
-  const gl=[]; for(let d=1;d<=upDepth;d++) gl.push({y:-d*(CH+GY),k:["","g_parents","g_grand","g_great","g_2","g_3","g_4","g_5","g_6"][d]||"g_6"}); for(let d=1;d<=downDepth;d++) gl.push({y:d*(CH+GY),k:d===1?"g_children":"g_gc"});
+  const glabs=[]; for(let d=1;d<=upDepth;d++) glabs.push({y:-d*(CH+GY),k:["","g_parents","g_grand","g_great","g_2","g_3","g_4","g_5","g_6"][d]||"g_6"}); for(let d=1;d<=downDepth;d++) glabs.push({y:d*(CH+GY),k:d===1?"g_children":"g_gc"});
   const minX=Math.min(...nodes.map(n=>n.x))-CW/2-20, maxX=Math.max(...nodes.map(n=>n.x),spNode?spNode.x:0)+CW/2+20;
-  g.selectAll(".gen").data(gl).join("text").attr("class","gen").attr("x",minX).attr("y",d=>d.y-CH/2-10).text(d=>t(d.k).toUpperCase());
+  gl.selectAll(".gen").data(glabs).join("text").attr("class","gen").attr("x",0).attr("y",d=>d.y-CH/2-10).text(d=>t(d.k).toUpperCase());
   const pathY=(a,b,up)=>{ const x1=a.x, y1=up?-a.y-CH/2:a.y+CH/2, x2=b.x, y2=up?-b.y+CH/2:b.y-CH/2; const my=(y1+y2)/2; return `M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}`; };
   g.selectAll(".link").data(links).join("path").attr("class",l=>{ const cid=l.up?l.a.data.id:l.b.data.id; const pid=l.up?l.b.data.id:l.a.data.id; const lk=cid&&P[cid]?P[cid].lk:null; const direct=cid&&pid&&DIRECT.has(cid)&&DIRECT.has(pid); return "link"+(lk==="possible"?" pos":lk==="probable"?" prob":"")+(direct?" direct":""); }).attr("d",l=>pathY(l.a,l.b,l.up));
   if(spNode){ g.append("path").attr("class","mar").attr("d",`M${CW/2},0 L${spNode.x-CW/2},0`); g.append("circle").attr("cx",(CW/2+spNode.x-CW/2)/2).attr("cy",0).attr("r",5).attr("fill","var(--surface)").attr("stroke","var(--brick)").attr("stroke-width",2); }
