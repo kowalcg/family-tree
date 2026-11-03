@@ -55,7 +55,7 @@ nav button[aria-pressed="true"]{background:var(--brick);border-color:var(--brick
 .step button{min-height:36px;min-width:36px;border:0;background:transparent;font-size:1.2rem;font-weight:700;color:var(--fg);padding:0;border-radius:6px;cursor:pointer}
 .step button:hover{background:var(--surface2)}
 .zoomgrp button{font-size:1.25rem}
-@media (max-width:760px){.legend{display:none}.crumb{display:none}}
+@media (max-width:760px){.legend{display:none}.crumb{display:none}.node .badge{display:none}}
 .bar{position:absolute;left:12px;top:12px;right:12px;display:flex;flex-wrap:wrap;gap:8px}
 .bar button,.bar select{min-height:44px;min-width:44px;padding:6px 12px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-weight:700;font-size:.9rem;cursor:pointer}
 .bar select{font-weight:400}
@@ -757,7 +757,7 @@ function drawChart(){
   const svg=d3.select("#svg"); svg.selectAll("*").remove();
   const W=svg.node().clientWidth||1000, H=svg.node().clientHeight||700; svg.attr("viewBox",`0 0 ${W} ${H}`);
   const g=svg.append("g"); const gl=svg.append("g").attr("class","glabels").style("pointer-events","none");
-  zoomBeh=d3.zoom().scaleExtent([.25,3]).filter(e=>{ if(e.type==="wheel") return true; if(e.type.startsWith("touch")) return e.touches&&e.touches.length>1; return !e.ctrlKey&&!e.button; }).on("zoom",e=>{ g.attr("transform",e.transform); gl.attr("transform",`translate(10,${e.transform.y}) scale(${e.transform.k})`); }); svg.call(zoomBeh).on("dblclick.zoom",null);
+  zoomBeh=d3.zoom().scaleExtent([.25,3]).filter(e=>{ if(e.type==="wheel") return true; if(e.type.startsWith("touch")) return e.touches&&e.touches.length>1; return !e.ctrlKey&&!e.button; }).on("zoom",e=>{ g.attr("transform",e.transform); gl.attr("transform",`translate(10,${e.transform.y+(window.innerWidth<=900?52:0)}) scale(${e.transform.k})`); }); svg.call(zoomBeh).on("dblclick.zoom",null);
   zoomBy=f=>svg.transition().duration(250).call(zoomBeh.scaleBy,f);
   if(mode==="fan") return drawFan(svg,g,W,H);
   // ancestors (above) and descendants (below)
