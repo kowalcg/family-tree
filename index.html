@@ -176,43 +176,100 @@ dialog::backdrop{background:rgba(20,14,10,.9)}
 .tour .k{font-family:var(--mono);font-size:.75rem;color:#E8A64A;letter-spacing:.08em}
 .tour .nav{display:flex;gap:6px}
 .tour button{min-width:48px;min-height:48px;border-radius:9px;border:1.5px solid #6b5a4e;background:#2A211C;color:#F3E9DC;font-weight:700;cursor:pointer}
+
+/* ===== layout v4: left rail, full-width chart, overlay drawer ===== */
+.shell{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1.5px solid var(--rule2);display:flex;flex-direction:column;gap:14px;padding:16px 14px max(16px,env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px))}
+.brand .bt{font-family:var(--display);font-weight:700;font-size:1.55rem;line-height:1.05;letter-spacing:-.01em}
+.brand .bt .amp{font-style:italic;font-weight:500;color:var(--brick)}
+.brand .bs{font-size:.78rem;color:var(--muted);margin-top:4px}
+.side nav{display:flex;flex-direction:column;gap:6px;padding:0}
+.side nav button{text-align:left;width:100%;min-height:46px;padding:8px 14px;border-radius:9px;border:1.5px solid transparent;background:transparent;color:var(--fg);font-weight:700;font-size:1rem;cursor:pointer}
+.side nav button:hover{background:var(--surface2)}
+.side nav button[aria-pressed="true"]{background:var(--brick);color:#fff}
+.ctrls{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1.5px solid var(--rule2)}
+.ctl-h{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px}
+.seg.full{display:flex;width:100%}.seg.full button{flex:1}
+.ctrls select{width:100%;min-height:46px;padding:6px 10px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font:inherit}
+.ctrls .step{width:100%;justify-content:space-between}
+.ctrls button.wide{width:100%;min-height:46px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-weight:700;cursor:pointer}
+.ctrls button.wide.pri{background:var(--brick);border-color:var(--brick);color:#fff}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1.5px solid var(--rule2)}
+.main{min-width:0}
+.treeview{position:relative;height:100vh}
+.chart{position:relative;height:100%;min-height:0;border:0;border-radius:0;background:var(--surface)}
+.chart svg{height:100%}
+.zoomgrp{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:6px;margin:0;z-index:4}
+.zoomgrp button{width:48px;height:48px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-size:1.3rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.bar{display:none}
+.legend{left:12px;right:auto;bottom:max(12px,env(safe-area-inset-bottom,0px));max-width:min(70%,560px)}
+.crumb{left:12px;bottom:auto;top:12px;font-size:.95rem;font-weight:700;color:var(--fg);background:color-mix(in srgb,var(--surface) 88%,transparent);padding:6px 10px;border-radius:8px;max-width:60%}
+.banner{top:52px;left:12px;right:auto;max-width:min(90%,620px)}
+.drawer{position:absolute;top:0;right:0;bottom:0;width:min(440px,100%);max-height:none;border:0;border-left:1.5px solid var(--rule2);border-radius:0;transform:translateX(102%);transition:transform .3s ease;z-index:6;box-shadow:-8px 0 30px rgba(0,0,0,.15);padding:22px 22px 60px}
+.treeview.open .drawer{transform:none}
+.drawerx{position:absolute;top:10px;right:max(10px,env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-size:1.1rem;font-weight:700;cursor:pointer;z-index:7;display:none}
+.treeview.open .drawerx{display:block}
+.pad{padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
+.menubtn{display:none;position:fixed;top:max(10px,env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));z-index:40;min-height:46px;padding:8px 14px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:29}
+@media (max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;bottom:0;width:min(86vw,330px);transform:translateX(-102%);transition:transform .28s ease;z-index:30;box-shadow:8px 0 30px rgba(0,0,0,.25)}
+  .side.open{transform:none}.backdrop.open{display:block}
+  .menubtn{display:block}
+  .treeview{height:100vh}
+  .crumb{top:64px;left:12px;max-width:calc(100% - 24px)}
+  .banner{top:118px;right:12px;max-width:none}
+  .legend{display:none}
+  .drawer{top:auto;left:0;right:0;width:100%;max-height:62vh;border-left:0;border-top:1.5px solid var(--rule2);border-radius:16px 16px 0 0;transform:translateY(103%);padding:18px 16px 40px}
+  .drawerx{top:auto;bottom:calc(62vh - 22px);right:12px}
+  .pad{padding-top:70px}
+}
 </style>
 
 </head>
 <body>
-<div class="gut wrap">
-<header>
-  <div>
-    <h1>Kowalczyk <span class="amp">&amp;</span> Prełowski</h1>
-    <p class="lede" data-i="lede"></p>
+<div class="shell">
+<button id="menuBtn" class="menubtn" aria-label="Menu">☰ <span data-i="menu"></span></button>
+<aside class="side" id="side">
+  <div class="brand"><div class="bt">Kowalczyk <span class="amp">&amp;</span> Prełowski</div><div class="bs" data-i="tagline"></div></div>
+  <nav id="nav" aria-label="Views"></nav>
+  <div class="ctrls" id="chartControls">
+    <div class="ctl-h" data-i="c_view"></div>
+    <div class="seg full"><button id="mode-tree" aria-pressed="true" data-i="m_tree"></button><button id="mode-fan" aria-pressed="false" data-i="m_fan"></button></div>
+    <div class="ctl-h" data-i="c_person"></div>
+    <select id="start" aria-label="Start from"></select>
+    <div class="ctl-h" data-i="c_gens"></div>
+    <div class="step" id="stepUp"><span class="lbl" data-i="anc"></span><button id="upMinus" aria-label="fewer ancestor generations">−</button><b id="upN">3</b><button id="up" aria-label="more ancestor generations">+</button></div>
+    <div class="step" id="stepDown"><span class="lbl" data-i="desc"></span><button id="downMinus" aria-label="fewer descendant generations">−</button><b id="downN">1</b><button id="down" aria-label="more descendant generations">+</button></div>
+    <button id="maxBtn" class="wide" data-i="max"></button>
+    <button id="tourBtn" class="wide pri" data-i="tour"></button>
   </div>
-  <div class="ctl">
-    <div class="seg" role="group" aria-label="Language"><button id="lang-pl">Polski</button><button id="lang-en">English</button></div>
-    <div class="seg" role="group" aria-label="Text size"><button data-fs="18">A</button><button data-fs="21">A+</button><button data-fs="24">A++</button></div>
+  <div class="side-foot">
+    <div class="seg full" role="group" aria-label="Language"><button id="lang-pl">Polski</button><button id="lang-en">English</button></div>
+    <div class="seg full" role="group" aria-label="Text size"><button data-fs="18">A</button><button data-fs="21">A+</button><button data-fs="24">A++</button></div>
   </div>
-</header>
-<nav id="nav" aria-label="Views"></nav>
-
-<div id="v-tree" class="stage">
-  <div class="chart">
-    <svg id="svg" role="img" aria-label="Family chart"></svg>
-    <div class="bar">
-      <button id="mode-tree" aria-pressed="true" data-i="m_tree"></button><button id="mode-fan" aria-pressed="false" data-i="m_fan"></button>
-      <select id="start" aria-label="Start from"></select>
-      <span class="step" id="stepUp"><span class="lbl" data-i="anc"></span><button id="upMinus" aria-label="fewer ancestor generations">−</button><b id="upN">3</b><button id="up" aria-label="more ancestor generations">+</button></span>
-      <span class="step" id="stepDown"><span class="lbl" data-i="desc"></span><button id="downMinus" aria-label="fewer descendant generations">−</button><b id="downN">1</b><button id="down" aria-label="more descendant generations">+</button></span><button id="maxBtn" data-i="max"></button>
-      <span class="zoomgrp"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="fit" aria-label="Fit">⤢</button></span><button id="tourBtn" data-i="tour"></button>
+</aside>
+<div class="backdrop" id="backdrop"></div>
+<main class="main">
+  <div id="v-tree" class="treeview">
+    <div class="chart">
+      <svg id="svg" role="img" aria-label="Family chart"></svg>
+      <div class="zoomgrp"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="fit" aria-label="Fit">⤢</button></div>
+      <div class="crumb" id="crumb"></div>
+      <div class="legend" id="legend"></div>
     </div>
-    <div class="crumb" id="crumb"></div>
-    <div class="legend" id="legend"></div>
+    <aside id="drawer" class="drawer"></aside>
+    <button id="drawerX" class="drawerx" aria-label="Close">✕</button>
   </div>
-  <aside id="drawer"></aside>
-</div>
-<div id="v-stories" class="panel" hidden></div>
-<div id="v-docs" class="panel" hidden></div>
-<div id="v-map" class="panel map" hidden></div>
-<div id="v-time" class="panel" hidden></div>
-<div id="v-about" class="panel" hidden></div>
+  <div class="pad">
+    <div id="v-stories" class="panel" hidden></div>
+    <div id="v-docs" class="panel" hidden></div>
+    <div id="v-map" class="panel map" hidden></div>
+    <div id="v-time" class="panel" hidden></div>
+    <div id="v-about" class="panel" hidden></div>
+  </div>
+</main>
 </div>
 
 <dialog id="lb"><div class="lb">
@@ -554,7 +611,7 @@ const T={
  ab_h:{pl:"Źródła, metoda i co zamówić",en:"Sources, method and what to order"},
  people:{pl:"osób",en:"people"},verified:{pl:"z akt",en:"from records"},gens_n:{pl:"pokoleń",en:"generations"},docs_n:{pl:"dokumentów",en:"documents"},places_n:{pl:"miejsc",en:"places"},
  tour_of:{pl:"Opowieść",en:"Story"},
- inlb_src:{pl:"Źródło",en:"Source"},
+ inlb_src:{pl:"Źródło",en:"Source"},menu:{pl:"Menu",en:"Menu"},tagline:{pl:"Drzewo rodzinne · PL / EN",en:"Family tree · PL / EN"},c_view:{pl:"Widok",en:"View"},c_person:{pl:"Osoba w środku",en:"Person at the centre"},c_gens:{pl:"Pokolenia",en:"Generations"},
  direct:{pl:"Twoja linia prosta",en:"Your direct line"},related:{pl:"Rodziny spokrewnione (jeszcze niepołączone)",en:"Related families (not yet connected)"},
  lineto:{pl:"Droga do Grzegorza i Barbary",en:"Line to Greg and Barbara"},
  notconn_h:{pl:"Ta rodzina nie jest jeszcze połączona z Twoją linią",en:"This family is not yet connected to your line"},
@@ -604,10 +661,14 @@ function kinship(a,b,viaM){ if(a===b) return null; if((P[a].sp||[]).includes(b))
 // ================= UI BUILD =================
 const VIEWS=["tree","stories","docs","map","time","about"];
 function buildNav(){ const n=document.getElementById("nav"); n.innerHTML=""; VIEWS.forEach(v=>{ const b=document.createElement("button"); b.textContent=t("v_"+v); b.setAttribute("aria-pressed",view===v?"true":"false"); b.onclick=()=>{ view=v; render(); }; n.appendChild(b); }); }
-function render(){ document.querySelectorAll("[data-i]").forEach(el=>el.textContent=t(el.dataset.i)); document.getElementById("lang-pl").setAttribute("aria-pressed",L==="pl"?"true":"false"); document.getElementById("lang-en").setAttribute("aria-pressed",L==="en"?"true":"false"); document.documentElement.lang=L;
+function closeSide(){ document.getElementById("side").classList.remove("open"); document.getElementById("backdrop").classList.remove("open"); }
+document.getElementById("menuBtn").onclick=()=>{ document.getElementById("side").classList.toggle("open"); document.getElementById("backdrop").classList.toggle("open"); };
+document.getElementById("backdrop").onclick=closeSide;
+document.getElementById("drawerX").onclick=()=>document.getElementById("v-tree").classList.remove("open");
+function render(){ document.querySelectorAll("[data-i]").forEach(el=>el.textContent=t(el.dataset.i)); document.getElementById("chartControls").hidden=(view!=="tree"); if(window.innerWidth<=900) closeSide(); document.getElementById("lang-pl").setAttribute("aria-pressed",L==="pl"?"true":"false"); document.getElementById("lang-en").setAttribute("aria-pressed",L==="en"?"true":"false"); document.documentElement.lang=L;
   buildNav(); VIEWS.forEach(v=>document.getElementById("v-"+v).hidden=(view!==v));
-  if(view==="tree"){ buildStart(); drawChart(); drawDrawer(); } if(view==="stories") drawStories(); if(view==="docs") drawDocs(); if(view==="map") drawMap(); if(view==="time") drawTime(); if(view==="about") drawAbout(); setHash(); }
-function setMain(id,opts={}){ if(!P[id]) return; lastMain=main; main=id; if(view!=="tree") view="tree"; if(opts.mode) mode=opts.mode; render(); }
+  if(view==="tree"){ buildStart(); drawChart(); drawDrawer(); if(!render.userActed) document.getElementById("v-tree").classList.remove("open"); } if(view==="stories") drawStories(); if(view==="docs") drawDocs(); if(view==="map") drawMap(); if(view==="time") drawTime(); if(view==="about") drawAbout(); setHash(); }
+function setMain(id,opts={}){ if(!P[id]) return; render.userActed=true; lastMain=main; main=id; if(view!=="tree") view="tree"; if(opts.mode) mode=opts.mode; render(); }
 function buildStart(){ const s=document.getElementById("start"); const direct=[["alex","Alexander"],["patricia","Patricia"],["greg","Grzegorz"],["barbara","Barbara"],["henryk","Henryk Kowalczyk"],["teresa","Teresa Dramińska"],["stefan","Stefan Prełowski"],["helena","Helena Zakierska"],["waclaw_k","Wacław Kowalczyk"],["antoni_dram","Antoni Dramiński"],["julian_z1909","Julian Zakierski 1909"],["waclaw_z","Wacław Zakierski (Steklin)"],["jan_z1841","Jan Zakierski ~1841"],["gabryel_z","Gabryel Zakierski ~1739"]].filter(o=>P[o[0]]);
   const related=[["franciszek_k1864","Kowalczyk: Franciszek 1864 (Groszki)"],["bronislaw_k","Kowalczyk: Bronisław 1889 (Groszki)"],["julian_d1866","Dramiński: Julian 1866 (Gralewo)"],["kajetan_d1773","Dramiński: Kajetan 1773 (Gralewo)"],["wladyslaw_dion","Dramiński: Władysław (Ciechanów)"],["stefan_p1910","Prełowski: Stefan 1910 (Chełmno)"],["stanislaw_p1900","Prełowski: Stanisław 1900 (Szczecin)"],["stanislaus_p","Prełowski: Stanisław (Dobrcz)"],["adam_pr1891","Prelewski: Adam 1891 (Czernikowo)"],["jozefat_z1854","Zakierski: Józefat (Dobrzejewice)"],["mikolaj_z","Zakierski: Mikołaj (Wola Trutowo)"]].filter(o=>P[o[0]]);
   const cur=(direct.some(o=>o[0]===main)||related.some(o=>o[0]===main))?"":`<option value="${main}" selected>${esc(P[main].g.split(" ")[0]+" "+(P[main].m||P[main].s))}</option>`;
@@ -658,7 +719,7 @@ function drawChart(){
   node.append("text").attr("class","dt").attr("x",64).attr("y",64).text(n=>n.gap?"":dates(P[n.id]));
   node.filter(n=>!n.gap&&DIRECT.has(n.id)).append("text").attr("class","badge").attr("x",CW-8).attr("y",14).attr("text-anchor","end").text("★ "+t("directbadge").toUpperCase());
   showBanner();
-  fit=()=>{ const b=g.node().getBBox(); const kmin=W<700?Math.min(1,(W-24)/(CW*2+GX)):0.72; let k=Math.min(W/(b.width+60),H/(b.height+60),1.15); const fits=k>=kmin; k=Math.max(k,kmin); const cx=fits?(b.x+b.width/2):0, cy=fits?(b.y+b.height/2):0; svg.transition().duration(500).call(zoomBeh.transform,d3.zoomIdentity.translate(W/2-cx*k,H/2-cy*k).scale(k)); };
+  fit=()=>{ const b=g.node().getBBox(); const kmin=W<700?Math.min(1,(W-24)/(CW*2+GX)):0.72; let k=Math.min(W/(b.width+60),H/(b.height+60),1.15); const fits=k>=kmin; k=Math.max(k,kmin); const cx=fits?(b.x+b.width/2):0, cy=fits?(b.y+b.height/2):0; const dx=(window.innerWidth>900&&document.getElementById("v-tree").classList.contains("open"))?-200:0; svg.transition().duration(500).call(zoomBeh.transform,d3.zoomIdentity.translate(W/2-cx*k+dx,H/2-cy*k).scale(k)); };
   fit();
   document.getElementById("crumb").textContent=(lastMain&&P[lastMain]?`${P[lastMain].g} ${P[lastMain].s} › `:"")+fullname(P[main]);
   document.getElementById("legend").innerHTML=Object.entries(STC).filter(([k])=>k!=="unknown").map(([k,c])=>`<span><i style="background:${c}"></i>${t("st_"+k)}</span>`).join("")+`<span><i style="background:transparent;border:2px dashed var(--rule);width:10px;height:10px"></i>${L==="pl"?"linia przerywana: powiązanie możliwe":"dashed: possible link"}</span>`;
@@ -697,7 +758,7 @@ function drawFan(svg,g,W,H){
 // ================= DRAWER =================
 function drawDrawer(o){
   const d=document.getElementById("drawer");
-  if(o&&o.gap){ const pp=P[o.gap.pid]; d.innerHTML=`<div class="mono" style="background:var(--surface2);color:var(--muted);border:2px dashed var(--rule)">?</div><h2>${t(o.gap.role==="f"?"father":"mother")}</h2><div class="maiden">${esc(pp.g)} ${esc(pp.s)}</div><div class="tags"><span class="tag" style="background:var(--unknown)">${t("st_unknown")}</span></div><p>${t("gap_note")}</p><p class="note">${L==="pl"?"Która kwerenda to wyjaśni, opisano w zakładce „Źródła i co dalej”.":"Which record request will answer this is listed under 'Sources & next steps'."}</p>`; return; }
+  if(o&&o.gap){ const pp=P[o.gap.pid]; d.innerHTML=`<div class="mono" style="background:var(--surface2);color:var(--muted);border:2px dashed var(--rule)">?</div><h2>${t(o.gap.role==="f"?"father":"mother")}</h2><div class="maiden">${esc(pp.g)} ${esc(pp.s)}</div><div class="tags"><span class="tag" style="background:var(--unknown)">${t("st_unknown")}</span></div><p>${t("gap_note")}</p><p class="note">${L==="pl"?"Która kwerenda to wyjaśni, opisano w zakładce „Źródła i co dalej”.":"Which record request will answer this is listed under 'Sources & next steps'."}</p>`; document.getElementById("v-tree").classList.add("open"); return; }
   const p=P[main]; const sibs=sibsOf(main); const ch=(kids[main]||[]).slice().sort((a,b)=>(yr(P[a].b)||0)-(yr(P[b].b)||0));
   const chip=id=>`<button data-go="${id}">${esc(P[id].g.split(" (")[0])} ${esc(P[id].m||P[id].s)}</button>`;
   const docs=DOCS.filter(x=>(x.people||[]).includes(main)); const ph=(p.ph||[]).map(f=>"scans/"+f);
@@ -716,6 +777,7 @@ function drawDrawer(o){
   ${(docs.length||ph.length)?`<div class="thumbs">${docs.map(x=>`<button data-doc="${x.id}" title="${esc(tx(x.t))}"><img loading="lazy" src="${x.file}" alt=""></button>`).join("")}${ph.filter(f=>!docs.some(x=>x.file===f)).map(f=>`<button data-img="${f}"><img loading="lazy" src="${f}" alt=""></button>`).join("")}</div>`:""}
   <div class="acts"><button class="pri" data-mode="${mode==="tree"?"fan":"tree"}">${mode==="tree"?t("infan"):t("focus")}</button><button data-home="1">${L==="pl"?"Licz pokrewieństwo od tej osoby":"Count relationships from here"}</button></div>
   <div class="src">${t("src")}: ${p.st==="family"&&!p.src?t("src_family"):esc(p.src||"")}</div>`;
+  document.getElementById("v-tree").classList.add("open"); d.scrollTop=0;
   d.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setMain(b.dataset.go));
   d.querySelectorAll("[data-doc]").forEach(b=>b.onclick=()=>openLB(DOCS.findIndex(x=>x.id===b.dataset.doc),DOCS));
   d.querySelectorAll("[data-img]").forEach(b=>b.onclick=()=>openLB(0,[{file:b.dataset.img,t:{en:fullname(p),pl:fullname(p)},d:{en:"",pl:""},src:p.src||""}]));
