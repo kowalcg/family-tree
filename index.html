@@ -78,7 +78,7 @@ nav button[aria-pressed="true"]{background:var(--brick);border-color:var(--brick
 .link.pos{stroke-dasharray:6 5}
 .link.prob{stroke-dasharray:14 5}
 .link.direct{stroke:var(--brick);stroke-width:3}
-.node .badge{font-family:var(--mono);font-size:10px;fill:var(--brick);letter-spacing:.06em}
+.node .badge{font-family:var(--mono);font-size:9px;fill:var(--brick);letter-spacing:.06em;opacity:.85}
 .banner{position:absolute;left:12px;right:12px;top:64px;background:var(--surface2);border:1.5px solid var(--ochre);border-radius:10px;padding:10px 14px;font-size:.92rem;z-index:3}
 .banner b{color:var(--ochre)}
 @media (max-width:760px){.banner{top:110px}}
@@ -717,7 +717,7 @@ function drawChart(){
   node.append("text").attr("class","nm").attr("x",64).attr("y",24).text(n=>n.gap?t(n.role==="f"?"father":"mother"):clip(P[n.id].g,18));
   node.append("text").attr("class","ln").attr("x",64).attr("y",46).text(n=>n.gap?t("unknown_parent"):clip(P[n.id].m?P[n.id].m:P[n.id].s,16));
   node.append("text").attr("class","dt").attr("x",64).attr("y",64).text(n=>n.gap?"":dates(P[n.id]));
-  node.filter(n=>!n.gap&&DIRECT.has(n.id)).append("text").attr("class","badge").attr("x",CW-8).attr("y",14).attr("text-anchor","end").text("★ "+t("directbadge").toUpperCase());
+  node.filter(n=>!n.gap&&DIRECT.has(n.id)).append("text").attr("class","badge").attr("x",CW-8).attr("y",CH-8).attr("text-anchor","end").text("★ "+t("directbadge").toUpperCase());
   showBanner();
   fit=()=>{ const b=g.node().getBBox(); const kmin=W<700?Math.min(1,(W-24)/(CW*2+GX)):0.72; let k=Math.min(W/(b.width+60),H/(b.height+60),1.15); const fits=k>=kmin; k=Math.max(k,kmin); const cx=fits?(b.x+b.width/2):0, cy=fits?(b.y+b.height/2):0; const dx=(window.innerWidth>900&&document.getElementById("v-tree").classList.contains("open"))?-200:0; svg.transition().duration(500).call(zoomBeh.transform,d3.zoomIdentity.translate(W/2-cx*k+dx,H/2-cy*k).scale(k)); };
   fit();
