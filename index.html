@@ -780,7 +780,8 @@ document.getElementById("fit").onclick=()=>fit&&fit(); document.getElementById("
 document.getElementById("maxBtn").onclick=()=>{ upDepth=8; downDepth=3; render(); };
 // ================= HOURGLASS =================
 const CW=(window.innerWidth<700)?190:230, CH=74, GX=(window.innerWidth<700)?14:26, GY=56;
-let fit=null, zoomBeh=null, zoomBy=null;
+let fit=null, zoomBeh=null, zoomBy=null, chartK=null, firstDraw=true;
+function wheelHandler(svg,zb){ return e=>{ e.preventDefault(); if(e.ctrlKey||e.metaKey){ const f=Math.exp(-e.deltaY*0.01); const r=svg.node().getBoundingClientRect(); svg.call(zb.scaleBy,f,[e.clientX-r.left,e.clientY-r.top]); } else { const t=d3.zoomTransform(svg.node()); svg.call(zb.translateBy,-e.deltaX/t.k,-e.deltaY/t.k); } }; }
 function ancTree(id,depth){ const p=P[id]; const n={id,depth,children:[]}; if(depth<upDepth){ const f=p.f?ancTree(p.f,depth+1):{id:null,role:"f",pid:id,depth:depth+1,children:[]}; const m=p.mo?ancTree(p.mo,depth+1):{id:null,role:"m",pid:id,depth:depth+1,children:[]}; if(p.f||p.mo||depth===0) n.children=[f,m]; } return n; }
 function descTree(id,depth){ const n={id,depth,children:[]}; if(depth<downDepth){ (kids[id]||[]).sort((a,b)=>(yr(P[a].b)||0)-(yr(P[b].b)||0)).forEach(c=>n.children.push(descTree(c,depth+1))); } return n; }
 function drawChart(){
@@ -789,8 +790,9 @@ function drawChart(){
   const svg=d3.select("#svg"); svg.selectAll("*").remove();
   const W=svg.node().clientWidth||1000, H=svg.node().clientHeight||700; svg.attr("viewBox",`0 0 ${W} ${H}`);
   const g=svg.append("g"); const gl=svg.append("g").attr("class","glabels").style("pointer-events","none");
-  zoomBeh=d3.zoom().scaleExtent([.25,3]).filter(e=>{ if(e.type==="wheel") return true; if(e.type.startsWith("touch")) return e.touches&&e.touches.length>1; return !e.ctrlKey&&!e.button; }).on("zoom",e=>{ g.attr("transform",e.transform); gl.attr("transform",`translate(10,${e.transform.y+(window.innerWidth<=900?52:0)}) scale(${e.transform.k})`); }); svg.call(zoomBeh).on("dblclick.zoom",null);
-  zoomBy=f=>svg.transition().duration(250).call(zoomBeh.scaleBy,f);
+  zoomBeh=d3.zoom().scaleExtent([.25,3]).filter(e=>{ if(e.type==="wheel") return false; if(e.type.startsWith("touch")) return e.touches&&e.touches.length>1; return !e.ctrlKey&&!e.button; }).on("zoom",e=>{ chartK=e.transform.k; g.attr("transform",e.transform); gl.attr("transform",`translate(10,${e.transform.y+(window.innerWidth<=900?52:0)}) scale(${e.transform.k})`); }); svg.call(zoomBeh).on("dblclick.zoom",null);
+  svg.on("wheel",wheelHandler(svg,zoomBeh),{passive:false});
+  zoomBy=f=>svg.transition().duration(200).call(zoomBeh.scaleBy,f);
   if(mode==="fan") return drawFan(svg,g,W,H);
   // ancestors (above) and descendants (below)
   const A=d3.hierarchy(ancTree(main,0)); const D=d3.hierarchy(descTree(main,0));
@@ -819,8 +821,10 @@ function drawChart(){
   node.append("text").attr("class","dt").attr("x",64).attr("y",64).text(n=>n.gap?"":dates(P[n.id]));
   node.filter(n=>!n.gap&&DIRECT.has(n.id)).append("text").attr("class","badge").attr("x",CW-8).attr("y",CH-8).attr("text-anchor","end").text("★ "+t("directbadge").toUpperCase());
   showBanner();
-  fit=()=>{ const b=g.node().getBBox(); const kmin=W<700?Math.min(1,(W-24)/(CW*2+GX)):0.72; let k=Math.min(W/(b.width+60),H/(b.height+60),1.15); const fits=k>=kmin; k=Math.max(k,kmin); const cx=fits?(b.x+b.width/2):0, cy=fits?(b.y+b.height/2):0; const dx=(window.innerWidth>900&&document.getElementById("v-tree").classList.contains("open"))?-200:0; svg.transition().duration(500).call(zoomBeh.transform,d3.zoomIdentity.translate(W/2-cx*k+dx,H/2-cy*k).scale(k)); };
-  fit();
+  const dxOpen=()=>(window.innerWidth>900&&document.getElementById("v-tree").classList.contains("open"))?-200:0;
+  const fitK=()=>{ const b=g.node().getBBox(); const kmin=W<700?Math.min(1,(W-24)/(CW*2+GX)):0.72; return Math.max(Math.min(W/(b.width+60),H/(b.height+60),1.15),kmin); };
+  fit=()=>{ const k=fitK(); chartK=k; svg.transition().duration(400).call(zoomBeh.transform,d3.zoomIdentity.translate(W/2+dxOpen(),H/2).scale(k)); };
+  { const k=chartK||fitK(); chartK=k; const tr=d3.zoomIdentity.translate(W/2+dxOpen(),H/2).scale(k); if(firstDraw){ svg.call(zoomBeh.transform,tr); firstDraw=false; } else { svg.transition().duration(350).call(zoomBeh.transform,tr); } }
   document.getElementById("crumb").textContent=(lastMain&&P[lastMain]?`${P[lastMain].g} ${P[lastMain].s} › `:"")+fullname(P[main]);
   document.getElementById("legend").innerHTML=Object.entries(STC).filter(([k])=>k!=="unknown").map(([k,c])=>`<span><i style="background:${c}"></i>${t("st_"+k)}</span>`).join("")+`<span><i style="background:transparent;border:2px dashed var(--rule);width:10px;height:10px"></i>${L==="pl"?"linia przerywana: powiązanie możliwe":"dashed: possible link"}</span>`;
 }
@@ -835,7 +839,7 @@ function drawFan(svg,g,W,H){
   const R=Math.min(W/2-20,H-60); const ring=[70,80,78,74,70,66,62,58];
   const rs=[0]; for(let i=0;i<=GENS;i++) rs.push(rs[i]+ring[i]*(R/ (ring.slice(0,GENS+1).reduce((a,b)=>a+b,0))));
   d3.partition().size([Math.PI,1])(root);
-  const cx=W/2, cy=H-30; g.attr("transform",`translate(${cx},${cy})`); zoomBeh.on("zoom",e=>g.attr("transform",`translate(${cx+e.transform.x},${cy+e.transform.y}) scale(${e.transform.k})`));
+  const cx=W/2, cy=H-30; g.attr("transform",`translate(${cx},${cy})`); zoomBeh.on("zoom",e=>{ chartK=e.transform.k; g.attr("transform",`translate(${cx+e.transform.x},${cy+e.transform.y}) scale(${e.transform.k})`); });
   const arc=d3.arc().startAngle(d=>d.x0-Math.PI/2).endAngle(d=>d.x1-Math.PI/2).innerRadius(d=>rs[d.depth]).outerRadius(d=>rs[d.depth+1]-2);
   const nodes=root.descendants().filter(d=>d.depth>0);
   const w=g.selectAll(".wedge").data(nodes).join("path").attr("class",d=>"wedge"+(d.data.id?"":" gap")).attr("d",arc).attr("fill",d=>d.data.id?LINEC[lineOf(P[d.data.id])]:"var(--bg)").attr("opacity",d=>d.data.id?(P[d.data.id].st==="verified"||P[d.data.id].st==="family"?1:P[d.data.id].st==="probable"?.8:.6):1)
@@ -851,7 +855,8 @@ function drawFan(svg,g,W,H){
   g.append("text").attr("y",16).attr("text-anchor","middle").attr("fill","#fff").attr("font-size",13).attr("font-family","var(--body)").text(mp.g.split(" ")[0]);
   // children chips below centre
   const ch=(kids[main]||[]); if(ch.length){ const cg=g.append("g").attr("transform",`translate(0,${rs[1]+14})`); ch.slice(0,6).forEach((c,i)=>{ const x=(i-(Math.min(ch.length,6)-1)/2)*118; const b=cg.append("g").attr("transform",`translate(${x},0)`).style("cursor","pointer").on("click",()=>setMain(c,{mode:"fan"})); b.append("rect").attr("x",-55).attr("y",-12).attr("width",110).attr("height",24).attr("rx",12).attr("fill","var(--surface2)").attr("stroke","var(--rule)"); b.append("text").attr("text-anchor","middle").attr("y",5).attr("font-size",13).attr("fill","var(--fg)").attr("font-family","var(--body)").text("▼ "+clip(P[c].g.split(" ")[0],12)); }); }
-  fit=()=>{ const k=Math.min(1,(W-20)/(2*R+40)); svg.transition().duration(400).call(zoomBeh.transform,d3.zoomIdentity.translate(0,(H-30)*(1-k)).scale(k)); };
+  fit=()=>{ const k=Math.min(1,(W-20)/(2*R+40)); chartK=k; svg.transition().duration(400).call(zoomBeh.transform,d3.zoomIdentity.translate(0,(H-30)*(1-k)).scale(k)); };
+  { const k=Math.min(1,(W-20)/(2*R+40)); chartK=k; svg.call(zoomBeh.transform,d3.zoomIdentity.translate(0,(H-30)*(1-k)).scale(k)); }
   document.getElementById("crumb").textContent=fullname(mp)+" · "+GENS+" "+t("gens_n");
   document.getElementById("legend").innerHTML=Object.entries(LINEC).map(([k,c])=>`<span><i style="background:${c}"></i>${t("ln_"+k)}</span>`).join("")+`<span>${L==="pl"?"jaśniejsze = mniej pewne":"paler = less certain"}</span>`;
 }
@@ -945,8 +950,8 @@ function drawMap(){ const v=document.getElementById("v-map"); const W=900,H=720,
     lg.append("text").attr("text-anchor",anc).attr("font-weight",700).text(d.n); lg.append("text").attr("class","cap").attr("text-anchor",anc).attr("y",15).text(d.c?`${ppl(d.c)} · ${tx(d.t)}`:tx(d.t)); });
   const node0=svg.node(); const rs=()=>Math.min(node0.clientWidth/W,node0.clientHeight/H)||1; // rendered px per viewBox unit
   let k=1; const relabel=()=>{ const fs=1/rs(); g.selectAll(".cap").style("display",(k*rs())>=1.35?null:"none"); g.selectAll(".lbl").attr("transform",function(){ const d=d3.select(this.parentNode).datum(); const r=d.cand?7:4+Math.sqrt(d.c)*2.2; const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; const sc=fs/k; return `translate(${((anc==="end"?-r:r)+(dx>0?dx-12:dx+12))*sc},${dy*sc}) scale(${sc})`; }); g.selectAll(".lead").attr("x2",function(){ const d=d3.select(this.parentNode).datum(); const r=d.cand?7:4+Math.sqrt(d.c)*2.2; const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; return (((anc==="end"?-r:r)+(dx>0?dx-12:dx+12))+(anc==="end"?2:-2))*fs/k; }).attr("y2",function(){ const d=d3.select(this.parentNode).datum(); const [dx,dy]=OFF[d.n]||[12,4,"start"]; return (dy-4)*fs/k; }).attr("stroke-width",1/k); g.selectAll(".place circle").attr("stroke-width",1.5/k); };
-  const zb=d3.zoom().scaleExtent([.6,10]).on("zoom",e=>{ k=e.transform.k; g.attr("transform",e.transform); relabel(); });
-  svg.call(zb).on("dblclick.zoom",null);
+  const zb=d3.zoom().scaleExtent([.6,10]).filter(e=>{ if(e.type==="wheel") return false; if(e.type.startsWith("touch")) return e.touches&&e.touches.length>1; return !e.ctrlKey&&!e.button; }).on("zoom",e=>{ k=e.transform.k; g.attr("transform",e.transform); relabel(); });
+  svg.call(zb).on("dblclick.zoom",null); svg.on("wheel",wheelHandler(svg,zb),{passive:false});
   // fit to the places (not the whole outline) so the cluster fills the box
   const core=pts.filter(p=>!p.cand); const xs=core.map(p=>p.x), ys=core.map(p=>p.y); const bx0=Math.min(...xs)-110, bx1=Math.max(...xs)+150, by0=Math.min(...ys)-40, by1=Math.max(...ys)+40;
   const fitT=()=>{ const vw=W/Math.max(1,rs())*rs(), k0=Math.min(W/(bx1-bx0),H/(by1-by0)); return d3.zoomIdentity.translate(W/2-(bx0+bx1)/2*k0,H/2-(by0+by1)/2*k0).scale(k0); };
