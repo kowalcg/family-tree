@@ -167,6 +167,7 @@ dialog::backdrop{background:rgba(20,14,10,.9)}
 .mapbox .zoomgrp{right:10px;bottom:10px}
 .map .cap{fill:var(--muted);font-size:12px;font-weight:400}
 .map .cand{fill:none;stroke:var(--ochre);stroke-width:2;stroke-dasharray:4 3}
+.map .lead{stroke:var(--muted);stroke-width:1;opacity:.7}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px}
 .stats div{border-left:3px solid var(--brick);padding:4px 0 4px 12px}
 .stats b{display:block;font-family:var(--display);font-weight:700;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
@@ -717,7 +718,8 @@ const T={
  directbadge:{pl:"linia prosta",en:"direct line"},
  banner_direct:{pl:"Osoba z Twojej linii prostej",en:"On your direct line"}
 };
-const t=k=>(T[k]||{})[L]||k; const tx=o=>o?(typeof o==="object"?(o[L]||o.en||""):o):"";
+const t=k=>(T[k]||{})[L]||k;
+const ppl=n=>L==="pl"?(n===1?"1 osoba":(n%10>=2&&n%10<=4&&(n%100<12||n%100>14))?n+" osoby":n+" osób"):(n===1?"1 person":n+" people"); const tx=o=>o?(typeof o==="object"?(o[L]||o.en||""):o):"";
 // ================= DATA INDEX =================
 const P={}; PEOPLE.forEach(p=>P[p.id]=p);
 const kids={}; PEOPLE.forEach(p=>{[p.f,p.mo].forEach(x=>{ if(x){ (kids[x]=kids[x]||[]).push(p.id);} });});
@@ -930,17 +932,18 @@ const PLACES=[
 ];
 function drawMap(){ const v=document.getElementById("v-map"); const W=900,H=720, lo0=13.8,lo1=24.4,la0=48.9,la1=55.0; const X=lo=>(lo-lo0)/(lo1-lo0)*W, Y=la=>(la1-la)/(la1-la0)*H*0.98+8;
   const cnt=p=>PEOPLE.filter(q=>q.bp&&p.m.test(q.bp)).length;
-  const OFF={"Toruń":[-14,-10,"end"],"Osówka / Steklin / Czernikowo":[12,16,"start"],"Mazowsze · Wola Trutowo · Dobrzejewice":[12,-14,"start"],"Chełmno":[12,-4,"start"],"Dobrcz · Serock · Osielsko":[-14,-8,"end"],"Bydgoszcz":[-14,14,"end"],"Gralewo · Cywiny · Raciąż":[-14,-6,"end"],"Dramino":[12,10,"start"],"Ciechanów · Kownaty":[12,-8,"start"],"Płock":[-12,14,"end"],"Warszawa · Marki":[12,4,"start"],"Groszki · Kałuszyn":[12,4,"start"],"Szczecin":[12,4,"start"],"Giżycko":[12,-4,"start"],"Kętrzyn":[-12,-6,"end"],"Olsztyn":[-12,10,"end"],"Kosemin · Zawidz":[12,-2,"start"],"Mrągowo":[12,12,"start"]};
+  const OFF={"Toruń":[-26,-22,"end"],"Osówka / Steklin / Czernikowo":[22,34,"start"],"Mazowsze · Wola Trutowo · Dobrzejewice":[30,-26,"start"],"Chełmno":[14,-18,"start"],"Dobrcz · Serock · Osielsko":[-20,-22,"end"],"Bydgoszcz":[-16,22,"end"],"Gralewo · Cywiny · Raciąż":[-22,-28,"end"],"Dramino":[18,30,"start"],"Ciechanów · Kownaty":[18,-14,"start"],"Płock":[-14,24,"end"],"Kosemin · Zawidz":[-22,10,"end"],"Warszawa · Marki":[-16,10,"end"],"Groszki · Kałuszyn":[16,14,"start"],"Szczecin":[12,4,"start"],"Giżycko":[12,-8,"start"],"Kętrzyn":[-12,-10,"end"],"Olsztyn":[-12,14,"end"],"Mrągowo":[12,14,"start"]};
   v.innerHTML=`<h3>${t("map_h")}</h3><p class="lead">${t("map_p")}</p><div class="mapbox"><svg id="mapsvg" viewBox="0 0 ${W} ${H}" role="img"></svg><div class="zoomgrp" style="position:absolute"><button id="mzi" aria-label="Zoom in">+</button><button id="mzo" aria-label="Zoom out">−</button><button id="mzr" aria-label="Reset">⤢</button></div></div><div id="mapList" class="chips" style="margin-top:12px"></div>`;
   const svg=d3.select("#mapsvg"); const g=svg.append("g");
   g.append("path").attr("class","land").attr("d","M"+PL_OUTLINE.map(([a,b])=>X(a)+","+Y(b)).join(" L")+" Z");
   const pts=PLACES.map((p,i)=>({...p,i,x:X(p.lo),y:Y(p.la),c:cnt(p)}));
   const node=g.selectAll(".place").data(pts).join("g").attr("class","place").attr("transform",d=>`translate(${d.x},${d.y})`).style("cursor",d=>d.cand?"default":"pointer")
     .on("click",(e,d)=>{ if(d.cand) return; const ppl=PEOPLE.filter(q=>q.bp&&d.m.test(q.bp)).sort((a,b)=>(yr(a.b)||0)-(yr(b.b)||0)); document.getElementById("mapList").innerHTML=`<b style="width:100%">${esc(d.n)} · ${ppl.length} ${t("people")}</b>`+ppl.map(q=>`<button data-go="${q.id}">${esc(q.g.split(" ")[0])} ${esc(q.m||q.s)} ${yr(q.b)||""}</button>`).join(""); v.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setMain(b.dataset.go)); });
-  node.each(function(d){ const s=d3.select(this); const r=d.cand?8:6+Math.min(d.c,24)*0.7; if(d.cand) s.append("circle").attr("class","cand").attr("r",r); else s.append("circle").attr("r",r).attr("fill","var(--brick)").attr("opacity",.85).attr("stroke","var(--surface)").attr("stroke-width",1.5);
-    const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; const lg=s.append("g").attr("class","lbl").attr("transform",`translate(${(anc==="end"?-r:r)+(dx>0?dx-12:dx+12)},${dy})`);
-    lg.append("text").attr("text-anchor",anc).attr("font-weight",700).text(d.n); if(d.c) lg.append("text").attr("class","cap").attr("text-anchor",anc).attr("y",15).text(`${d.c} ${t("people")} · ${tx(d.t)}`); else lg.append("text").attr("class","cap").attr("text-anchor",anc).attr("y",15).text(tx(d.t)); });
-  let k=1; const zb=d3.zoom().scaleExtent([.8,8]).on("zoom",e=>{ k=e.transform.k; g.attr("transform",e.transform); g.selectAll(".lbl").attr("transform",function(){ const d=d3.select(this.parentNode).datum(); const r=d.cand?8:6+Math.min(d.c,24)*0.7; const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; return `translate(${((anc==="end"?-r:r)+(dx>0?dx-12:dx+12))/k},${dy/k}) scale(${1/k})`; }); g.selectAll(".place circle").attr("stroke-width",1.5/k); });
+  node.each(function(d){ const s=d3.select(this); const r=d.cand?7:4+Math.sqrt(d.c)*2.2; if(d.cand) s.append("circle").attr("class","cand").attr("r",r); else s.append("circle").attr("r",r).attr("fill","var(--brick)").attr("opacity",.85).attr("stroke","var(--surface)").attr("stroke-width",1.5);
+    const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; const lx=(anc==="end"?-r:r)+(dx>0?dx-12:dx+12), ly=dy; if(Math.abs(dx)>14||Math.abs(dy)>14) s.append("line").attr("class","lead").attr("x1",0).attr("y1",0).attr("x2",lx+(anc==="end"?2:-2)).attr("y2",ly-4);
+    const lg=s.append("g").attr("class","lbl").attr("transform",`translate(${lx},${ly})`);
+    lg.append("text").attr("text-anchor",anc).attr("font-weight",700).text(d.n); lg.append("text").attr("class","cap").attr("text-anchor",anc).attr("y",15).text(d.c?`${ppl(d.c)} · ${tx(d.t)}`:tx(d.t)); });
+  let k=1; const zb=d3.zoom().scaleExtent([.8,8]).on("zoom",e=>{ k=e.transform.k; g.attr("transform",e.transform); g.selectAll(".lbl").attr("transform",function(){ const d=d3.select(this.parentNode).datum(); const r=d.cand?7:4+Math.sqrt(d.c)*2.2; const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; return `translate(${((anc==="end"?-r:r)+(dx>0?dx-12:dx+12))/k},${dy/k}) scale(${1/k})`; }); g.selectAll(".place circle").attr("stroke-width",1.5/k); g.selectAll(".lead").attr("stroke-width",1/k); });
   svg.call(zb).on("dblclick.zoom",null);
   document.getElementById("mzi").onclick=()=>svg.transition().duration(250).call(zb.scaleBy,1.5); document.getElementById("mzo").onclick=()=>svg.transition().duration(250).call(zb.scaleBy,1/1.5); document.getElementById("mzr").onclick=()=>svg.transition().duration(300).call(zb.transform,d3.zoomIdentity);
   // start zoomed on the Toruń–Warsaw corridor on phones
