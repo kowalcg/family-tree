@@ -161,8 +161,11 @@ dialog::backdrop{background:rgba(20,14,10,.9)}
 .map svg{width:100%;height:auto;max-width:100%;display:block;margin-top:14px}
 .map .land{fill:color-mix(in srgb,var(--vistula) 10%,var(--surface));stroke:var(--vistula);stroke-width:1}
 .map .pt{cursor:pointer}
-.map text{font-family:var(--body);font-size:13px;fill:var(--fg);pointer-events:none}
-.map .cap{fill:var(--muted);font-size:12px}
+.map text{font-family:var(--body);font-size:14px;fill:var(--fg);pointer-events:none;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.mapbox{position:relative;margin-top:14px;border:1.5px solid var(--rule2);border-radius:10px;overflow:hidden;background:var(--surface)}
+.mapbox svg{display:block;width:100%;height:min(72vh,760px);touch-action:pan-y pinch-zoom;cursor:grab}
+.mapbox .zoomgrp{right:10px;bottom:10px}
+.map .cap{fill:var(--muted);font-size:12px;font-weight:400}
 .map .cand{fill:none;stroke:var(--ochre);stroke-width:2;stroke-dasharray:4 3}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px}
 .stats div{border-left:3px solid var(--brick);padding:4px 0 4px 12px}
@@ -923,15 +926,26 @@ const PLACES=[
  {n:"Toruń",la:53.01,lo:18.60,m:/Toruń/},{n:"Osówka / Steklin / Czernikowo",la:52.93,lo:19.08,m:/Osówka|Steklin|Szkleniec|Czernik|Obrowo|Witowąż/},{n:"Mazowsze · Wola Trutowo · Dobrzejewice",la:52.98,lo:19.15,m:/Mazowsze|Trutowo|Dobrzejewice|Lubin/},
  {n:"Chełmno",la:53.35,lo:18.42,m:/Chełmno|Kulm/},{n:"Dobrcz · Serock · Osielsko",la:53.28,lo:18.10,m:/Dobrcz|Serock|Osielsko|Wudzyn|Niewieścin/},{n:"Bydgoszcz",la:53.12,lo:18.00,m:/Bydgoszcz|Bromberg/},
  {n:"Gralewo · Cywiny · Raciąż",la:52.78,lo:20.10,m:/Gralewo|Cywiny|Raciąż|Kraszewo|Unieck|Sikory|Glinojeck/},{n:"Dramino",la:52.70,lo:20.40,m:/Dramino|Baboszewo|Mystkowo|Koziebrody/},{n:"Ciechanów · Kownaty",la:52.88,lo:20.62,m:/Ciechanów|Kownaty|Ciachcin|Dźwierzno/},{n:"Płock",la:52.55,lo:19.70,m:/Płock/},
- {n:"Warszawa · Marki",la:52.32,lo:21.10,m:/Warszawa|Marki/},{n:"Groszki · Kałuszyn",la:52.21,lo:21.85,m:/Groszki|Kałuszyn|Ryczyca/},{n:"Szczecin",la:53.43,lo:14.55,m:/Szczecin|Stettin/,cand:true}
+ {n:"Warszawa · Marki",la:52.32,lo:21.10,m:/Warszawa|Marki/},{n:"Groszki · Kałuszyn",la:52.21,lo:21.85,m:/Groszki|Kałuszyn|Ryczyca/},{n:"Kosemin · Zawidz",la:52.83,lo:19.75,m:/Kosemin|Zawidz/},{n:"Mrągowo",la:53.87,lo:21.30,m:/Mrągowo/},{n:"Szczecin",la:53.43,lo:14.55,m:/Szczecin|Stettin/,cand:true}
 ];
-function drawMap(){ const v=document.getElementById("v-map"); const W=780,H=640, lo0=13.8,lo1=24.4,la0=48.9,la1=55.0; const X=lo=>(lo-lo0)/(lo1-lo0)*W, Y=la=>(la1-la)/(la1-la0)*H*0.98+8;
+function drawMap(){ const v=document.getElementById("v-map"); const W=900,H=720, lo0=13.8,lo1=24.4,la0=48.9,la1=55.0; const X=lo=>(lo-lo0)/(lo1-lo0)*W, Y=la=>(la1-la)/(la1-la0)*H*0.98+8;
   const cnt=p=>PEOPLE.filter(q=>q.bp&&p.m.test(q.bp)).length;
-  let s=`<svg viewBox="0 0 ${W} ${H}" role="img"><path class="land" d="M${PL_OUTLINE.map(([a,b])=>X(a)+","+Y(b)).join(" L")} Z"/>`;
-  PLACES.forEach((p,i)=>{ const x=X(p.lo),y=Y(p.la),c=cnt(p); const r=6+Math.min(c,20)*0.9; s+=p.cand?`<circle class="cand" cx="${x}" cy="${y}" r="9"/>`:`<circle class="pt" data-i="${i}" cx="${x}" cy="${y}" r="${r}" fill="var(--brick)" opacity=".85"/>`; s+=`<text x="${x+r+4}" y="${y+4}" font-weight="700">${p.n}</text>${c?`<text class="cap" x="${x+r+4}" y="${y+18}">${c} ${t("people")}</text>`:""}`; });
-  s+=`</svg>`;
-  v.innerHTML=`<h3>${t("map_h")}</h3><p class="lead">${t("map_p")}</p>${s}<div id="mapList" class="chips" style="margin-top:12px"></div>`;
-  v.querySelectorAll(".pt").forEach(c=>c.onclick=()=>{ const p=PLACES[+c.dataset.i]; const ppl=PEOPLE.filter(q=>q.bp&&p.m.test(q.bp)).sort((a,b)=>(yr(a.b)||0)-(yr(b.b)||0)); document.getElementById("mapList").innerHTML=`<b style="width:100%">${p.n}</b>`+ppl.map(q=>`<button data-go="${q.id}">${esc(q.g.split(" ")[0])} ${esc(q.m||q.s)} ${yr(q.b)||""}</button>`).join(""); v.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setMain(b.dataset.go)); }); }
+  const OFF={"Toruń":[-14,-10,"end"],"Osówka / Steklin / Czernikowo":[12,16,"start"],"Mazowsze · Wola Trutowo · Dobrzejewice":[12,-14,"start"],"Chełmno":[12,-4,"start"],"Dobrcz · Serock · Osielsko":[-14,-8,"end"],"Bydgoszcz":[-14,14,"end"],"Gralewo · Cywiny · Raciąż":[-14,-6,"end"],"Dramino":[12,10,"start"],"Ciechanów · Kownaty":[12,-8,"start"],"Płock":[-12,14,"end"],"Warszawa · Marki":[12,4,"start"],"Groszki · Kałuszyn":[12,4,"start"],"Szczecin":[12,4,"start"],"Giżycko":[12,-4,"start"],"Kętrzyn":[-12,-6,"end"],"Olsztyn":[-12,10,"end"],"Kosemin · Zawidz":[12,-2,"start"],"Mrągowo":[12,12,"start"]};
+  v.innerHTML=`<h3>${t("map_h")}</h3><p class="lead">${t("map_p")}</p><div class="mapbox"><svg id="mapsvg" viewBox="0 0 ${W} ${H}" role="img"></svg><div class="zoomgrp" style="position:absolute"><button id="mzi" aria-label="Zoom in">+</button><button id="mzo" aria-label="Zoom out">−</button><button id="mzr" aria-label="Reset">⤢</button></div></div><div id="mapList" class="chips" style="margin-top:12px"></div>`;
+  const svg=d3.select("#mapsvg"); const g=svg.append("g");
+  g.append("path").attr("class","land").attr("d","M"+PL_OUTLINE.map(([a,b])=>X(a)+","+Y(b)).join(" L")+" Z");
+  const pts=PLACES.map((p,i)=>({...p,i,x:X(p.lo),y:Y(p.la),c:cnt(p)}));
+  const node=g.selectAll(".place").data(pts).join("g").attr("class","place").attr("transform",d=>`translate(${d.x},${d.y})`).style("cursor",d=>d.cand?"default":"pointer")
+    .on("click",(e,d)=>{ if(d.cand) return; const ppl=PEOPLE.filter(q=>q.bp&&d.m.test(q.bp)).sort((a,b)=>(yr(a.b)||0)-(yr(b.b)||0)); document.getElementById("mapList").innerHTML=`<b style="width:100%">${esc(d.n)} · ${ppl.length} ${t("people")}</b>`+ppl.map(q=>`<button data-go="${q.id}">${esc(q.g.split(" ")[0])} ${esc(q.m||q.s)} ${yr(q.b)||""}</button>`).join(""); v.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setMain(b.dataset.go)); });
+  node.each(function(d){ const s=d3.select(this); const r=d.cand?8:6+Math.min(d.c,24)*0.7; if(d.cand) s.append("circle").attr("class","cand").attr("r",r); else s.append("circle").attr("r",r).attr("fill","var(--brick)").attr("opacity",.85).attr("stroke","var(--surface)").attr("stroke-width",1.5);
+    const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; const lg=s.append("g").attr("class","lbl").attr("transform",`translate(${(anc==="end"?-r:r)+(dx>0?dx-12:dx+12)},${dy})`);
+    lg.append("text").attr("text-anchor",anc).attr("font-weight",700).text(d.n); if(d.c) lg.append("text").attr("class","cap").attr("text-anchor",anc).attr("y",15).text(`${d.c} ${t("people")} · ${tx(d.t)}`); else lg.append("text").attr("class","cap").attr("text-anchor",anc).attr("y",15).text(tx(d.t)); });
+  let k=1; const zb=d3.zoom().scaleExtent([.8,8]).on("zoom",e=>{ k=e.transform.k; g.attr("transform",e.transform); g.selectAll(".lbl").attr("transform",function(){ const d=d3.select(this.parentNode).datum(); const r=d.cand?8:6+Math.min(d.c,24)*0.7; const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; return `translate(${((anc==="end"?-r:r)+(dx>0?dx-12:dx+12))/k},${dy/k}) scale(${1/k})`; }); g.selectAll(".place circle").attr("stroke-width",1.5/k); });
+  svg.call(zb).on("dblclick.zoom",null);
+  document.getElementById("mzi").onclick=()=>svg.transition().duration(250).call(zb.scaleBy,1.5); document.getElementById("mzo").onclick=()=>svg.transition().duration(250).call(zb.scaleBy,1/1.5); document.getElementById("mzr").onclick=()=>svg.transition().duration(300).call(zb.transform,d3.zoomIdentity);
+  // start zoomed on the Toruń–Warsaw corridor on phones
+  if(window.innerWidth<700){ svg.call(zb.transform,d3.zoomIdentity.translate(-X(19.2)*1.6+W/2,-Y(52.9)*1.6+H/2).scale(1.6)); }
+}
 // ================= TIMELINE =================
 const EV=[
  {y:"1574",c:1,t:{pl:"Pierwsze poświadczenie nazwiska Dramiński (Johannes Draminski, Łomża).",en:"Surname Dramiński first attested (Johannes Draminski, Łomża)."}},
