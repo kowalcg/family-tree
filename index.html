@@ -44,6 +44,9 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
 .seg button+button{border-left:1.5px solid var(--rule)}
 .seg.full{display:flex}.seg.full button{flex:1}
+.langseg{margin:0 4px 12px;border-color:var(--brick)}
+.tabbar .lt{display:inline-flex;align-items:center;justify-content:center;width:30px;height:22px;border:1.5px solid currentColor;border-radius:7px;font-size:.72rem;font-weight:800;letter-spacing:.03em}
+.tabbar button.langb{color:var(--brick)}
 .stage{min-width:0;position:relative}
 .view[hidden]{display:none!important}
 /* pages */
@@ -324,9 +327,9 @@ dialog::backdrop{background:rgba(20,14,10,.9)}
 <div class="app">
 <aside class="rail" id="rail">
   <div class="brand" id="brand"><div class="bt">Kowalczyk <em>&amp;</em><br>Prełowski</div><div class="bs" data-i="tagline"></div></div>
+  <div class="seg full langseg" role="group" aria-label="Language / Język"><button id="lang-pl">🇵🇱 Polski</button><button id="lang-en">🇬🇧 English</button></div>
   <nav id="railnav" aria-label="Views"></nav>
   <div class="foot">
-    <div class="seg full" role="group" aria-label="Language"><button id="lang-pl">Polski</button><button id="lang-en">English</button></div>
     <div class="seg full" role="group" aria-label="Text size"><button data-fs="18">A</button><button data-fs="20">A+</button><button data-fs="22">A++</button></div>
   </div>
 </aside>
@@ -1330,6 +1333,8 @@ const NAVS=[["start","start"],["tree","tree"],["stories","stories"],["docs","doc
 function renderNav(){ document.getElementById("railnav").innerHTML=NAVS.map(([v,i])=>`<button class="navb" data-v="${v}" aria-current="${view===v}">${ico(i)}<span>${t("v_"+v)}</span></button>`).join("");
   const tabs=[["start","start"],["tree","tree"],["stories","stories"],["docs","docs"],["more","more"]];
   document.getElementById("tabbar").innerHTML=tabs.map(([v,i])=>`<button data-v="${v}" aria-current="${view===v||(v==="more"&&["map","time","about"].includes(view))}">${ico(i)}<span>${t(v==="more"?"v_more":"v_"+v)}</span></button>`).join("");
+  document.getElementById("tabbar").insertAdjacentHTML("beforeend",`<button class="langb" id="tabLang" aria-label="${L==="pl"?"Switch to English":"Przełącz na polski"}"><span class="lt">${L==="pl"?"EN":"PL"}</span><span>${L==="pl"?"English":"Polski"}</span></button>`);
+  document.getElementById("tabLang").onclick=()=>setLang(L==="pl"?"en":"pl");
   document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{ if(b.dataset.v==="more") openSheet(); else go(b.dataset.v); }); }
 function openSheet(){ const sh=document.getElementById("sheet"), sc=document.getElementById("scrim"); sh.innerHTML=[["map","map"],["time","time"],["about","about"]].map(([v,i])=>`<button class="navb" data-sv="${v}">${ico(i)}<span>${t("v_"+v)}</span></button>`).join("")+`<div class="seg full" style="margin-top:8px"><button data-l="pl" aria-pressed="${L==="pl"}">Polski</button><button data-l="en" aria-pressed="${L==="en"}">English</button></div><div class="seg full"><button data-f="18">A</button><button data-f="20">A+</button><button data-f="22">A++</button></div>`;
   sh.hidden=false; sc.hidden=false; const close=()=>{ sh.hidden=true; sc.hidden=true; }; sc.onclick=close;
