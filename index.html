@@ -820,7 +820,7 @@ function kinship(a,b,viaM){ if(a===b) return null; if((P[a].sp||[]).includes(b))
   if(up===1) return pl?(down===2?(sx==="M"?"bratanek / siostrzeniec":"bratanica / siostrzenica"):(sx==="M"?"wnuk rodzeństwa":"wnuczka rodzeństwa")):(down===2?(sx==="M"?"nephew":"niece"):(sx==="M"?"grand-nephew":"grand-niece"));
   const deg=Math.min(up,down)-1, rem=Math.abs(up-down);
   return pl?`${sx==="M"?"kuzyn":"kuzynka"} ${deg}. stopnia${rem?` (${rem} pok. różnicy)`:""}`:`${["","first","second","third","fourth","fifth"][deg]||deg+"th"} cousin${rem?" "+rem+"× removed":""}`; }
-function wheelHandler(svg,zb){ return e=>{ e.preventDefault(); if(e.ctrlKey||e.metaKey){ const f=Math.exp(-e.deltaY*0.01); const r=svg.node().getBoundingClientRect(); svg.call(zb.scaleBy,f,[e.clientX-r.left,e.clientY-r.top]); } else { const t=d3.zoomTransform(svg.node()); svg.call(zb.translateBy,-e.deltaX/t.k,-e.deltaY/t.k); } }; }
+function wheelHandler(svg,zb){ return e=>{ e.preventDefault(); if(e.ctrlKey||e.metaKey||(typeof isMouseWheel==="function"&&isMouseWheel(e))){ if(!e.ctrlKey&&!e.metaKey){ const r=svg.node().getBoundingClientRect(); svg.call(zb.scaleBy,e.deltaY<0?1.2:1/1.2,[e.clientX-r.left,e.clientY-r.top]); return; } const f=Math.exp(-e.deltaY*0.01); const r=svg.node().getBoundingClientRect(); svg.call(zb.scaleBy,f,[e.clientX-r.left,e.clientY-r.top]); } else { const t=d3.zoomTransform(svg.node()); svg.call(zb.translateBy,-e.deltaX/t.k,-e.deltaY/t.k); } }; }
 // ================= LIGHTBOX =================
 let LBlist=[], LBi=0, LBz=1, LBpan={x:0,y:0};
 const lb=document.getElementById("lb");
@@ -982,7 +982,7 @@ Object.assign(T,{
  home_lines:{pl:"Cztery linie rodziny",en:"Four family lines"}, home_start:{pl:"Zacznij od",en:"Start with"}, home_found:{pl:"Najważniejsze odkrycia",en:"Key discoveries"}, home_open:{pl:"Czego jeszcze szukamy",en:"What we are still looking for"},
  see_all:{pl:"Wszystkie odkrycia",en:"All discoveries"}, oldest:{pl:"Najstarszy przodek",en:"Oldest ancestor"}, gens_back:{pl:"pokoleń",en:"generations"}, since:{pl:"od roku",en:"since"}, ppl_line:{pl:"osób",en:"people"},
  couple_gb:{pl:"Grzegorz i Barbara",en:"Greg and Barbara"}, couple_sub:{pl:"rodzeństwo, rodzice, dziadkowie",en:"siblings, parents, grandparents"}, story:{pl:"Opowieść",en:"Guided story"}, story_sub:{pl:"8 kroków przez drzewo",en:"8 steps through the tree"},
- hint_tree:{pl:"Kliknij osobę. Przewijaj, aby się przesuwać; + i − przybliżają.",en:"Click a person. Scroll to move; + and − zoom."},
+ hint_tree:{pl:"Kliknij osobę. Kółko myszy przybliża, przeciąganie przesuwa.",en:"Click a person. Mouse wheel zooms, drag to move."},
  status_open:{pl:"Pochodzenie w trakcie ustalania",en:"Origin still being traced"},
  notconn:{pl:"Ta rodzina nie jest jeszcze połączona z Twoją linią.",en:"This family is not yet connected to your line."}, notconn2:{pl:"To ci sami ludzie tego nazwiska z tych samych parafii, zapisani w aktach; więź z Twoją linią potwierdzi dopiero kolejny akt.",en:"Same surname, same parishes, verified records; the tie to your line awaits one more document."},
  tree_of:{pl:"drzewo",en:"tree"}, unk_title:{pl:"Rodzeństwo jeszcze nieznane",en:"Siblings not yet known"},
@@ -1095,6 +1095,8 @@ function descLayout(){
   const maxX=Math.max(...nodes.map(n=>n.x+n.w)), maxY=Math.max(...nodes.map(n=>n.y+n.h));
   return {nodes,edges,W:maxX+PAD,H:maxY+PAD,focus:pos[root]}; }
 
+// a physical mouse wheel zooms; trackpad swipes pan natively
+function isMouseWheel(e){ if(e.deltaMode===1||e.deltaMode===2) return true; const wd=e.wheelDeltaY; if(wd&&!e.deltaX&&Math.abs(wd)>=120&&wd%120===0) return true; return !e.deltaX&&Math.abs(e.deltaY)>=100&&Number.isInteger(e.deltaY)&&e.deltaY%100===0; }
 // ===================== RENDER TREE =====================
 const scroller=()=>document.getElementById("scroller");
 const cardMap=new Map(); let gen=0;
@@ -1153,7 +1155,9 @@ function scrollToNode(n,instant){ const sc=scroller(); if(!n||!isFinite(n.x)) re
   const left=offX+(n.x+n.w/2)*S-(sc.clientWidth-dw)/2, top=offY+(n.y+n.h/2)*S-(sc.clientHeight-dh)/2; sc.scrollTo({left:Math.max(0,left),top:Math.max(0,top),behavior:instant?"auto":"smooth"}); }
 // interactions on the scroller
 (function(){ const sc=scroller();
-  sc.addEventListener("wheel",e=>{ if(e.ctrlKey||e.metaKey){ e.preventDefault(); const r=sc.getBoundingClientRect(); zoomAt(S*Math.exp(-e.deltaY*0.012),e.clientX-r.left,e.clientY-r.top); } },{passive:false});
+  sc.addEventListener("wheel",e=>{ const r=sc.getBoundingClientRect();
+    if(e.ctrlKey||e.metaKey){ e.preventDefault(); zoomAt(S*Math.exp(-e.deltaY*0.012),e.clientX-r.left,e.clientY-r.top); return; }
+    if(isMouseWheel(e)){ e.preventDefault(); zoomAt(S*(e.deltaY<0?1.15:1/1.15),e.clientX-r.left,e.clientY-r.top); } },{passive:false});
   let g0=null; sc.addEventListener("gesturestart",e=>{ e.preventDefault(); g0=S; }); sc.addEventListener("gesturechange",e=>{ e.preventDefault(); const r=sc.getBoundingClientRect(); zoomAt(g0*e.scale,e.clientX-r.left,e.clientY-r.top); });
   let pin=null; sc.addEventListener("touchstart",e=>{ if(e.touches.length===2){ const [a,b]=e.touches; pin={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),s:S}; } },{passive:true});
   sc.addEventListener("touchmove",e=>{ if(e.touches.length===2&&pin){ e.preventDefault(); const [a,b]=e.touches; const d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY); const r=sc.getBoundingClientRect(); zoomAt(pin.s*d/pin.d,(a.clientX+b.clientX)/2-r.left,(a.clientY+b.clientY)/2-r.top); } },{passive:false});
