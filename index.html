@@ -91,7 +91,9 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .todo b{font-family:var(--display);font-size:1.15rem}
 @media (max-width:820px){.hero{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}
 /* tree workspace */
-.tree{position:relative;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.tree{position:relative;height:100vh;display:flex;flex-direction:column;overflow:hidden;overflow:clip}
+.drawer:not(.vis){visibility:hidden}
+.tree.open .drawer{visibility:visible}
 .tbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--rule2);background:var(--surface);z-index:8}
 .who{display:flex;align-items:center;gap:10px;min-width:0;margin-right:4px}
 .who .mono{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;flex:none}
@@ -155,6 +157,20 @@ svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stro
 .card.morec{justify-content:center;text-align:center;border-style:dashed;background:var(--surface2);font-weight:700;color:var(--brick)}
 .card.morec::before{display:none}
 .card.stub{font-size:calc(13px*var(--cf))}
+.fwrap{position:relative}
+.fbtn{display:inline-flex;align-items:center;gap:6px}
+.fbtn.on{border-color:var(--ochre);color:var(--ochre)}
+.fcount{background:var(--ochre);color:#fff;border-radius:999px;font-size:.72rem;padding:1px 7px;font-weight:900}
+.fpop{position:absolute;top:calc(100% + 8px);left:0;width:min(420px,92vw);background:var(--surface);border:1.5px solid var(--rule);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.28);padding:14px 16px;z-index:45}
+.fpop h5{margin:10px 0 8px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fpop h5:first-child{margin-top:0}
+.fgrid{display:flex;flex-wrap:wrap;gap:6px}
+.fchip{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:6px 12px;border-radius:999px;border:1.5px solid var(--rule);background:transparent;font-weight:700;font-size:.86rem;cursor:pointer;opacity:.55;text-decoration:line-through}
+.fchip.on{opacity:1;text-decoration:none;background:var(--surface2);border-color:var(--fg)}
+.fchip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.fbot{display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--rule2)}
+.fbot .note{flex:1}
+@media (max-width:900px){.fwrap{order:3}.fpop{position:fixed;left:8px;right:8px;top:auto;bottom:calc(var(--tab) + 10px);width:auto}}
 /* fan */
 .wedge{cursor:pointer;stroke:var(--canvas);stroke-width:2}
 .wedge:hover{filter:brightness(1.12)}
@@ -322,6 +338,7 @@ dialog::backdrop{background:rgba(20,14,10,.9)}
       <div class="seg" role="group" aria-label="Chart" id="modes"></div>
       <div class="step"><span class="lbl" data-i="gens_lbl"></span><button id="gMinus" aria-label="−">−</button><b id="gN">2</b><button id="gPlus" aria-label="+">+</button></div>
       <button class="btn" id="gAll" data-i="all"></button>
+      <div class="fwrap"><button class="btn fbtn" id="fBtn"></button><div class="fpop" id="fPop" hidden></div></div>
       <div class="tsp"></div>
       <div class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" autocomplete="off" data-ph="search_ph"><div class="results" id="res" hidden></div></div>
     </div>
@@ -990,7 +1007,10 @@ Object.assign(T,{
  unk_body:{pl:"Dzieci urodzone po ok. 1920 r. nie są w publicznych indeksach, a ich akty są w urzędach stanu cywilnego. Najszybciej pomoże rodzina: kto pamięta braci i siostry tej osoby?",en:"Children born after about 1920 are not in the public indexes; their records sit in the civil registry offices. The family is the fastest source: who remembers this person's brothers and sisters?"},
  gap_title_f:{pl:"Ojciec jeszcze nieznany",en:"Father not yet found"}, gap_title_m:{pl:"Matka jeszcze nieznana",en:"Mother not yet found"},
  wife:{pl:"żona",en:"wife"}, husband:{pl:"mąż",en:"husband"},
- your_line:{pl:"Droga do Grzegorza i Barbary",en:"Line to Greg and Barbara"}
+ your_line:{pl:"Droga do Grzegorza i Barbary",en:"Line to Greg and Barbara"},
+ filter:{pl:"Filtr",en:"Filter"}, f_lines:{pl:"Linie rodziny",en:"Family lines"}, f_conf:{pl:"Pewność",en:"Certainty"}, f_view:{pl:"Widok",en:"View"},
+ f_direct:{pl:"Tylko linia prosta (bez rodzeństwa)",en:"Direct line only (no siblings)"}, f_reset:{pl:"Pokaż wszystkich",en:"Show everyone"}, f_done:{pl:"Gotowe",en:"Done"},
+ f_hidden:{pl:"ukrytych osób",en:"people hidden"}
 });
 // ---------- helpers ----------
 const LMETA=[
@@ -1015,6 +1035,11 @@ const ico=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${icon(n)}</
 let view="start", root="greg", mode="family", sel=null, home="greg", S=null, natW=0, natH=0, offX=0, offY=0, firstTree=true;
 const depth={family:2,anc:4,desc:3,fan:5};
 const expanded=new Set();
+const FILT={lines:new Set(["kowalczyk","draminski","prelowski","zakierski"]),st:new Set(["family","verified","probable","possible"]),direct:false};
+try{ const f=JSON.parse(localStorage.getItem("ft-filter")||"null"); if(f){ if(Array.isArray(f.lines)) FILT.lines=new Set(f.lines); if(Array.isArray(f.st)) FILT.st=new Set(f.st); FILT.direct=!!f.direct; } }catch(e){}
+const saveFilt=()=>{ try{ localStorage.setItem("ft-filter",JSON.stringify({lines:[...FILT.lines],st:[...FILT.st],direct:FILT.direct})); }catch(e){} };
+const filtCount=()=>(4-FILT.lines.size)+(4-FILT.st.size)+(FILT.direct?1:0);
+function visible(id){ if(!id||!P[id]) return false; if(id===root) return true; const p=P[id]; if(p.ln&&!FILT.lines.has(p.ln)) return false; if(!FILT.st.has(p.st)) return false; return true; }
 let CW=196, CH=72, GX=16, GY=60, CG=56, RG=14, PAD=40;
 function dims(){ const ph=innerWidth<700; const f=(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fs"))||18)/18; document.documentElement.style.setProperty("--cf",f.toFixed(3));
   CW=Math.round((ph?172:214)*f); CH=Math.round(76*f); GX=Math.round((ph?12:16)*f); GY=Math.round(58*f); CG=Math.round(52*f); RG=Math.round(12*f); PAD=Math.round(36*f); }
@@ -1023,10 +1048,10 @@ function famLayout(){
   const D=depth.family, nodes=[], edges=[], pos={};
   const rowY=l=>PAD+(D-l)*(CH+GY);
   function groupOf(X,role,l){ const p=P[X]; let ids=[X];
-    if(p.f||p.mo){ ids=PEOPLE.filter(q=>(p.f&&q.f===p.f)||(p.mo&&q.mo===p.mo)).map(q=>q.id); if(!ids.includes(X)) ids.push(X); }
+    if((p.f||p.mo)&&!(FILT.direct&&DIRECT.has(X))){ ids=PEOPLE.filter(q=>(p.f&&q.f===p.f)||(p.mo&&q.mo===p.mo)).map(q=>q.id).filter(i=>i===X||visible(i)); if(!ids.includes(X)) ids.push(X); }
     ids.sort(byBirth); let others=ids.filter(i=>i!==X).map(id=>({t:"p",id}));
     if(others.length>5&&!expanded.has(X)){ const n=others.length-4; others=others.slice(0,4); others.push({t:"more",pid:X,n}); }
-    if(!others.length&&(p.f||p.mo)&&DIRECT.has(X)&&l>0) others.push({t:"unk",pid:X});
+    if(!others.length&&(p.f||p.mo)&&DIRECT.has(X)&&l>0&&!FILT.direct) others.push({t:"unk",pid:X});
     const me={t:"p",id:X};
     if(role==="f") return [...others,me]; if(role==="m") return [me,...others];
     const all=[...ids.filter(i=>i!==X||true)].map(id=>({t:"p",id})); // centre role: birth order including X
@@ -1034,7 +1059,7 @@ function famLayout(){
     return all; }
   function build(X,l,role){ const p=P[X]; const items=(l<D)?groupOf(X,role,l):[{t:"p",id:X}];
     const gw=items.length*(CW+GX)-GX; let F=null,M=null;
-    if(l<D){ if(p.f) F=build(p.f,l+1,"f"); if(p.mo) M=build(p.mo,l+1,"m"); }
+    if(l<D){ if(visible(p.f)) F=build(p.f,l+1,"f"); if(visible(p.mo)) M=build(p.mo,l+1,"m"); }
     const pw=(F?F.w:0)+(M?M.w:0)+(F&&M?GX*2:0);
     return {X,l,role,items,gw,F,M,pw,w:Math.max(gw,pw)}; }
   function connect(t,gx,y){ const fp=t.F?pos[t.F.X]:null, mp=t.M?pos[t.M.X]:null; if(!fp&&!mp) return;
@@ -1054,10 +1079,10 @@ function famLayout(){
       nodes.push(n); });
     connect(t,gx,y); }
   // root couple and children
-  const rp=P[root]; const sp=(rp.sp||[])[0]; let top;
-  if(sp){ const FX=rp.x==="F"?sp:root, MX=rp.x==="F"?root:sp; const F=build(FX,0,"f"), M=build(MX,0,"m"); const items=childrenOf(FX,MX).map(id=>({t:"p",id}));
+  const rp=P[root]; const sp=(rp.sp||[]).find(x=>visible(x)); let top;
+  if(sp){ const FX=rp.x==="F"?sp:root, MX=rp.x==="F"?root:sp; const F=build(FX,0,"f"), M=build(MX,0,"m"); const items=childrenOf(FX,MX).filter(visible).map(id=>({t:"p",id}));
     const pw=F.w+M.w+GX*2; const gw=items.length?items.length*(CW+GX)-GX:0; top={X:null,l:-1,items,gw,F,M,pw,w:Math.max(pw,gw)}; }
-  else { const F=build(root,0,"c"); const items=childrenOf(root).map(id=>({t:"p",id})); const gw=items.length?items.length*(CW+GX)-GX:0; top={X:null,l:-1,items,gw,F,M:null,pw:F.w,w:Math.max(F.w,gw)}; }
+  else { const F=build(root,0,"c"); const items=childrenOf(root).filter(visible).map(id=>({t:"p",id})); const gw=items.length?items.length*(CW+GX)-GX:0; top={X:null,l:-1,items,gw,F,M:null,pw:F.w,w:Math.max(F.w,gw)}; }
   if(top.items.length) place(top,PAD,"c"); else { let px=PAD+top.w/2-top.pw/2; place(top.F,px,"r"); if(top.M) place(top.M,px+top.F.w+GX*2,"l"); if(top.M){ const fp=pos[top.F.X], mp=pos[top.M.X]; const y1=fp.y+CH/2; edges.push({d:`M${fp.x+CW},${y1}H${mp.x}`,c:"mar"+(DIRECT.has(top.F.X)&&DIRECT.has(top.M.X)?" direct":"")}); edges.push({ring:[(fp.x+CW+mp.x)/2,y1]}); } }
   // kids' own spouses are not drawn here; their children appear in Descendants
   const maxX=Math.max(...nodes.map(n=>n.x+n.w)), maxY=Math.max(...nodes.map(n=>n.y+n.h));
@@ -1069,16 +1094,17 @@ function ancLayout(){
   function add(id,g,r,extra={}){ const n={t:"p",id,k:"p:"+id,x:X(g),y:Y(r),w:CW,h:CH,...extra}; nodes.push(n); pos[id]=n; return n; }
   function stub(pid,role,g,r){ const n={t:"gap",pid,role,k:"gap:"+pid+":"+role,x:X(g),y:Y(r),w:Math.round(CW*.86),h:Math.round(CH*.62)}; nodes.push(n); return n; }
   function elbow(a,b,cls){ const x1=a.x+a.w, y1=a.y+a.h/2, x2=b.x, y2=b.y+b.h/2, mx=x1+CG/2; edges.push({d:`M${x1},${y1}H${mx}V${y2}H${x2}`,c:cls}); }
-  function place(id,g){ const p=P[id];
-    if(g>=D||(!p.f&&!p.mo)){ const r=cur; cur+=1; add(id,g,r,{xp:(g>=D&&(p.f||p.mo))?"right":null}); return r; }
-    const rs=[p.f,p.mo].map((pid,i)=>{ if(pid) return {r:place(pid,g+1),pid}; const r=cur; cur+=SH; return {r,stub:true,role:i?"m":"f"}; });
-    const r=(rs[0].r+rs[1].r)/2+(rs.some(o=>o.stub)?(rs[0].stub?SH/2-.5:0)+(rs[1].stub?-(SH/2)+.5:0):0)*0; const me=add(id,g,r);
+  function place(id,g){ const p=P[id]; const pf=visible(p.f)?p.f:null, pm=visible(p.mo)?p.mo:null; const hid=(p.f&&!pf)||(p.mo&&!pm);
+    if(g>=D||(!pf&&!pm)){ const r=cur; cur+=1; add(id,g,r,{xp:(g>=D&&(pf||pm))?"right":null}); return r; }
+    const rs=[[pf,p.f],[pm,p.mo]].map(([pid,real],i)=>{ if(pid) return {r:place(pid,g+1),pid}; if(real) return null; const r=cur; cur+=SH; return {r,stub:true,role:i?"m":"f"}; }).filter(Boolean);
+    if(rs.length===1&&rs[0].stub&&hid){ const r=cur-SH; rs.length=0; const rr=r; cur=rr; const n=add(id,g,cur); cur+=1; return cur-1; }
+    const r=rs.length>1?(rs[0].r+rs[rs.length-1].r)/2:rs[0].r; const me=add(id,g,r);
     rs.forEach(o=>{ const tgt=o.stub?stub(id,o.role,g+1,o.r):pos[o.pid]; const lk=p.lk; const dir=DIRECT.has(id)&&o.pid&&DIRECT.has(o.pid); elbow(me,tgt,"e"+(dir?" direct":"")+(o.stub?" sib":"")+(lk==="possible"?" pos":lk==="probable"?" prob":"")); });
     return r; }
   const rp=P[root], sp=(rp.sp||[])[0];
   if(root==="greg"||root==="barbara"){ // couple root with children on the left
-    const a=place("greg",1); cur+=.5; const b=place("barbara",1); const ch=childrenOf("greg","barbara"); const mid=(a+b)/2; const start=mid-(ch.length-1)/2;
-    ch.forEach((c,i)=>{ const n=add(c,0,start+i); elbow(n,pos.greg,"e direct"); elbow(n,pos.barbara,"e direct"); }); }
+    const a=place("greg",1); cur+=.5; const b=visible("barbara")||root==="barbara"?place("barbara",1):a; const ch=childrenOf("greg","barbara").filter(visible); const mid=(a+b)/2; const start=mid-(ch.length-1)/2;
+    ch.forEach((c,i)=>{ const n=add(c,0,start+i); elbow(n,pos.greg,"e direct"); if(pos.barbara) elbow(n,pos.barbara,"e direct"); }); }
   else place(root,0);
   const minY=Math.min(...nodes.map(n=>n.y)); if(minY<PAD) nodes.forEach(n=>n.y+=PAD-minY), edges.forEach(e=>{});
   const maxX=Math.max(...nodes.map(n=>n.x+n.w)), maxY=Math.max(...nodes.map(n=>n.y+n.h));
@@ -1087,7 +1113,7 @@ function ancLayout(){
 function descLayout(){
   const D=depth.desc, nodes=[], edges=[], pos={}; let cur=0; const seen=new Set();
   const X=g=>PAD+g*(CW+CG), Y=r=>PAD+r*(CH+RG);
-  function place(id,g){ seen.add(id); const k=(kids[id]||[]).filter(c=>!seen.has(c)).sort(byBirth); const p=P[id];
+  function place(id,g){ seen.add(id); const k=(kids[id]||[]).filter(c=>!seen.has(c)&&visible(c)&&!(FILT.direct&&!DIRECT.has(c)&&DIRECT.has(id))).sort(byBirth); const p=P[id];
     if(!k.length||g>=D){ const r=cur; cur+=1; const n={t:"p",id,k:"p:"+id,x:X(g),y:Y(r),w:CW,h:CH,sp:1,xp:(g>=D&&k.length)?"right":null}; nodes.push(n); pos[id]=n; return r; }
     const rs=k.map(c=>place(c,g+1)); const r=(rs[0]+rs[rs.length-1])/2; const n={t:"p",id,k:"p:"+id,x:X(g),y:Y(r),w:CW,h:CH,sp:1}; nodes.push(n); pos[id]=n;
     k.forEach(c=>{ const b=pos[c]; const x1=n.x+n.w, y1=n.y+n.h/2, x2=b.x, y2=b.y+b.h/2, mx=x1+CG/2; const lk=P[c].lk; edges.push({d:`M${x1},${y1}H${mx}V${y2}H${x2}`,c:"e"+(DIRECT.has(c)&&DIRECT.has(id)?" direct":"")+(lk==="possible"?" pos":lk==="probable"?" prob":"")}); });
@@ -1145,7 +1171,7 @@ function renderTree(o={}){
   const f=sel&&lay.nodes&&lay.nodes.find(n=>n.id===sel)?lay.nodes.find(n=>n.id===sel):lay.focus;
   if(f&&o.scroll!==false) scrollToNode(f, instant);
   firstTree=false;
-  renderWho(); renderBanner(); renderLegend(); updHash();
+  renderWho(); renderBanner(); renderLegend(); renderFilterBtn(); updHash();
 }
 function fitScale(){ const sc=scroller(); const cw=sc.clientWidth, ch=sc.clientHeight; const ph=innerWidth<700; const k=Math.min(cw/natW,ch/natH)*.97; const kmin=ph?.78:.86; return Math.max(Math.min(k,1.1),kmin); }
 function applyScale(){ const sc=scroller(); const cw=sc.clientWidth, ch=sc.clientHeight; const w=natW*S, h=natH*S; offX=Math.max(0,(cw-w)/2); offY=Math.max(0,(ch-h)/2);
@@ -1170,12 +1196,14 @@ function scrollToNode(n,instant){ const sc=scroller(); if(!n||!isFinite(n.x)) re
   document.getElementById("zfit").onclick=()=>{ S=fitScale(); applyScale(); const n=lastFocus(); if(n) scrollToNode(n); };
   let rt=null; window.addEventListener("resize",()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if(view==="tree") renderTree({instant:true}); },150); });
 })();
+// the tree box must never scroll itself (browsers do it when an off-screen panel takes focus)
+(function(){ const tr=document.getElementById("v-tree"); const fix=()=>{ if(tr.scrollLeft||tr.scrollTop){ tr.scrollLeft=0; tr.scrollTop=0; } }; tr.addEventListener("scroll",fix,{passive:true}); document.querySelector(".stage").addEventListener("scroll",()=>{ const st=document.querySelector(".stage"); if(st.scrollLeft) st.scrollLeft=0; },{passive:true}); })();
 function lastFocus(){ const el=cardMap.get("p:"+(sel||root)); if(!el) return null; return {x:parseFloat(el.style.left),y:parseFloat(el.style.top),w:parseFloat(el.style.width),h:parseFloat(el.style.height)}; }
 
 // ===================== FAN =====================
 let fanData=null;
 function fanLayout(){ const G=Math.min(depth.fan,Math.max(2,deepest(root))); const W=1000, R=480, H=R+70;
-  function a(id,d){ const p=id?P[id]:null; const n={id,d}; if(d<G){ n.children=[a(p&&p.f||null,d+1),a(p&&p.mo||null,d+1)]; } else n.value=1; return n; }
+  function a(id,d){ const p=id?P[id]:null; const n={id,d}; if(d<G){ n.children=[a(p&&visible(p.f)?p.f:null,d+1),a(p&&visible(p.mo)?p.mo:null,d+1)]; } else n.value=1; return n; }
   const h=d3.hierarchy(a(root,0)).sum(d=>d.children?0:1); d3.partition().size([Math.PI,1])(h);
   const inner=74, ring=(R-inner)/G; const r0=d=>inner+(d-1)*ring, r1=d=>inner+d*ring-2;
   const arc=d3.arc().startAngle(d=>d.x0-Math.PI/2).endAngle(d=>d.x1-Math.PI/2).innerRadius(d=>r0(d.depth)).outerRadius(d=>r1(d.depth)).padAngle(.004);
@@ -1193,6 +1221,22 @@ function fanLayout(){ const G=Math.min(depth.fan,Math.max(2,deepest(root))); con
 function bindFan(){ document.querySelectorAll("#edges .wedge[data-id]").forEach(w=>{ const id=w.dataset.id; if(!id) return; w.onclick=()=>select(id); w.ondblclick=()=>setRoot(id); }); }
 
 // ===================== CHROME: who / banner / legend / modes =====================
+function renderFilterBtn(){ const b=document.getElementById("fBtn"); const n=filtCount(); b.innerHTML=`<svg class="i" viewBox="0 0 24 24"><path d="M4 5h16l-6 8v6l-4-2v-4z"/></svg><span>${t("filter")}</span>${n?`<span class="fcount">${n}</span>`:""}`; b.classList.toggle("on",!!n); }
+function openFilter(){ const pop=document.getElementById("fPop"); if(!pop.hidden){ pop.hidden=true; return; }
+  const chip=(k,on,lab,col)=>`<button class="fchip${on?" on":""}" data-k="${k}">${col?`<i style="background:${col}"></i>`:""}${lab}</button>`;
+  const draw=()=>{ const hidden=PEOPLE.filter(p=>!visible(p.id)).length;
+    pop.innerHTML=`<h5>${t("f_lines")}</h5><div class="fgrid">${["kowalczyk","draminski","prelowski","zakierski"].map(l=>chip("l:"+l,FILT.lines.has(l),t("ln_"+l),LINEC[l])).join("")}</div>
+    <h5>${t("f_conf")}</h5><div class="fgrid">${["verified","family","probable","possible"].map(k=>chip("s:"+k,FILT.st.has(k),t("st_"+k),STC[k])).join("")}</div>
+    <h5>${t("f_view")}</h5><div class="fgrid">${chip("d",FILT.direct,t("f_direct"))}</div>
+    <div class="fbot"><span class="note">${hidden?`${hidden} ${t("f_hidden")}`:""}</span><button class="btn" data-k="reset">${t("f_reset")}</button><button class="btn pri" data-k="done">${t("f_done")}</button></div>`;
+    pop.querySelectorAll("[data-k]").forEach(b=>b.onclick=e=>{ e.stopPropagation(); const k=b.dataset.k;
+      if(k==="done"){ pop.hidden=true; return; }
+      if(k==="reset"){ FILT.lines=new Set(["kowalczyk","draminski","prelowski","zakierski"]); FILT.st=new Set(["family","verified","probable","possible"]); FILT.direct=false; }
+      else if(k==="d") FILT.direct=!FILT.direct;
+      else { const [ty,v]=k.split(":"); const set=ty==="l"?FILT.lines:FILT.st; if(set.has(v)){ if(set.size>1) set.delete(v); } else set.add(v); }
+      saveFilt(); renderFilterBtn(); renderTree(); draw(); }); };
+  draw(); pop.hidden=false; }
+document.addEventListener("click",e=>{ const pop=document.getElementById("fPop"); if(pop&&!pop.hidden&&!e.target.closest("#fPop,#fBtn")) pop.hidden=true; });
 function renderModes(){ const m=document.getElementById("modes"); m.innerHTML=["family","anc","desc","fan"].map(k=>`<button data-m="${k}" aria-pressed="${mode===k}">${t("m_"+k)}</button>`).join(""); m.querySelectorAll("button").forEach(b=>b.onclick=()=>{ mode=b.dataset.m; S=null; renderModes(); renderTree({refit:true}); }); }
 function renderWho(){ const p=P[root]; const w=document.getElementById("who"); w.innerHTML=`<div class="mono" style="background:${lc(p)}">${esc(initials(p))}</div><div style="min-width:0"><div class="sub">${t("m_"+mode)}</div><div class="nm">${esc(p.g.split(" ")[0]+" "+(p.m||p.s))}</div></div>`; w.style.cursor="pointer"; w.onclick=()=>select(root); }
 function renderBanner(){ const b=document.getElementById("banner"); if(DIRECT.has(root)){ b.hidden=true; return; } b.hidden=false; const p=P[root]; const anc=ancList(root).map(o=>o.id); const desc=new Set(); const walk=x=>(kids[x]||[]).forEach(c=>{ if(!desc.has(c)){ desc.add(c); walk(c);} }); walk(root);
@@ -1249,6 +1293,7 @@ function setMain(id,opts={}){ if(!P[id]) return; if(opts.mode) mode=opts.mode===
   q.addEventListener("keydown",e=>{ if(res.hidden) return; if(e.key==="ArrowDown"){ act=Math.min(act+1,list.length-1); e.preventDefault(); } else if(e.key==="ArrowUp"){ act=Math.max(act-1,0); e.preventDefault(); } else if(e.key==="Enter"){ if(list[act]) pick(list[act]); return; } else if(e.key==="Escape"){ res.hidden=true; return; } else return; res.querySelectorAll("button").forEach((b,i)=>b.classList.toggle("act",i===act)); });
   document.addEventListener("click",e=>{ if(!e.target.closest(".search")) res.hidden=true; });
 })();
+document.getElementById("fBtn").onclick=e=>{ e.stopPropagation(); openFilter(); };
 document.getElementById("gPlus").onclick=()=>{ depth[mode]=Math.min(depth[mode]+1,mode==="fan"?8:10); renderTree(); };
 document.getElementById("gMinus").onclick=()=>{ depth[mode]=Math.max(depth[mode]-1,1); renderTree(); };
 document.getElementById("gAll").onclick=()=>{ depth[mode]=mode==="fan"?8:mode==="desc"?Math.max(2,descDeep(root)):Math.max(2,deepest(root)+(mode==="family"?1:0)); expanded.clear(); PEOPLE.forEach(p=>expanded.add(p.id)); S=null; renderTree({refit:true}); };
