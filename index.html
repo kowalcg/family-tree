@@ -72,6 +72,11 @@ nav button[aria-pressed="true"]{background:var(--brick);border-color:var(--brick
 .link{fill:none;stroke:var(--rule);stroke-width:2.2}
 .link.pos{stroke-dasharray:6 5}
 .link.prob{stroke-dasharray:14 5}
+.link.direct{stroke:var(--brick);stroke-width:3}
+.node .badge{font-family:var(--mono);font-size:10px;fill:var(--brick);letter-spacing:.06em}
+.banner{position:absolute;left:12px;right:12px;top:64px;background:var(--surface2);border:1.5px solid var(--ochre);border-radius:10px;padding:10px 14px;font-size:.92rem;z-index:3}
+.banner b{color:var(--ochre)}
+@media (max-width:760px){.banner{top:110px}}
 .mar{stroke:var(--brick);stroke-width:2.2;fill:none}
 .gen{font-family:var(--mono);font-size:13px;fill:var(--muted);letter-spacing:.08em}
 .wedge{cursor:pointer;stroke:var(--surface);stroke-width:1.5}
@@ -543,7 +548,13 @@ const T={
  ab_h:{pl:"Źródła, metoda i co zamówić",en:"Sources, method and what to order"},
  people:{pl:"osób",en:"people"},verified:{pl:"z akt",en:"from records"},gens_n:{pl:"pokoleń",en:"generations"},docs_n:{pl:"dokumentów",en:"documents"},places_n:{pl:"miejsc",en:"places"},
  tour_of:{pl:"Opowieść",en:"Story"},
- inlb_src:{pl:"Źródło",en:"Source"}
+ inlb_src:{pl:"Źródło",en:"Source"},
+ direct:{pl:"Twoja linia prosta",en:"Your direct line"},related:{pl:"Rodziny spokrewnione (jeszcze niepołączone)",en:"Related families (not yet connected)"},
+ lineto:{pl:"Droga do Grzegorza i Barbary",en:"Line to Greg and Barbara"},
+ notconn_h:{pl:"Ta rodzina nie jest jeszcze połączona z Twoją linią",en:"This family is not yet connected to your line"},
+ notconn_p:{pl:"To rodzina tego samego nazwiska z tych samych parafii, zapisana w aktach i trzymana tu jako prawdopodobni krewni. Połączy ją dopiero akt chrztu lub ślubu Twojego dziadka z tej linii.",en:"A family of the same surname from the same parishes, verified in the records and kept here as probable kin. Only the baptism or marriage act of your grandparent on this line can tie it in."},
+ directbadge:{pl:"linia prosta",en:"direct line"},
+ banner_direct:{pl:"Osoba z Twojej linii prostej",en:"On your direct line"}
 };
 const t=k=>(T[k]||{})[L]||k; const tx=o=>o?(typeof o==="object"?(o[L]||o.en||""):o):"";
 // ================= DATA INDEX =================
@@ -552,13 +563,18 @@ const kids={}; PEOPLE.forEach(p=>{[p.f,p.mo].forEach(x=>{ if(x){ (kids[x]=kids[x
 const LINEC={kowalczyk:"var(--lk)",draminski:"var(--ld)",prelowski:"var(--lp)",zakierski:"var(--lz)"};
 const STC={family:"var(--family)",verified:"var(--verified)",probable:"var(--probable)",possible:"var(--possible)",unknown:"var(--unknown)"};
 const lineOf=p=>p.ln||"prelowski";
+const DIRECT=(()=>{ const s=new Set(); const walk=id=>{ if(!id||s.has(id)) return; s.add(id); const p=P[id]; walk(p.f); walk(p.mo); }; walk("greg"); walk("barbara"); ["alex","patricia"].forEach(x=>s.add(x)); return s; })();
+function pathToHome(id){ // chain of ids from person down to greg or barbara via children on the direct line
+  if(!DIRECT.has(id)) return null; const path=[id]; let cur=id; let guard=0;
+  while(cur!=="greg"&&cur!=="barbara"&&guard++<20){ const next=(kids[cur]||[]).find(c=>DIRECT.has(c)); if(!next) break; path.push(next); cur=next; }
+  return path; }
 const yr=s=>{ if(!s) return null; const m=String(s).match(/\d{4}/); return m?+m[0]:null; };
 const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
 const initials=p=>(p.g||"?").replace(/[()?]/g,"").trim().split(/\s+/)[0].slice(0,1)+((p.m||p.s||"").slice(0,1));
 const fullname=p=>p.m?`${p.g} ${p.s} (${t("nee")} ${p.m})`:`${p.g} ${p.s}`;
 const sibsOf=id=>{ const p=P[id]; if(!p||(!p.f&&!p.mo)) return []; return PEOPLE.filter(q=>q.id!==id&&((p.f&&q.f===p.f)||(p.mo&&q.mo===p.mo))).map(q=>q.id); };
 // ================= STATE =================
-let main="helena", home="helena", mode="tree", view="tree", upDepth=3, downDepth=1, lastMain=null;
+let main="helena", home="greg", mode="tree", view="tree", upDepth=3, downDepth=1, lastMain=null;
 function setHash(){ try{ history.replaceState(null,"",`#${view==="tree"?"p-"+main+"-"+mode:view}`);}catch(e){} }
 function readHash(){ const h=(location.hash||"").slice(1); if(!h) return; if(h.startsWith("p-")){ const [,id,m]=h.split("-"); if(P[id]) main=id; if(m==="fan"||m==="tree") mode=m; view="tree"; } else if(["stories","docs","map","time","about"].includes(h)) view=h; }
 // ================= KINSHIP =================
@@ -586,8 +602,10 @@ function render(){ document.querySelectorAll("[data-i]").forEach(el=>el.textCont
   buildNav(); VIEWS.forEach(v=>document.getElementById("v-"+v).hidden=(view!==v));
   if(view==="tree"){ buildStart(); drawChart(); drawDrawer(); } if(view==="stories") drawStories(); if(view==="docs") drawDocs(); if(view==="map") drawMap(); if(view==="time") drawTime(); if(view==="about") drawAbout(); setHash(); }
 function setMain(id,opts={}){ if(!P[id]) return; lastMain=main; main=id; if(view!=="tree") view="tree"; if(opts.mode) mode=opts.mode; render(); }
-function buildStart(){ const s=document.getElementById("start"); const opts=[["helena","Helena"],["barbara","Barbara"],["greg","Grzegorz"],["alex","Alexander"],["patricia","Patricia"],["stefan","Stefan"],["henryk","Henryk"],["teresa","Teresa"],["waclaw_z","Wacław Zakierski (Steklin)"],["stefan_p1910","Stefan Prełowski 1910"],["julian_d1866","Julian Dramiński 1866"],["franciszek_k1864","Franciszek Kowalczyk 1864"],["stanislaus_p","Stanisław Prełowski (Dobrcz)"],["gabryel_z","Gabryel Zakierski ~1739"],["jerzy_d","Jerzy Dramiński ~1700"]];
-  if(!opts.some(o=>o[0]===main)) opts.unshift([main, P[main].g.split(" ")[0]+" "+(P[main].m||P[main].s)]); s.innerHTML=opts.map(([id,n])=>`<option value="${id}" ${id===main?"selected":""}>${esc(n)}</option>`).join(""); s.onchange=()=>setMain(s.value); }
+function buildStart(){ const s=document.getElementById("start"); const direct=[["alex","Alexander"],["patricia","Patricia"],["greg","Grzegorz"],["barbara","Barbara"],["henryk","Henryk Kowalczyk"],["teresa","Teresa Dramińska"],["stefan","Stefan Prełowski"],["helena","Helena Zakierska"],["waclaw_k","Wacław Kowalczyk"],["antoni_dram","Antoni Dramiński"],["julian_z1909","Julian Zakierski 1909"],["waclaw_z","Wacław Zakierski (Steklin)"],["jan_z1841","Jan Zakierski ~1841"],["gabryel_z","Gabryel Zakierski ~1739"]].filter(o=>P[o[0]]);
+  const related=[["franciszek_k1864","Kowalczyk: Franciszek 1864 (Groszki)"],["bronislaw_k","Kowalczyk: Bronisław 1889 (Groszki)"],["julian_d1866","Dramiński: Julian 1866 (Gralewo)"],["kajetan_d1773","Dramiński: Kajetan 1773 (Gralewo)"],["wladyslaw_dion","Dramiński: Władysław (Ciechanów)"],["stefan_p1910","Prełowski: Stefan 1910 (Chełmno)"],["stanislaw_p1900","Prełowski: Stanisław 1900 (Szczecin)"],["stanislaus_p","Prełowski: Stanisław (Dobrcz)"],["adam_pr1891","Prelewski: Adam 1891 (Czernikowo)"],["jozefat_z1854","Zakierski: Józefat (Dobrzejewice)"],["mikolaj_z","Zakierski: Mikołaj (Wola Trutowo)"]].filter(o=>P[o[0]]);
+  const cur=(direct.some(o=>o[0]===main)||related.some(o=>o[0]===main))?"":`<option value="${main}" selected>${esc(P[main].g.split(" ")[0]+" "+(P[main].m||P[main].s))}</option>`;
+  s.innerHTML=cur+`<optgroup label="${t("direct")}">`+direct.map(([id,n])=>`<option value="${id}" ${id===main?"selected":""}>${esc(n)}</option>`).join("")+`</optgroup><optgroup label="${t("related")}">`+related.map(([id,n])=>`<option value="${id}" ${id===main?"selected":""}>${esc(n)}</option>`).join("")+"</optgroup>"; s.onchange=()=>setMain(s.value); }
 document.getElementById("mode-tree").onclick=()=>{mode="tree";render();}; document.getElementById("mode-fan").onclick=()=>{mode="fan";render();};
 document.getElementById("up").onclick=()=>{ upDepth=Math.min(upDepth+1,8); render(); }; document.getElementById("down").onclick=()=>{ downDepth=Math.min(downDepth+1,4); render(); };
 document.getElementById("fit").onclick=()=>fit&&fit(); document.getElementById("zin").onclick=()=>zoomBy&&zoomBy(1.35); document.getElementById("zout").onclick=()=>zoomBy&&zoomBy(1/1.35);
@@ -619,7 +637,7 @@ function drawChart(){
   const minX=Math.min(...nodes.map(n=>n.x))-CW/2-20, maxX=Math.max(...nodes.map(n=>n.x),spNode?spNode.x:0)+CW/2+20;
   g.selectAll(".gen").data(gl).join("text").attr("class","gen").attr("x",minX).attr("y",d=>d.y-CH/2-10).text(d=>t(d.k).toUpperCase());
   const pathY=(a,b,up)=>{ const x1=a.x, y1=up?-a.y-CH/2:a.y+CH/2, x2=b.x, y2=up?-b.y+CH/2:b.y-CH/2; const my=(y1+y2)/2; return `M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}`; };
-  g.selectAll(".link").data(links).join("path").attr("class",l=>{ const child=l.up?l.a:l.b; const cid=l.up?l.a.data.id:l.b.data.id; const lk=cid&&P[cid]?P[cid].lk:null; return "link"+(lk==="possible"?" pos":lk==="probable"?" prob":""); }).attr("d",l=>pathY(l.a,l.b,l.up));
+  g.selectAll(".link").data(links).join("path").attr("class",l=>{ const cid=l.up?l.a.data.id:l.b.data.id; const pid=l.up?l.b.data.id:l.a.data.id; const lk=cid&&P[cid]?P[cid].lk:null; const direct=cid&&pid&&DIRECT.has(cid)&&DIRECT.has(pid); return "link"+(lk==="possible"?" pos":lk==="probable"?" prob":"")+(direct?" direct":""); }).attr("d",l=>pathY(l.a,l.b,l.up));
   if(spNode){ g.append("path").attr("class","mar").attr("d",`M${CW/2},0 L${spNode.x-CW/2},0`); g.append("circle").attr("cx",(CW/2+spNode.x-CW/2)/2).attr("cy",0).attr("r",5).attr("fill","var(--surface)").attr("stroke","var(--brick)").attr("stroke-width",2); }
   const all=nodes.map(n=>({x:n.x,y:n.y,id:n.d.data.id,gap:!n.d.data.id,role:n.d.data.role,pid:n.d.data.pid})); if(spNode) all.push({x:spNode.x,y:0,id:spNode.id,sp:true});
   const node=g.selectAll(".node").data(all).join("g").attr("class",n=>"node"+(n.gap?" gap":"")+(n.id===main?" main":"")).attr("transform",n=>`translate(${n.x-CW/2},${n.y-CH/2})`).attr("tabindex",0).attr("role","button")
@@ -631,11 +649,14 @@ function drawChart(){
   node.append("text").attr("class","nm").attr("x",64).attr("y",24).text(n=>n.gap?t(n.role==="f"?"father":"mother"):clip(P[n.id].g,18));
   node.append("text").attr("class","ln").attr("x",64).attr("y",46).text(n=>n.gap?t("unknown_parent"):clip(P[n.id].m?P[n.id].m:P[n.id].s,16));
   node.append("text").attr("class","dt").attr("x",64).attr("y",64).text(n=>n.gap?"":dates(P[n.id]));
+  node.filter(n=>!n.gap&&DIRECT.has(n.id)).append("text").attr("class","badge").attr("x",CW-8).attr("y",14).attr("text-anchor","end").text("★ "+t("directbadge").toUpperCase());
+  showBanner();
   fit=()=>{ const b=g.node().getBBox(); const kmin=W<700?Math.min(1,(W-24)/(CW*2+GX)):0.72; let k=Math.min(W/(b.width+60),H/(b.height+60),1.15); const fits=k>=kmin; k=Math.max(k,kmin); const cx=fits?(b.x+b.width/2):0, cy=fits?(b.y+b.height/2):0; svg.transition().duration(500).call(zoomBeh.transform,d3.zoomIdentity.translate(W/2-cx*k,H/2-cy*k).scale(k)); };
   fit();
   document.getElementById("crumb").textContent=(lastMain&&P[lastMain]?`${P[lastMain].g} ${P[lastMain].s} › `:"")+fullname(P[main]);
   document.getElementById("legend").innerHTML=Object.entries(STC).filter(([k])=>k!=="unknown").map(([k,c])=>`<span><i style="background:${c}"></i>${t("st_"+k)}</span>`).join("")+`<span><i style="background:transparent;border:2px dashed var(--rule);width:10px;height:10px"></i>${L==="pl"?"linia przerywana: powiązanie możliwe":"dashed: possible link"}</span>`;
 }
+function showBanner(){ let b=document.getElementById("banner"); if(!b){ b=document.createElement("div"); b.id="banner"; b.className="banner"; document.querySelector(".chart").appendChild(b); } if(DIRECT.has(main)){ b.hidden=true; } else { const p=P[main]; b.hidden=false; b.innerHTML=`<b>${t("notconn_h")}</b> · ${t("ln_"+lineOf(p))}. ${t("notconn_p")}`; } }
 function clip(s,n){ s=s||""; return s.length>n?s.slice(0,n-1)+"…":s; }
 function dates(p){ const b=yr(p.b), d=yr(p.d); const bp=p.bp?p.bp.split(",")[0].split(";")[0].replace(/\s*\(.*\)/,""):""; return [b?("* "+b+(d?" – † "+d:"")):(d?"† "+d:""), bp].filter(Boolean).join(" · "); }
 // ================= FAN =================
@@ -657,7 +678,7 @@ function drawFan(svg,g,W,H){
     .text(d=>{ const p=P[d.data.id]; const ringW=rs[d.depth+1]-rs[d.depth]; const arcLen=(d.x1-d.x0)*(rs[d.depth]+rs[d.depth+1])/2; const s=d.depth<=2?p.g.split(" ")[0]+" "+(p.m||p.s):(p.m||p.s); const maxC=Math.floor(ringW/7.5); if(arcLen<18) return ""; return s.length>maxC?s.slice(0,Math.max(3,maxC-1))+"…":s; });
   g.selectAll(".wld").data(nodes.filter(d=>d.data.id&&d.depth<=2)).join("text").attr("class","wld").attr("transform",d=>{ const th=((d.x0+d.x1)/2)*180/Math.PI-180; const r=(rs[d.depth]+rs[d.depth+1])/2; return `rotate(${th}) translate(${r},0) rotate(${th<-90?180:0})`; }).attr("text-anchor","middle").attr("dy","1.1em").text(d=>{ const p=P[d.data.id]; const b=yr(p.b),dd=yr(p.d); return b?b+(dd?"–"+dd:""):""; });
   // centre
-  const mp=P[main]; g.append("circle").attr("r",rs[1]-4).attr("fill",LINEC[lineOf(mp)]).attr("stroke","var(--brick)").attr("stroke-width",3).style("cursor","pointer").on("click",()=>drawDrawer());
+  showBanner(); const mp=P[main]; g.append("circle").attr("r",rs[1]-4).attr("fill",LINEC[lineOf(mp)]).attr("stroke","var(--brick)").attr("stroke-width",3).style("cursor","pointer").on("click",()=>drawDrawer());
   g.append("text").attr("class","ini").attr("y",-6).attr("text-anchor","middle").attr("font-size",28).attr("fill","#fff").attr("font-family","var(--display)").attr("font-weight",700).text(initials(mp));
   g.append("text").attr("y",16).attr("text-anchor","middle").attr("fill","#fff").attr("font-size",13).attr("font-family","var(--body)").text(mp.g.split(" ")[0]);
   // children chips below centre
@@ -677,6 +698,7 @@ function drawDrawer(o){
   d.innerHTML=`<div class="mono" style="background:${LINEC[lineOf(p)]}">${esc(initials(p))}</div>
   <h2>${esc(p.g)}</h2><div class="maiden">${p.m?esc(p.s)+" · "+t("nee")+" "+esc(p.m):esc(p.s)}</div>
   ${k?`<p class="kin">${esc(k)} <span style="color:var(--muted);font-style:normal;font-size:.8rem">(${t("rel_home").toLowerCase()} ${esc(P[home].g.split(" ")[0])})</span></p>`:""}
+  ${(()=>{ const path=pathToHome(main); if(path&&path.length>1) return `<div class="note" style="margin-bottom:6px">${t("lineto")}:</div><div class="chips" style="margin-bottom:10px">${path.map((id,i)=>`<button data-go="${id}" ${id===main?'style="border-color:var(--brick);font-weight:700"':""}>${i?"↓ ":""}${esc(P[id].g.split(" ")[0])}</button>`).join("")}</div>`; if(!DIRECT.has(main)) return `<div class="note" style="margin-bottom:10px;border-left:3px solid var(--ochre);padding-left:10px"><b>${t("notconn_h")}.</b> ${t("notconn_p")}</div>`; return ""; })()}
   <div class="tags"><span class="tag" style="background:${STC[p.st]}">${t("st_"+p.st)}</span>${p.lk&&(p.f||p.mo)?`<span class="tag o">${t("lk")}: ${t("st_"+p.lk).toLowerCase()}</span>`:""}<span class="tag o" style="border-color:${LINEC[lineOf(p)]}">${t("ln_"+lineOf(p))}</span></div>
   <dl>${p.b?`<dt>${t("born")}</dt><dd>${esc(p.b)}${p.bq?' <span style="color:var(--muted)">(?)</span>':""}</dd>`:""}${p.bp?`<dt>${t("place")}</dt><dd>${esc(p.bp)}${p.bpq?' <span style="color:var(--muted)">(?)</span>':""}</dd>`:""}${p.d?`<dt>${t("died")}</dt><dd>${esc(p.d)}${p.dp?", "+esc(p.dp):""}</dd>`:""}
   ${(p.sp||[]).length?`<dt>${t("spouse")}</dt><dd class="chips">${p.sp.map(chip).join("")}</dd>`:""}
