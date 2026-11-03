@@ -49,6 +49,11 @@ nav button[aria-pressed="true"]{background:var(--brick);border-color:var(--brick
 .chart svg{display:block;width:100%;height:700px;touch-action:pan-y pinch-zoom}
 @media (max-width:760px){.chart svg{height:72vh;min-height:480px}.chart{min-height:0}}
 .zoomgrp{display:inline-flex;gap:4px;margin-left:auto}
+.step{display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--rule);border-radius:9px;background:var(--surface);padding:0 6px 0 10px;min-height:44px}
+.step .lbl{font-size:.8rem;font-weight:700;color:var(--muted);letter-spacing:.03em}
+.step b{min-width:1.2em;text-align:center;font-variant-numeric:tabular-nums}
+.step button{min-height:36px;min-width:36px;border:0;background:transparent;font-size:1.2rem;font-weight:700;color:var(--fg);padding:0;border-radius:6px;cursor:pointer}
+.step button:hover{background:var(--surface2)}
 .zoomgrp button{font-size:1.25rem}
 @media (max-width:760px){.legend{display:none}.crumb{display:none}}
 .bar{position:absolute;left:12px;top:12px;right:12px;display:flex;flex-wrap:wrap;gap:8px}
@@ -194,7 +199,8 @@ dialog::backdrop{background:rgba(20,14,10,.9)}
     <div class="bar">
       <button id="mode-tree" aria-pressed="true" data-i="m_tree"></button><button id="mode-fan" aria-pressed="false" data-i="m_fan"></button>
       <select id="start" aria-label="Start from"></select>
-      <button id="up" title="+1" data-i="more_up"></button><button id="down" data-i="more_down"></button><button id="maxBtn" data-i="max"></button>
+      <span class="step" id="stepUp"><span class="lbl" data-i="anc"></span><button id="upMinus" aria-label="fewer ancestor generations">−</button><b id="upN">3</b><button id="up" aria-label="more ancestor generations">+</button></span>
+      <span class="step" id="stepDown"><span class="lbl" data-i="desc"></span><button id="downMinus" aria-label="fewer descendant generations">−</button><b id="downN">1</b><button id="down" aria-label="more descendant generations">+</button></span><button id="maxBtn" data-i="max"></button>
       <span class="zoomgrp"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="fit" aria-label="Fit">⤢</button></span><button id="tourBtn" data-i="tour"></button>
     </div>
     <div class="crumb" id="crumb"></div>
@@ -528,7 +534,7 @@ let L="pl"; try{ const sv=localStorage.getItem("ft-lang"); L = sv || ((navigator
 const T={
  lede:{pl:"Cztery rodziny z Mazowsza i ziemi toruńskiej, odtworzone z ksiąg parafialnych, akt stanu cywilnego i archiwów. Każda osoba ma źródło i stopień pewności. Nic nie jest zmyślone.",en:"Four families from Mazowsze and the Toruń country, traced through parish registers, civil books and archives. Every person carries a source and a confidence label. Nothing is invented."},
  v_tree:{pl:"Drzewo",en:"Tree"},v_stories:{pl:"Odkrycia",en:"Discoveries"},v_docs:{pl:"Dokumenty",en:"Documents"},v_map:{pl:"Mapa",en:"Map"},v_time:{pl:"Oś czasu",en:"Timeline"},v_about:{pl:"Źródła i co dalej",en:"Sources & next steps"},
- m_tree:{pl:"Klepsydra",en:"Hourglass"},max:{pl:"Cała linia",en:"Whole line"},m_fan:{pl:"Wachlarz",en:"Fan"},more_up:{pl:"▲ więcej",en:"▲ more"},more_down:{pl:"▼ więcej",en:"▼ more"},tour:{pl:"▶ Opowieść",en:"▶ Story"},
+ m_tree:{pl:"Klepsydra",en:"Hourglass"},max:{pl:"Cała linia",en:"Whole line"},anc:{pl:"Przodkowie",en:"Ancestors"},desc:{pl:"Potomkowie",en:"Descendants"},m_fan:{pl:"Wachlarz",en:"Fan"},more_up:{pl:"▲ więcej",en:"▲ more"},more_down:{pl:"▼ więcej",en:"▼ more"},tour:{pl:"▶ Opowieść",en:"▶ Story"},
  st_family:{pl:"Przekaz rodzinny",en:"Family record"},st_verified:{pl:"Potwierdzone w aktach",en:"Verified record"},st_probable:{pl:"Prawdopodobne",en:"Probable"},st_possible:{pl:"Możliwe",en:"Possible"},st_unknown:{pl:"Nieznane",en:"Unknown"},
  lk:{pl:"powiązanie z rodzicami",en:"link to parents"},
  ln_kowalczyk:{pl:"linia Kowalczyków",en:"Kowalczyk line"},ln_draminski:{pl:"linia Dramińskich",en:"Dramiński line"},ln_prelowski:{pl:"linia Prełowskich",en:"Prełowski line"},ln_zakierski:{pl:"linia Zakierskich",en:"Zakierski line"},
@@ -608,6 +614,7 @@ function buildStart(){ const s=document.getElementById("start"); const direct=[[
   s.innerHTML=cur+`<optgroup label="${t("direct")}">`+direct.map(([id,n])=>`<option value="${id}" ${id===main?"selected":""}>${esc(n)}</option>`).join("")+`</optgroup><optgroup label="${t("related")}">`+related.map(([id,n])=>`<option value="${id}" ${id===main?"selected":""}>${esc(n)}</option>`).join("")+"</optgroup>"; s.onchange=()=>setMain(s.value); }
 document.getElementById("mode-tree").onclick=()=>{mode="tree";render();}; document.getElementById("mode-fan").onclick=()=>{mode="fan";render();};
 document.getElementById("up").onclick=()=>{ upDepth=Math.min(upDepth+1,8); render(); }; document.getElementById("down").onclick=()=>{ downDepth=Math.min(downDepth+1,4); render(); };
+document.getElementById("upMinus").onclick=()=>{ upDepth=Math.max(upDepth-1,1); render(); }; document.getElementById("downMinus").onclick=()=>{ downDepth=Math.max(downDepth-1,0); render(); };
 document.getElementById("fit").onclick=()=>fit&&fit(); document.getElementById("zin").onclick=()=>zoomBy&&zoomBy(1.35); document.getElementById("zout").onclick=()=>zoomBy&&zoomBy(1/1.35);
 document.getElementById("maxBtn").onclick=()=>{ upDepth=8; downDepth=3; render(); };
 // ================= HOURGLASS =================
@@ -617,7 +624,7 @@ function ancTree(id,depth){ const p=P[id]; const n={id,depth,children:[]}; if(de
 function descTree(id,depth){ const n={id,depth,children:[]}; if(depth<downDepth){ (kids[id]||[]).sort((a,b)=>(yr(P[a].b)||0)-(yr(P[b].b)||0)).forEach(c=>n.children.push(descTree(c,depth+1))); } return n; }
 function drawChart(){
   document.getElementById("mode-tree").setAttribute("aria-pressed",mode==="tree"?"true":"false"); document.getElementById("mode-fan").setAttribute("aria-pressed",mode==="fan"?"true":"false");
-  document.getElementById("up").hidden=mode!=="tree"; document.getElementById("down").hidden=mode!=="tree";
+  document.getElementById("stepUp").hidden=false; document.getElementById("stepDown").hidden=mode!=="tree"; document.getElementById("upN").textContent=upDepth; document.getElementById("downN").textContent=downDepth;
   const svg=d3.select("#svg"); svg.selectAll("*").remove();
   const W=svg.node().clientWidth||1000, H=svg.node().clientHeight||700; svg.attr("viewBox",`0 0 ${W} ${H}`);
   const g=svg.append("g");
