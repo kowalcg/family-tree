@@ -163,7 +163,7 @@ dialog::backdrop{background:rgba(20,14,10,.9)}
 .map .pt{cursor:pointer}
 .map text{font-family:var(--body);font-size:14px;fill:var(--fg);pointer-events:none;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
 .mapbox{position:relative;margin-top:14px;border:1.5px solid var(--rule2);border-radius:10px;overflow:hidden;background:var(--surface)}
-.mapbox svg{display:block;width:100%;height:min(72vh,760px);touch-action:pan-y pinch-zoom;cursor:grab}
+.mapbox svg{display:block;width:100%;height:min(78vh,820px);touch-action:pan-y pinch-zoom;cursor:grab}
 .mapbox .zoomgrp{right:10px;bottom:10px}
 .map .cap{fill:var(--muted);font-size:12px;font-weight:400}
 .map .cand{fill:none;stroke:var(--ochre);stroke-width:2;stroke-dasharray:4 3}
@@ -943,11 +943,17 @@ function drawMap(){ const v=document.getElementById("v-map"); const W=900,H=720,
     const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; const lx=(anc==="end"?-r:r)+(dx>0?dx-12:dx+12), ly=dy; if(Math.abs(dx)>14||Math.abs(dy)>14) s.append("line").attr("class","lead").attr("x1",0).attr("y1",0).attr("x2",lx+(anc==="end"?2:-2)).attr("y2",ly-4);
     const lg=s.append("g").attr("class","lbl").attr("transform",`translate(${lx},${ly})`);
     lg.append("text").attr("text-anchor",anc).attr("font-weight",700).text(d.n); lg.append("text").attr("class","cap").attr("text-anchor",anc).attr("y",15).text(d.c?`${ppl(d.c)} · ${tx(d.t)}`:tx(d.t)); });
-  let k=1; const zb=d3.zoom().scaleExtent([.8,8]).on("zoom",e=>{ k=e.transform.k; g.attr("transform",e.transform); g.selectAll(".lbl").attr("transform",function(){ const d=d3.select(this.parentNode).datum(); const r=d.cand?7:4+Math.sqrt(d.c)*2.2; const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; return `translate(${((anc==="end"?-r:r)+(dx>0?dx-12:dx+12))/k},${dy/k}) scale(${1/k})`; }); g.selectAll(".place circle").attr("stroke-width",1.5/k); g.selectAll(".lead").attr("stroke-width",1/k); });
+  const node0=svg.node(); const rs=()=>Math.min(node0.clientWidth/W,node0.clientHeight/H)||1; // rendered px per viewBox unit
+  let k=1; const relabel=()=>{ const fs=1/rs(); g.selectAll(".lbl").attr("transform",function(){ const d=d3.select(this.parentNode).datum(); const r=d.cand?7:4+Math.sqrt(d.c)*2.2; const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; const sc=fs/k; return `translate(${((anc==="end"?-r:r)+(dx>0?dx-12:dx+12))*sc},${dy*sc}) scale(${sc})`; }); g.selectAll(".lead").attr("x2",function(){ const d=d3.select(this.parentNode).datum(); const r=d.cand?7:4+Math.sqrt(d.c)*2.2; const [dx,dy,anc]=OFF[d.n]||[12,4,"start"]; return (((anc==="end"?-r:r)+(dx>0?dx-12:dx+12))+(anc==="end"?2:-2))*fs/k; }).attr("y2",function(){ const d=d3.select(this.parentNode).datum(); const [dx,dy]=OFF[d.n]||[12,4,"start"]; return (dy-4)*fs/k; }).attr("stroke-width",1/k); g.selectAll(".place circle").attr("stroke-width",1.5/k); };
+  const zb=d3.zoom().scaleExtent([.6,10]).on("zoom",e=>{ k=e.transform.k; g.attr("transform",e.transform); relabel(); });
   svg.call(zb).on("dblclick.zoom",null);
-  document.getElementById("mzi").onclick=()=>svg.transition().duration(250).call(zb.scaleBy,1.5); document.getElementById("mzo").onclick=()=>svg.transition().duration(250).call(zb.scaleBy,1/1.5); document.getElementById("mzr").onclick=()=>svg.transition().duration(300).call(zb.transform,d3.zoomIdentity);
-  // start zoomed on the Toruń–Warsaw corridor on phones
-  if(window.innerWidth<700){ svg.call(zb.transform,d3.zoomIdentity.translate(-X(19.2)*1.6+W/2,-Y(52.9)*1.6+H/2).scale(1.6)); }
+  // fit to the places (not the whole outline) so the cluster fills the box
+  const xs=pts.map(p=>p.x), ys=pts.map(p=>p.y); const bx0=Math.min(...xs)-90, bx1=Math.max(...xs)+120, by0=Math.min(...ys)-50, by1=Math.max(...ys)+50;
+  const fitT=()=>{ const vw=W/Math.max(1,rs())*rs(), k0=Math.min(W/(bx1-bx0),H/(by1-by0)); return d3.zoomIdentity.translate(W/2-(bx0+bx1)/2*k0,H/2-(by0+by1)/2*k0).scale(k0); };
+  svg.call(zb.transform,fitT());
+  document.getElementById("mzi").onclick=()=>svg.transition().duration(250).call(zb.scaleBy,1.5); document.getElementById("mzo").onclick=()=>svg.transition().duration(250).call(zb.scaleBy,1/1.5); document.getElementById("mzr").onclick=()=>svg.transition().duration(300).call(zb.transform,fitT());
+  if(window.innerWidth<700){ svg.call(zb.transform,d3.zoomIdentity.translate(-X(19.3)*2.2+W/2,-Y(53.0)*2.2+H/2).scale(2.2)); }
+  window.addEventListener("resize",relabel,{passive:true});
 }
 // ================= TIMELINE =================
 const EV=[
