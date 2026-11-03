@@ -7,140 +7,258 @@
 <meta name="description" content="Drzewo rodzinne Kowalczyk, Dramiński, Prełowski, Zakierski / Family tree">
 <style>html,body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Rodzina Kowalczyk Prełowski</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Lato:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Lato:ital,wght@0,400;0,700;0,900;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: brick-and-lime daylight page; header with language + text-size; view tabs; chart (hourglass tree or ancestor fan) beside a person drawer; galleries below. Tokens only, both themes. */
+/* Layout v5: left rail (desktop) or bottom tab bar (phone); full-height tree workspace with native-scroll canvas, toolbar on top, person drawer sliding over the chart. Palette: Toruń brick and lime, Vistula slate, Kujawy ochre, glazed green. */
 :root{
-  --bg:#F4EEE4; --surface:#FFFBF5; --surface2:#F1E9DC; --fg:#241B16; --muted:#6B5F55; --rule:#B9AFA3; --rule2:#DED5C8;
-  --brick:#9E3B2A; --brick2:#6E2418; --glaze:#2F4A3E; --ochre:#B5742F; --violet:#5A4A7A; --vistula:#3E6B8A; --oak:#7A6A3A;
-  --lk:#9E3B2A; --ld:#B5742F; --lp:#3E6B8A; --lz:#2F4A3E; /* line hues: kowalczyk, draminski, prelowski, zakierski */
-  --family:#3E6B8A; --verified:#2E6B45; --probable:#B5742F; --possible:#8A5A8E; --unknown:#8E857B;
+  --bg:#F4EEE4; --canvas:#EFE7DA; --surface:#FFFBF5; --surface2:#F3EADD; --fg:#241B16; --muted:#6B5F55; --rule:#B9AFA3; --rule2:#DED5C8;
+  --line:#C8BCAE; --line2:#9C8F82;
+  --brick:#9E3B2A; --ochre:#B5742F; --glaze:#2F4A3E; --vistula:#3E6B8A;
+  --lk:#A8442F; --ld:#B07A1E; --lp:#3E6B8A; --lz:#3E7058;
+  --family:#3E6B8A; --verified:#2E7A4E; --probable:#B5742F; --possible:#8A5A8E; --unknown:#8E857B;
   --display:"Cormorant Garamond",Georgia,serif; --body:"Lato","Helvetica Neue",Arial,sans-serif; --mono:"IBM Plex Mono",Menlo,monospace;
-  --fs:18px; --brickline:rgba(158,59,42,.06);
+  --fs:18px; --cf:1; --rail:250px; --tab:62px;
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#1B1512; --surface:#2A211C; --surface2:#33291F; --fg:#F3E9DC; --muted:#B9A997; --rule:#5A4C40; --rule2:#3E342B; --brick:#D5704F; --brick2:#E8A64A; --glaze:#4F8A72; --ochre:#D9A24A; --violet:#9E8CC4; --vistula:#7FA8C6; --oak:#B3A06A; --lk:#D5704F; --ld:#D9A24A; --lp:#7FA8C6; --lz:#4F8A72; --family:#7FA8C6; --verified:#62B882; --probable:#D9A24A; --possible:#C49AC9; --unknown:#7D7268; --brickline:rgba(255,255,255,.05); color-scheme:dark } }
-:root[data-theme="dark"]{ --bg:#1B1512; --surface:#2A211C; --surface2:#33291F; --fg:#F3E9DC; --muted:#B9A997; --rule:#5A4C40; --rule2:#3E342B; --brick:#D5704F; --brick2:#E8A64A; --glaze:#4F8A72; --ochre:#D9A24A; --violet:#9E8CC4; --vistula:#7FA8C6; --oak:#B3A06A; --lk:#D5704F; --ld:#D9A24A; --lp:#7FA8C6; --lz:#4F8A72; --family:#7FA8C6; --verified:#62B882; --probable:#D9A24A; --possible:#C49AC9; --unknown:#7D7268; --brickline:rgba(255,255,255,.05); color-scheme:dark }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#17120F; --canvas:#1C1612; --surface:#261E19; --surface2:#30261F; --fg:#F3E9DC; --muted:#B5A595; --rule:#5A4C40; --rule2:#3A3029; --line:#4E4238; --line2:#8A7A6B; --brick:#E07A57; --ochre:#E0A64F; --glaze:#5FA084; --vistula:#86AED0; --lk:#D9704F; --ld:#D39A3C; --lp:#6E9CC4; --lz:#5E9E80; --family:#86AED0; --verified:#62B882; --probable:#E0A64F; --possible:#C49AC9; --unknown:#7D7268; color-scheme:dark } }
+:root[data-theme="dark"]{ --bg:#17120F; --canvas:#1C1612; --surface:#261E19; --surface2:#30261F; --fg:#F3E9DC; --muted:#B5A595; --rule:#5A4C40; --rule2:#3A3029; --line:#4E4238; --line2:#8A7A6B; --brick:#E07A57; --ochre:#E0A64F; --glaze:#5FA084; --vistula:#86AED0; --lk:#D9704F; --ld:#D39A3C; --lp:#6E9CC4; --lz:#5E9E80; --family:#86AED0; --verified:#62B882; --probable:#E0A64F; --possible:#C49AC9; --unknown:#7D7268; color-scheme:dark }
 *{box-sizing:border-box}
 html{font-size:var(--fs)}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:1rem;line-height:1.5;margin:0;min-height:100%}
-.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.wrap{max-width:1360px;margin:0 auto}
-button{font-family:inherit}
-button:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--brick);outline-offset:2px}
-/* header */
-header{padding-block:22px 10px;display:grid;grid-template-columns:1fr auto;gap:12px 24px;align-items:end;border-bottom:2px solid var(--brick)}
-header h1{font-family:var(--display);font-weight:600;font-size:clamp(34px,5vw,60px);line-height:1;margin:0;letter-spacing:-.01em;text-wrap:balance}
-header h1 .amp{font-style:italic;font-weight:500;color:var(--brick)}
-header .lede{margin:8px 0 0;max-width:64ch;color:var(--muted);font-size:1rem}
-.ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--brick);outline-offset:2px}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.app{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);min-height:100vh}
+/* rail */
+.rail{position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;padding:20px 14px 16px max(14px,env(safe-area-inset-left,0px));background:var(--surface);border-right:1px solid var(--rule2);overflow:auto;z-index:20}
+.brand{padding:2px 8px 14px;cursor:pointer}
+.brand .bt{font-family:var(--display);font-weight:700;font-size:1.6rem;line-height:1;letter-spacing:-.01em}
+.brand .bt em{font-style:italic;font-weight:500;color:var(--brick)}
+.brand .bs{font-size:.74rem;color:var(--muted);margin-top:6px;letter-spacing:.02em}
+.navb{display:flex;align-items:center;gap:12px;width:100%;text-align:left;min-height:46px;padding:8px 12px;border:0;border-radius:10px;background:transparent;font-weight:700;font-size:.95rem;cursor:pointer}
+.navb:hover{background:var(--surface2)}
+.navb[aria-current="true"]{background:var(--brick);color:#fff}
+.rail .foot{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:14px}
 .seg{display:inline-flex;border:1.5px solid var(--rule);border-radius:10px;overflow:hidden;background:var(--surface)}
-.seg button{border:0;background:transparent;color:var(--fg);padding:9px 14px;min-height:48px;font-weight:700;font-size:.9rem;cursor:pointer}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-weight:700;font-size:.86rem;cursor:pointer;white-space:nowrap}
 .seg button[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
 .seg button+button{border-left:1.5px solid var(--rule)}
-@media (max-width:760px){header{grid-template-columns:1fr}.ctl{justify-content:flex-start}}
-/* tabs */
-nav{display:flex;flex-wrap:wrap;gap:8px;padding-block:14px 12px}
-nav button{min-height:48px;padding:8px 16px;border-radius:10px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-weight:700;font-size:.95rem;cursor:pointer}
-nav button[aria-pressed="true"]{background:var(--brick);border-color:var(--brick);color:#fff}
-/* stage */
-.stage{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px}
-@media (max-width:1000px){.stage{grid-template-columns:minmax(0,1fr)}}
-.chart{position:relative;background:var(--surface);border:1.5px solid var(--rule2);border-radius:12px;overflow:hidden;min-height:620px}
-.chart svg{display:block;width:100%;height:700px;touch-action:pan-y pinch-zoom}
-@media (max-width:760px){.chart svg{height:72vh;min-height:480px}.chart{min-height:0}}
-.zoomgrp{display:inline-flex;gap:4px;margin-left:auto}
-.step{display:inline-flex;align-items:center;gap:4px;border:1.5px solid var(--rule);border-radius:9px;background:var(--surface);padding:0 6px 0 10px;min-height:44px}
-.step .lbl{font-size:.8rem;font-weight:700;color:var(--muted);letter-spacing:.03em}
-.step b{min-width:1.2em;text-align:center;font-variant-numeric:tabular-nums}
-.step button{min-height:36px;min-width:36px;border:0;background:transparent;font-size:1.2rem;font-weight:700;color:var(--fg);padding:0;border-radius:6px;cursor:pointer}
-.step button:hover{background:var(--surface2)}
-.zoomgrp button{font-size:1.25rem}
-@media (max-width:760px){.legend{display:none}.crumb{display:none}.node .badge{display:none}}
-.bar{position:absolute;left:12px;top:12px;right:12px;display:flex;flex-wrap:wrap;gap:8px}
-.bar button,.bar select{min-height:44px;min-width:44px;padding:6px 12px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-weight:700;font-size:.9rem;cursor:pointer}
-.bar select{font-weight:400}
-.crumb{position:absolute;left:12px;bottom:10px;font-size:.85rem;color:var(--muted);max-width:70%;pointer-events:none}
-.legend{position:absolute;right:12px;bottom:10px;display:flex;flex-wrap:wrap;gap:6px 12px;font-size:.82rem;color:var(--muted);background:color-mix(in srgb,var(--surface) 90%,transparent);padding:6px 10px;border-radius:8px;border:1px solid var(--rule2)}
-.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:-1px}
-/* svg nodes */
-.node{cursor:pointer}
-.node .card{fill:var(--surface);stroke:var(--rule);stroke-width:1.5}
-.node.main .card{stroke:var(--brick);stroke-width:3;fill:var(--surface2)}
-.node:hover .card{stroke:var(--fg)}
-.node text{font-family:var(--body);fill:var(--fg);font-size:16px}
-.node .nm{font-weight:700;font-size:17px}
-.node .ln{font-family:var(--display);font-weight:600;font-size:19px}
-.node .dt{font-size:15px;fill:var(--muted)}
-.node .ini{font-family:var(--display);font-weight:700;font-size:18px;fill:#fff}
-.node.gap .card{stroke-dasharray:6 4;fill:var(--bg)}
-.node.gap text{fill:var(--muted);font-style:italic}
-.link{fill:none;stroke:var(--rule);stroke-width:2.2}
-.link.pos{stroke-dasharray:6 5}
-.link.prob{stroke-dasharray:14 5}
-.link.direct{stroke:var(--brick);stroke-width:3}
-.node .badge{font-family:var(--mono);font-size:9px;fill:var(--brick);letter-spacing:.06em;opacity:.85}
-.banner{position:absolute;left:12px;right:12px;top:64px;background:var(--surface2);border:1.5px solid var(--ochre);border-radius:10px;padding:10px 14px;font-size:.92rem;z-index:3}
-.banner b{color:var(--ochre)}
-@media (max-width:760px){.banner{top:110px}}
-.mar{stroke:var(--brick);stroke-width:2.2;fill:none}
-.gen{font-family:var(--mono);font-size:13px;fill:var(--muted);letter-spacing:.08em;paint-order:stroke;stroke:var(--surface);stroke-width:4px}
-.wedge{cursor:pointer;stroke:var(--surface);stroke-width:1.5}
-.wedge.gap{fill:var(--bg);stroke:var(--rule);stroke-dasharray:4 3;cursor:default}
-.wedge:hover{filter:brightness(1.12)}
-.wl{font-family:var(--body);font-size:15px;fill:#fff;pointer-events:none;font-weight:700}
-.wl.sm{font-size:13px}
-.wld{font-family:var(--body);font-size:13px;fill:rgba(255,255,255,.85);pointer-events:none}
-.wl.dark,.wld.dark{fill:var(--fg)}
-.ctr{font-family:var(--display);font-weight:700;font-size:20px;fill:var(--fg);text-anchor:middle}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-/* drawer */
-aside{background:var(--surface);border:1.5px solid var(--rule2);border-radius:12px;padding:22px;min-width:0;align-self:start;position:sticky;top:10px;max-height:calc(100vh - 20px);overflow:auto}
-@media (max-width:1000px){aside{position:static;max-height:none}}
-.mono{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:26px;color:#fff;margin-bottom:10px}
-aside h2{font-family:var(--display);font-weight:700;font-size:1.9rem;margin:0;line-height:1.1;text-wrap:balance}
-aside .maiden{color:var(--muted);font-style:italic;font-family:var(--display);font-size:1.2rem;margin-top:2px}
-.tags{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 14px}
-.tag{display:inline-block;font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:5px 10px;border-radius:6px;color:#fff}
-.tag.o{background:transparent;color:var(--fg);border:1.5px solid var(--rule)}
-dl{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;margin:0;font-size:.95rem}
-dt{color:var(--muted)}dd{margin:0}
-aside p{font-size:.95rem;margin:14px 0 0}
-.kin{font-family:var(--display);font-style:italic;font-size:1.05rem;color:var(--brick);margin:0 0 8px}
-.src{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-top:16px;padding-top:12px;border-top:1px solid var(--rule2);word-break:break-word}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips button{font:inherit;font-size:.9rem;min-height:40px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);border-radius:999px;padding:6px 14px;cursor:pointer}
-.chips button:hover{border-color:var(--brick)}
-.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
-.acts button{min-height:44px;padding:8px 14px;border-radius:9px;border:1.5px solid var(--brick);background:transparent;color:var(--brick);font-weight:700;cursor:pointer}
-.acts button.pri{background:var(--brick);color:#fff}
-.thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.thumbs button{border:1.5px solid var(--rule);border-radius:8px;padding:0;background:var(--surface2);cursor:pointer;width:96px;height:72px;overflow:hidden}
-.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
-/* panels */
-.panel{background:var(--surface);border:1.5px solid var(--rule2);border-radius:12px;padding:26px;min-width:0}
-.panel h3{font-family:var(--display);font-weight:700;font-size:2rem;margin:0 0 8px;letter-spacing:-.01em}
+.seg.full{display:flex}.seg.full button{flex:1}
+.stage{min-width:0;position:relative}
+.view[hidden]{display:none!important}
+/* pages */
+.page{max-width:1180px;margin:0 auto;padding:34px max(20px,env(safe-area-inset-right,0px)) 80px max(20px,env(safe-area-inset-left,0px))}
+.page h2.h{font-family:var(--display);font-weight:700;font-size:clamp(2rem,4.5vw,2.8rem);line-height:1.05;margin:0 0 8px;letter-spacing:-.01em;text-wrap:balance}
+.page .lead{color:var(--muted);margin:0 0 18px;max-width:70ch}
+.panel h3{font-family:var(--display);font-weight:700;font-size:clamp(1.9rem,4vw,2.5rem);margin:0 0 8px;letter-spacing:-.01em;line-height:1.05}
 .panel p,.panel li{max-width:72ch}
-.panel .lead{color:var(--muted);margin-top:0}
+.sec{margin-top:40px}
+.sec>h3{font-family:var(--display);font-weight:700;font-size:1.7rem;margin:0 0 14px}
+/* home */
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;align-items:end;padding-bottom:26px;border-bottom:2px solid var(--brick)}
+.hero h1{font-family:var(--display);font-weight:700;font-size:clamp(2.6rem,7vw,4.8rem);line-height:.95;margin:0;letter-spacing:-.02em}
+.hero h1 em{font-style:italic;font-weight:500;color:var(--brick)}
+.hero p{color:var(--muted);margin:14px 0 0;max-width:58ch;font-size:1.05rem}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.kpis div{border-left:3px solid var(--brick);padding:2px 0 2px 12px}
+.kpis b{display:block;font-family:var(--display);font-size:2.3rem;line-height:1;font-variant-numeric:tabular-nums}
+.kpis span{font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.starts{display:flex;flex-wrap:wrap;gap:10px}
+.startb{display:flex;align-items:center;gap:12px;min-height:58px;padding:8px 18px 8px 10px;border-radius:14px;border:1.5px solid var(--rule2);background:var(--surface);cursor:pointer;font-weight:700;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.startb:hover{border-color:var(--brick)}
+.startb .mono{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;font-size:1.05rem}
+.startb small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+.startb.play{background:var(--brick);border-color:var(--brick);color:#fff}
+.startb.play small{color:rgba(255,255,255,.85)}
+.lines{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.lcard{border-radius:16px;overflow:hidden;background:var(--surface);border:1.5px solid var(--rule2);display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.lcard .im{height:150px;background:var(--rule2) center/cover no-repeat;position:relative}
+.lcard .im::after{content:"";position:absolute;inset:auto 0 0 0;height:6px;background:var(--lc)}
+.lcard .b{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+.lcard .k{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.lcard h4{margin:0;font-family:var(--display);font-weight:700;font-size:1.6rem;line-height:1.05}
+.lcard .pl{font-size:.92rem;color:var(--muted)}
+.lcard .st{display:flex;gap:16px;margin:4px 0 2px}
+.lcard .st b{font-family:var(--display);font-size:1.6rem;line-height:1;display:block}
+.lcard .st span{font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.lcard .old{font-size:.88rem}
+.lcard .old b{font-weight:700}
+.lcard .acts{margin-top:auto;display:flex;gap:8px;padding-top:8px}
+.btn{min-height:44px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--rule);background:var(--surface);font-weight:700;font-size:.9rem;cursor:pointer}
+.btn:hover{border-color:var(--brick)}
+.btn.pri{background:var(--brick);border-color:var(--brick);color:#fff}
+.todo{border:1.5px solid var(--rule2);border-radius:12px;padding:14px 16px;background:var(--surface);margin-top:10px}
+.todo b{font-family:var(--display);font-size:1.15rem}
+@media (max-width:820px){.hero{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(3,1fr)}}
+/* tree workspace */
+.tree{position:relative;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.tbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--rule2);background:var(--surface);z-index:8}
+.who{display:flex;align-items:center;gap:10px;min-width:0;margin-right:4px}
+.who .mono{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;flex:none}
+.who .nm{font-family:var(--display);font-weight:700;font-size:1.25rem;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.who .sub{font-size:.74rem;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.tsp{flex:1}
+.search{position:relative;flex:0 1 280px;min-width:180px}
+.search input{width:100%;min-height:44px;padding:8px 12px 8px 38px;border-radius:10px;border:1.5px solid var(--rule);background:var(--bg);color:var(--fg);font:inherit;font-size:.95rem}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:.6}
+.results{position:absolute;top:calc(100% + 6px);left:0;width:max(100%,320px);background:var(--surface);border:1.5px solid var(--rule);border-radius:12px;box-shadow:0 12px 34px rgba(0,0,0,.25);max-height:60vh;overflow:auto;z-index:40;padding:4px}
+.results button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;border:0;background:transparent;padding:9px 10px;cursor:pointer;font-size:.92rem;border-radius:8px}
+.results button:hover,.results button.act{background:var(--surface2)}
+.results .dt{width:10px;height:10px;border-radius:50%;flex:none}
+.results .y{color:var(--muted);font-size:.8rem;margin-left:auto;white-space:nowrap}
+.results .none{padding:12px;color:var(--muted);font-size:.9rem}
+.step{display:inline-flex;align-items:center;gap:2px;border:1.5px solid var(--rule);border-radius:10px;background:var(--surface);padding:0 4px 0 10px;min-height:44px}
+.step .lbl{font-size:.78rem;font-weight:700;color:var(--muted);margin-right:4px}
+.step b{min-width:1.4em;text-align:center;font-variant-numeric:tabular-nums}
+.step button{width:34px;height:34px;border:0;background:transparent;font-size:1.2rem;font-weight:700;border-radius:8px;cursor:pointer}
+.step button:hover{background:var(--surface2)}
+.step button:disabled{opacity:.3;cursor:default}
+.banner{padding:10px 16px;background:var(--surface2);border-bottom:1.5px solid var(--ochre);font-size:.92rem;display:flex;gap:12px;align-items:center;flex-wrap:wrap;z-index:7}
+.banner b{color:var(--ochre)}
+.banner .btn{min-height:36px;padding:4px 12px}
+.scroller{position:relative;flex:1;overflow:auto;background:var(--canvas);touch-action:pan-x pan-y;overscroll-behavior:contain;cursor:grab;
+  background-image:radial-gradient(color-mix(in srgb,var(--rule) 45%,transparent) 1px,transparent 1.2px);background-size:22px 22px}
+.scroller.drag{cursor:grabbing;user-select:none}
+.sizer{position:relative}
+.canvas{position:absolute;left:0;top:0;transform-origin:0 0}
+.canvas>svg{position:absolute;left:0;top:0;overflow:visible;transition:opacity .25s}
+.canvas>svg.fade{opacity:0}
+.e{fill:none;stroke:var(--line2);stroke-width:2}
+.e.sib{stroke:var(--line);stroke-width:1.8}
+.e.direct{stroke:var(--brick);stroke-width:3}
+.e.pos{stroke-dasharray:7 6}.e.prob{stroke-dasharray:14 6}
+.mar{fill:none;stroke:var(--line2);stroke-width:2.4}
+.mar.direct{stroke:var(--brick);stroke-width:3}
+.ring{fill:var(--surface);stroke:var(--brick);stroke-width:2}
+/* cards */
+.card{position:absolute;display:flex;align-items:center;gap:.6em;padding:.45em .55em .45em .8em;border-radius:12px;background:var(--surface);border:1.5px solid var(--rule2);box-shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.07);cursor:pointer;
+  transition:left .55s cubic-bezier(.2,.75,.2,1),top .55s cubic-bezier(.2,.75,.2,1),opacity .35s,box-shadow .2s,border-color .2s,transform .2s;overflow:hidden;font-size:calc(16.5px*var(--cf));user-select:none}
+.card:hover{border-color:var(--fg);box-shadow:0 8px 24px rgba(0,0,0,.16);transform:translateY(-1px)}
+.card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--lc)}
+.card.direct{border-color:color-mix(in srgb,var(--brick) 55%,var(--rule2))}
+.card.root{border-color:var(--brick);border-width:2.5px;background:var(--surface2)}
+.card.sel{box-shadow:0 0 0 4px color-mix(in srgb,var(--ochre) 60%,transparent),0 8px 24px rgba(0,0,0,.16)}
+.card .mono{flex:none;width:2.3em;height:2.3em;border-radius:50%;display:grid;place-items:center;background:var(--lc);color:#fff;font-family:var(--display);font-weight:700;font-size:1em}
+.card .tx{min-width:0;flex:1;display:flex;flex-direction:column;line-height:1.16}
+.card .g{font-weight:700;font-size:.95em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .s{font-family:var(--display);font-weight:700;font-size:1.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .s i{font-weight:500;font-size:.82em;color:var(--muted)}
+.card .d{font-size:.76em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:.15em}
+.card .dot{position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--st)}
+.card .xp{flex:none;width:1.9em;height:1.9em;border-radius:50%;border:1.5px solid var(--rule);display:grid;place-items:center;font-weight:900;color:var(--brick);font-size:.9em;background:var(--surface)}
+.card .xp:hover{border-color:var(--brick);background:var(--surface2)}
+.card.ghost{background:color-mix(in srgb,var(--surface) 55%,transparent);border-style:dashed;box-shadow:none;border-color:var(--rule)}
+.card.ghost::before{display:none}
+.card.ghost .tx{color:var(--muted)}
+.card.ghost .s{font-family:var(--body);font-size:.88em}
+.card.ghost .mono{background:transparent;border:1.5px dashed var(--rule);color:var(--muted)}
+.card.morec{justify-content:center;text-align:center;border-style:dashed;background:var(--surface2);font-weight:700;color:var(--brick)}
+.card.morec::before{display:none}
+.card.stub{font-size:calc(13px*var(--cf))}
+/* fan */
+.wedge{cursor:pointer;stroke:var(--canvas);stroke-width:2}
+.wedge:hover{filter:brightness(1.12)}
+.wedge.gap{fill:transparent;stroke:var(--rule);stroke-dasharray:4 4;cursor:default}
+.wedge.sel{stroke:var(--ochre);stroke-width:4}
+.wl{font-family:var(--body);fill:#fff;pointer-events:none;font-weight:700}
+.wld{font-family:var(--body);fill:rgba(255,255,255,.86);pointer-events:none}
+/* overlays */
+.zoom{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;gap:6px;z-index:6;align-items:center}
+.zoom button{width:48px;height:48px;border-radius:12px;border:1.5px solid var(--rule);background:var(--surface);font-size:1.35rem;font-weight:700;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.15);display:grid;place-items:center}
+.zoom button:hover{border-color:var(--brick)}
+.zoom .pct{font-size:.7rem;color:var(--muted);font-family:var(--mono);background:var(--surface);padding:1px 6px;border-radius:6px}
+.legendw{position:absolute;left:14px;bottom:14px;z-index:6;max-width:calc(100% - 100px)}
+.legend{background:color-mix(in srgb,var(--surface) 94%,transparent);border:1px solid var(--rule2);border-radius:12px;padding:10px 12px;font-size:.8rem;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 14px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.legend span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%}
+.legend .ln{width:22px;height:0;border-top:3px solid var(--brick);border-radius:0}
+.legend .ld{width:22px;height:0;border-top:2px dashed var(--line2);border-radius:0}
+.legend .x{border:0;background:transparent;font-weight:700;cursor:pointer;color:var(--muted);padding:0 2px}
+.legbtn{min-height:38px;padding:6px 12px;border-radius:10px;border:1.5px solid var(--rule);background:var(--surface);font-weight:700;font-size:.82rem;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.hintc{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:var(--fg);color:var(--bg);font-size:.84rem;padding:8px 14px;border-radius:999px;z-index:6;box-shadow:0 6px 20px rgba(0,0,0,.25);transition:opacity .4s;white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+/* drawer */
+.drawer{position:absolute;top:0;right:0;bottom:0;width:min(430px,100%);background:var(--surface);border-left:1.5px solid var(--rule2);box-shadow:-12px 0 40px rgba(0,0,0,.18);transform:translateX(104%);transition:transform .32s cubic-bezier(.2,.75,.2,1);z-index:12;overflow:auto;overscroll-behavior:contain;padding:18px 22px 40px}
+.tree.open .drawer{transform:none}
+@media (min-width:901px){.tree.open .banner{padding-right:450px}}
+.dx{position:sticky;top:0;float:right;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--rule);background:var(--surface);font-size:1.05rem;font-weight:700;cursor:pointer;z-index:2;margin:-4px -8px 0 8px}
+.dhead{display:flex;gap:14px;align-items:center;margin:2px 0 10px}
+.dhead .mono{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;font-size:1.5rem;flex:none}
+.dhead h2{font-family:var(--display);font-weight:700;font-size:1.75rem;line-height:1.05;margin:0;text-wrap:balance}
+.dhead .sub{font-family:var(--display);font-style:italic;font-size:1.15rem;color:var(--muted)}
+.life{font-family:var(--display);font-size:1.3rem;font-weight:600;margin:2px 0 4px}
+.life span{color:var(--muted);font-family:var(--body);font-size:.85rem;font-weight:400}
+.kin{font-family:var(--display);font-style:italic;font-size:1.1rem;color:var(--brick);margin:4px 0 8px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 10px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:5px 10px;border-radius:999px;border:1.5px solid var(--rule)}
+.tag i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.path{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:6px 0 4px;font-size:.84rem}
+.path button{border:1.5px solid var(--rule);background:transparent;border-radius:999px;padding:3px 10px;cursor:pointer;font-size:.84rem;min-height:32px}
+.path button.me{border-color:var(--brick);font-weight:700}
+.path .ar{color:var(--muted)}
+.dsec{margin-top:16px}
+.dsec h5{margin:0 0 8px;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.mini{display:flex;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--rule2);background:var(--surface);border-radius:10px;padding:6px 10px 6px 6px;cursor:pointer;min-height:48px;min-width:0}
+.mini:hover{border-color:var(--brick)}
+.mini .mono{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;font-size:.9rem;flex:none}
+.mini .t{min-width:0;line-height:1.15}
+.mini .t b{display:block;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini .t small{color:var(--muted);font-size:.76rem}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:.92rem}
+.dl dt{color:var(--muted)}.dl dd{margin:0}
+.dnote{font-size:.95rem;margin:14px 0 0}
+.dacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.thumbs{display:flex;flex-wrap:wrap;gap:8px}
+.thumbs button{border:1.5px solid var(--rule);border-radius:8px;padding:0;background:var(--surface2);cursor:pointer;width:100px;height:76px;overflow:hidden}
+.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.src{font-family:var(--mono);font-size:.76rem;color:var(--muted);margin-top:18px;padding-top:12px;border-top:1px solid var(--rule2);word-break:break-word}
+.note{font-size:.88rem;color:var(--muted)}
+/* reused page components */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-top:18px}
-.story{border:1.5px solid var(--rule2);border-radius:12px;overflow:hidden;background:var(--surface2);display:flex;flex-direction:column}
+.story{border:1.5px solid var(--rule2);border-radius:14px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
 .story img{width:100%;height:190px;object-fit:cover;display:block;background:var(--rule2)}
 .story .b{padding:16px 18px;display:flex;flex-direction:column;gap:8px;flex:1}
-.story h4{margin:0;font-family:var(--display);font-weight:700;font-size:1.35rem;line-height:1.15}
-.story .k{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.story h4{margin:0;font-family:var(--display);font-weight:700;font-size:1.4rem;line-height:1.12}
+.story .k{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .story p{margin:0;font-size:.95rem}
-.story .acts{margin-top:auto}
+.story .acts,.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
+.acts button{min-height:44px;padding:8px 14px;border-radius:10px;border:1.5px solid var(--brick);background:transparent;color:var(--brick);font-weight:700;cursor:pointer}
+.acts button.pri{background:var(--brick);color:#fff}
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.filters button{min-height:40px;padding:6px 14px;border-radius:999px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-weight:700;font-size:.85rem;cursor:pointer}
+.filters button{min-height:40px;padding:6px 14px;border-radius:999px;border:1.5px solid var(--rule);background:var(--surface);font-weight:700;font-size:.85rem;cursor:pointer}
 .filters button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .docgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:16px}
-.doc{border:1.5px solid var(--rule2);border-radius:10px;overflow:hidden;background:var(--surface2);cursor:pointer;padding:0;text-align:left;color:var(--fg);display:flex;flex-direction:column}
+.doc{border:1.5px solid var(--rule2);border-radius:12px;overflow:hidden;background:var(--surface);cursor:pointer;padding:0;text-align:left;display:flex;flex-direction:column}
+.doc:hover{border-color:var(--brick)}
 .doc img{width:100%;height:150px;object-fit:cover;display:block;background:var(--rule2)}
 .doc .b{padding:10px 12px 12px}
-.doc .y{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.doc .y{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
 .doc .t{font-weight:700;font-size:.92rem;line-height:1.25;margin-top:2px}
-.pill{display:inline-block;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:2px 7px;border-radius:4px;margin-top:6px;color:#fff}
-/* lightbox */
-dialog{border:0;border-radius:14px;padding:0;max-width:min(96vw,1400px);width:96vw;background:#1B1512;color:#F3E9DC;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.pill{display:inline-block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:2px 7px;border-radius:4px;margin-top:6px;color:#fff}
+.status{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:inherit;font-size:.88rem;min-height:38px;border:1.5px solid var(--rule);background:var(--surface);border-radius:999px;padding:5px 14px;cursor:pointer}
+.chips button:hover{border-color:var(--brick)}
+.tl{list-style:none;margin:16px 0 0;padding:0;border-left:3px solid var(--rule2)}
+.tl li{position:relative;padding:0 0 16px 24px}
+.tl li::before{content:"";position:absolute;left:-8px;top:8px;width:13px;height:13px;border-radius:50%;background:var(--brick)}
+.tl li.ctx::before{background:var(--rule)}
+.tl .y{font-family:var(--mono);font-size:.82rem;color:var(--muted);display:block}
+.tl li.ctx{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px}
+.stats div{border-left:3px solid var(--brick);padding:4px 0 4px 12px}
+.stats b{display:block;font-family:var(--display);font-weight:700;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
+.stats span{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.map .land{fill:color-mix(in srgb,var(--vistula) 10%,var(--surface));stroke:var(--vistula);stroke-width:1}
+.map text{font-family:var(--body);font-size:14px;fill:var(--fg);pointer-events:none;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.map .cap{fill:var(--muted);font-size:12px;font-weight:400}
+.map .cand{fill:none;stroke:var(--ochre);stroke-width:2;stroke-dasharray:4 3}
+.map .lead{stroke:var(--muted);stroke-width:1;opacity:.7}
+.mapbox{position:relative;margin-top:14px;border:1.5px solid var(--rule2);border-radius:12px;overflow:hidden;background:var(--surface)}
+.mapbox svg{display:block;width:100%;height:min(76vh,820px);touch-action:pan-y pinch-zoom;cursor:grab}
+.mapbox .zoomgrp{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;gap:6px}
+.mapbox .zoomgrp button{width:46px;height:46px;border-radius:10px;border:1.5px solid var(--rule);background:var(--surface);font-size:1.3rem;font-weight:700;cursor:pointer}
+/* lightbox & tour */
+dialog{border:0;border-radius:14px;padding:0;max-width:min(96vw,1400px);width:96vw;background:#17120F;color:#F3E9DC;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 dialog::backdrop{background:rgba(20,14,10,.9)}
 .lb{display:grid;grid-template-rows:auto 1fr auto;height:92vh}
 .lb .top{display:flex;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid #4a3c33}
@@ -151,130 +269,78 @@ dialog::backdrop{background:rgba(20,14,10,.9)}
 .lb .cap{padding:12px 16px;border-top:1px solid #4a3c33;font-size:.95rem;max-height:30vh;overflow:auto}
 .lb .cap .s{font-family:var(--mono);font-size:.78rem;color:#B9A997;margin-top:6px}
 .lb .nav{display:flex;gap:8px}
-/* timeline & map */
-.tl{list-style:none;margin:16px 0 0;padding:0;border-left:3px solid var(--rule2)}
-.tl li{position:relative;padding:0 0 16px 24px}
-.tl li::before{content:"";position:absolute;left:-8px;top:8px;width:13px;height:13px;border-radius:50%;background:var(--brick)}
-.tl li.ctx::before{background:var(--rule)}
-.tl .y{font-family:var(--mono);font-size:.82rem;color:var(--muted);display:block}
-.tl li.ctx{color:var(--muted)}
-.map svg{width:100%;height:auto;max-width:100%;display:block;margin-top:14px}
-.map .land{fill:color-mix(in srgb,var(--vistula) 10%,var(--surface));stroke:var(--vistula);stroke-width:1}
-.map .pt{cursor:pointer}
-.map text{font-family:var(--body);font-size:14px;fill:var(--fg);pointer-events:none;paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
-.mapbox{position:relative;margin-top:14px;border:1.5px solid var(--rule2);border-radius:10px;overflow:hidden;background:var(--surface)}
-.mapbox svg{display:block;width:100%;height:min(78vh,820px);touch-action:pan-y pinch-zoom;cursor:grab}
-.mapbox .zoomgrp{right:10px;bottom:10px}
-.map .cap{fill:var(--muted);font-size:12px;font-weight:400}
-.map .cand{fill:none;stroke:var(--ochre);stroke-width:2;stroke-dasharray:4 3}
-.map .lead{stroke:var(--muted);stroke-width:1;opacity:.7}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px}
-.stats div{border-left:3px solid var(--brick);padding:4px 0 4px 12px}
-.stats b{display:block;font-family:var(--display);font-weight:700;font-size:2rem;line-height:1;font-variant-numeric:tabular-nums}
-.stats span{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.todo{border:1.5px solid var(--rule2);border-radius:10px;padding:14px 16px;background:var(--surface2);margin-top:10px}
-.todo b{font-family:var(--display);font-size:1.15rem}
-.note{font-size:.88rem;color:var(--muted)}
-.tour{position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom,0px));width:min(92vw,720px);background:#1B1512;color:#F3E9DC;border-radius:14px;padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.4);z-index:20;display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center}
+.tour{position:fixed;left:50%;transform:translateX(-50%);bottom:max(18px,env(safe-area-inset-bottom,0px));width:min(92vw,720px);background:#17120F;color:#F3E9DC;border-radius:16px;padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.4);z-index:50;display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center}
 .tour p{margin:0;font-size:1.05rem;line-height:1.4}
 .tour .k{font-family:var(--mono);font-size:.75rem;color:#E8A64A;letter-spacing:.08em}
 .tour .nav{display:flex;gap:6px}
-.tour button{min-width:48px;min-height:48px;border-radius:9px;border:1.5px solid #6b5a4e;background:#2A211C;color:#F3E9DC;font-weight:700;cursor:pointer}
-
-/* ===== layout v4: left rail, full-width chart, overlay drawer ===== */
-.shell{display:grid;grid-template-columns:272px minmax(0,1fr);min-height:100vh}
-.side{position:sticky;top:0;height:100vh;overflow:auto;background:var(--surface);border-right:1.5px solid var(--rule2);display:flex;flex-direction:column;gap:14px;padding:16px 14px max(16px,env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px))}
-.brand .bt{font-family:var(--display);font-weight:700;font-size:1.55rem;line-height:1.05;letter-spacing:-.01em}
-.brand .bt .amp{font-style:italic;font-weight:500;color:var(--brick)}
-.brand .bs{font-size:.78rem;color:var(--muted);margin-top:4px}
-.side nav{display:flex;flex-direction:column;gap:6px;padding:0}
-.side nav button{text-align:left;width:100%;min-height:46px;padding:8px 14px;border-radius:9px;border:1.5px solid transparent;background:transparent;color:var(--fg);font-weight:700;font-size:1rem;cursor:pointer}
-.side nav button:hover{background:var(--surface2)}
-.side nav button[aria-pressed="true"]{background:var(--brick);color:#fff}
-.ctrls{display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1.5px solid var(--rule2)}
-.ctl-h{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px}
-.seg.full{display:flex;width:100%}.seg.full button{flex:1}
-.ctrls select{width:100%;min-height:46px;padding:6px 10px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font:inherit}
-.ctrls .step{width:100%;justify-content:space-between}
-.ctrls button.wide{width:100%;min-height:46px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-weight:700;cursor:pointer}
-.ctrls button.wide.pri{background:var(--brick);border-color:var(--brick);color:#fff}
-.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:10px;border-top:1.5px solid var(--rule2)}
-.main{min-width:0}
-.treeview{position:relative;height:100vh}
-.chart{position:relative;height:100%;min-height:0;border:0;border-radius:0;background:var(--surface)}
-.chart svg{height:100%}
-.zoomgrp{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:6px;margin:0;z-index:4}
-.zoomgrp button{width:48px;height:48px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-size:1.3rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.12)}
-.bar{display:none}
-.legend{left:12px;right:auto;bottom:max(12px,env(safe-area-inset-bottom,0px));max-width:min(70%,560px)}
-.crumb{left:12px;bottom:auto;top:12px;font-size:.95rem;font-weight:700;color:var(--fg);background:color-mix(in srgb,var(--surface) 88%,transparent);padding:6px 10px;border-radius:8px;max-width:60%}
-.banner{top:52px;left:12px;right:auto;max-width:min(90%,620px)}
-.drawer{position:absolute;top:0;right:0;bottom:0;width:min(440px,100%);max-height:none;border:0;border-left:1.5px solid var(--rule2);border-radius:0;transform:translateX(102%);transition:transform .3s ease;z-index:6;box-shadow:-8px 0 30px rgba(0,0,0,.15);padding:22px 22px 60px}
-.treeview.open .drawer{transform:none}
-.drawerx{position:absolute;top:10px;right:max(10px,env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-size:1.1rem;font-weight:700;cursor:pointer;z-index:7;display:none}
-.treeview.open .drawerx{display:block}
-.pad{padding:18px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px))}
-.menubtn{display:none;position:fixed;top:max(10px,env(safe-area-inset-top,0px));left:max(10px,env(safe-area-inset-left,0px));z-index:40;min-height:46px;padding:8px 14px;border-radius:9px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font-weight:700;font-size:1rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-.backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:29}
+.tour button{min-width:48px;min-height:48px;border-radius:10px;border:1.5px solid #6b5a4e;background:#2A211C;color:#F3E9DC;font-weight:700;cursor:pointer}
+/* phone */
+.tabbar{display:none;position:fixed;left:0;right:0;bottom:0;height:calc(var(--tab) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);background:var(--surface);border-top:1px solid var(--rule2);z-index:30}
+.tabbar button{flex:1;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.68rem;font-weight:700;cursor:pointer;color:var(--muted)}
+.tabbar button[aria-current="true"]{color:var(--brick)}
+.sheet{position:fixed;left:0;right:0;bottom:calc(var(--tab) + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1.5px solid var(--rule2);border-radius:18px 18px 0 0;padding:16px max(16px,env(safe-area-inset-left,0px)) 20px;z-index:29;box-shadow:0 -10px 30px rgba(0,0,0,.2);display:flex;flex-direction:column;gap:6px}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:28}
 @media (max-width:900px){
-  .shell{grid-template-columns:1fr}
-  .side{position:fixed;left:0;top:0;bottom:0;width:min(86vw,330px);transform:translateX(-102%);transition:transform .28s ease;z-index:30;box-shadow:8px 0 30px rgba(0,0,0,.25)}
-  .side.open{transform:none}.backdrop.open{display:block}
-  .menubtn{display:block}
-  .treeview{height:100vh}
-  .crumb{top:64px;left:12px;max-width:calc(100% - 24px)}
-  .banner{top:118px;right:12px;max-width:none}
-  .legend{display:none}
-  .drawer{top:auto;left:0;right:0;width:100%;max-height:62vh;border-left:0;border-top:1.5px solid var(--rule2);border-radius:16px 16px 0 0;transform:translateY(103%);padding:18px 16px 40px}
-  .drawerx{top:auto;bottom:calc(62vh - 22px);right:12px}
-  .pad{padding-top:70px}
+  .app{grid-template-columns:1fr}
+  .rail{display:none}
+  .tabbar{display:flex}
+  .tree{height:calc(100vh - var(--tab) - env(safe-area-inset-bottom,0px))}
+  .page{padding-bottom:calc(var(--tab) + 40px)}
+  .tbar{padding:8px 10px;gap:6px}
+  .who,.tsp{display:none}
+  #modes{order:1;flex:1 1 100%;display:flex}#modes button{flex:1;padding:6px 4px;font-size:.82rem}
+  .step{order:2}.step .lbl{display:none}
+  #gAll{order:3;padding:6px 10px}
+  .search{order:4;flex:1 1 120px;min-width:110px;max-width:none}
+  .drawer{top:auto;left:0;right:0;width:100%;height:70%;border-left:0;border-top:1.5px solid var(--rule2);border-radius:18px 18px 0 0;transform:translateY(104%);padding:14px 16px 30px}
+  .legendw{display:none}
+  .zoom{flex-direction:row;right:10px;bottom:10px;gap:4px;background:color-mix(in srgb,var(--surface) 92%,transparent);padding:4px;border-radius:12px;border:1px solid var(--rule2)}
+  .zoom button{width:40px;height:40px;font-size:1.15rem;box-shadow:none}
+  .zoom .pct{display:none}
+  .tour{bottom:calc(var(--tab) + 12px)}
 }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
 </head>
 <body>
-<div class="shell">
-<button id="menuBtn" class="menubtn" aria-label="Menu">☰ <span data-i="menu"></span></button>
-<aside class="side" id="side">
-  <div class="brand"><div class="bt">Kowalczyk <span class="amp">&amp;</span> Prełowski</div><div class="bs" data-i="tagline"></div></div>
-  <nav id="nav" aria-label="Views"></nav>
-  <div class="ctrls" id="chartControls">
-    <div class="ctl-h" data-i="c_view"></div>
-    <div class="seg full"><button id="mode-tree" aria-pressed="true" data-i="m_tree"></button><button id="mode-fan" aria-pressed="false" data-i="m_fan"></button></div>
-    <div class="ctl-h" data-i="c_person"></div>
-    <select id="start" aria-label="Start from"></select>
-    <div class="ctl-h" data-i="c_gens"></div>
-    <div class="step" id="stepUp"><span class="lbl" data-i="anc"></span><button id="upMinus" aria-label="fewer ancestor generations">−</button><b id="upN">3</b><button id="up" aria-label="more ancestor generations">+</button></div>
-    <div class="step" id="stepDown"><span class="lbl" data-i="desc"></span><button id="downMinus" aria-label="fewer descendant generations">−</button><b id="downN">1</b><button id="down" aria-label="more descendant generations">+</button></div>
-    <button id="maxBtn" class="wide" data-i="max"></button>
-    <button id="tourBtn" class="wide pri" data-i="tour"></button>
-  </div>
-  <div class="side-foot">
+<div class="app">
+<aside class="rail" id="rail">
+  <div class="brand" id="brand"><div class="bt">Kowalczyk <em>&amp;</em><br>Prełowski</div><div class="bs" data-i="tagline"></div></div>
+  <nav id="railnav" aria-label="Views"></nav>
+  <div class="foot">
     <div class="seg full" role="group" aria-label="Language"><button id="lang-pl">Polski</button><button id="lang-en">English</button></div>
-    <div class="seg full" role="group" aria-label="Text size"><button data-fs="18">A</button><button data-fs="21">A+</button><button data-fs="24">A++</button></div>
+    <div class="seg full" role="group" aria-label="Text size"><button data-fs="18">A</button><button data-fs="20">A+</button><button data-fs="22">A++</button></div>
   </div>
 </aside>
-<div class="backdrop" id="backdrop"></div>
-<main class="main">
-  <div id="v-tree" class="treeview">
-    <div class="chart">
-      <svg id="svg" role="img" aria-label="Family chart"></svg>
-      <div class="zoomgrp"><button id="zin" aria-label="Zoom in">+</button><button id="zout" aria-label="Zoom out">−</button><button id="fit" aria-label="Fit">⤢</button></div>
-      <div class="crumb" id="crumb"></div>
-      <div class="legend" id="legend"></div>
+<main class="stage">
+  <section id="v-start" class="view page"></section>
+  <section id="v-tree" class="view tree" hidden>
+    <div class="tbar">
+      <div class="who" id="who"></div>
+      <div class="seg" role="group" aria-label="Chart" id="modes"></div>
+      <div class="step"><span class="lbl" data-i="gens_lbl"></span><button id="gMinus" aria-label="−">−</button><b id="gN">2</b><button id="gPlus" aria-label="+">+</button></div>
+      <button class="btn" id="gAll" data-i="all"></button>
+      <div class="tsp"></div>
+      <div class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" type="search" autocomplete="off" data-ph="search_ph"><div class="results" id="res" hidden></div></div>
     </div>
-    <aside id="drawer" class="drawer"></aside>
-    <button id="drawerX" class="drawerx" aria-label="Close">✕</button>
-  </div>
-  <div class="pad">
-    <div id="v-stories" class="panel" hidden></div>
-    <div id="v-docs" class="panel" hidden></div>
-    <div id="v-map" class="panel map" hidden></div>
-    <div id="v-time" class="panel" hidden></div>
-    <div id="v-about" class="panel" hidden></div>
-  </div>
+    <div class="banner" id="banner" hidden></div>
+    <div class="scroller" id="scroller"><div class="sizer" id="sizer"><div class="canvas" id="canvas"><svg id="edges"></svg><div id="cards"></div></div></div></div>
+    <div class="hintc" id="hintc" hidden></div>
+    <div class="zoom"><button id="zin" aria-label="Zoom in">+</button><span class="pct" id="zpct">100%</span><button id="zout" aria-label="Zoom out">−</button><button id="zfit" aria-label="Fit"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button></div>
+    <div class="legendw" id="legendw"></div>
+    <aside class="drawer" id="drawer" aria-label="Person"></aside>
+  </section>
+  <section id="v-stories" class="view page panel" hidden></section>
+  <section id="v-docs" class="view page panel" hidden></section>
+  <section id="v-map" class="view page panel map" hidden></section>
+  <section id="v-time" class="view page panel" hidden></section>
+  <section id="v-about" class="view page panel" hidden></section>
 </main>
+<nav class="tabbar" id="tabbar" aria-label="Views"></nav>
 </div>
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet" hidden></div>
 
 <dialog id="lb"><div class="lb">
   <div class="top"><h4 id="lbT"></h4><div class="nav"><button id="lbPrev" aria-label="Previous">‹</button><button id="lbNext" aria-label="Next">›</button></div><button id="lbZi" aria-label="Zoom in">+</button><button id="lbZo" aria-label="Zoom out">−</button><button id="lbX" aria-label="Close">✕</button></div>
@@ -736,10 +802,6 @@ const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").rep
 const initials=p=>(p.g||"?").replace(/[()?]/g,"").trim().split(/\s+/)[0].slice(0,1)+((p.m||p.s||"").slice(0,1));
 const fullname=p=>p.m?`${p.g} ${p.s} (${t("nee")} ${p.m})`:`${p.g} ${p.s}`;
 const sibsOf=id=>{ const p=P[id]; if(!p||(!p.f&&!p.mo)) return []; return PEOPLE.filter(q=>q.id!==id&&((p.f&&q.f===p.f)||(p.mo&&q.mo===p.mo))).map(q=>q.id); };
-// ================= STATE =================
-let main="helena", home="greg", mode="tree", view="tree", upDepth=3, downDepth=1, lastMain=null;
-function setHash(){ try{ history.replaceState(null,"",`#${view==="tree"?"p-"+main+"-"+mode:view}`);}catch(e){} }
-function readHash(){ const h=(location.hash||"").slice(1); if(!h) return; if(h.startsWith("p-")){ const [,id,m]=h.split("-"); if(P[id]) main=id; if(m==="fan"||m==="tree") mode=m; view="tree"; } else if(["stories","docs","map","time","about"].includes(h)) view=h; }
 // ================= KINSHIP =================
 function ancMap(id){ const m={}; const q=[[id,0]]; while(q.length){ const [x,d]=q.shift(); if(m[x]!==undefined&&m[x]<=d) continue; m[x]=d; const p=P[x]; if(p.f) q.push([p.f,d+1]); if(p.mo) q.push([p.mo,d+1]); } return m; }
 const PLN=(n,f)=>n; 
@@ -758,137 +820,7 @@ function kinship(a,b,viaM){ if(a===b) return null; if((P[a].sp||[]).includes(b))
   if(up===1) return pl?(down===2?(sx==="M"?"bratanek / siostrzeniec":"bratanica / siostrzenica"):(sx==="M"?"wnuk rodzeństwa":"wnuczka rodzeństwa")):(down===2?(sx==="M"?"nephew":"niece"):(sx==="M"?"grand-nephew":"grand-niece"));
   const deg=Math.min(up,down)-1, rem=Math.abs(up-down);
   return pl?`${sx==="M"?"kuzyn":"kuzynka"} ${deg}. stopnia${rem?` (${rem} pok. różnicy)`:""}`:`${["","first","second","third","fourth","fifth"][deg]||deg+"th"} cousin${rem?" "+rem+"× removed":""}`; }
-// ================= UI BUILD =================
-const VIEWS=["tree","stories","docs","map","time","about"];
-function buildNav(){ const n=document.getElementById("nav"); n.innerHTML=""; VIEWS.forEach(v=>{ const b=document.createElement("button"); b.textContent=t("v_"+v); b.setAttribute("aria-pressed",view===v?"true":"false"); b.onclick=()=>{ view=v; render(); }; n.appendChild(b); }); }
-function closeSide(){ document.getElementById("side").classList.remove("open"); document.getElementById("backdrop").classList.remove("open"); }
-document.getElementById("menuBtn").onclick=()=>{ document.getElementById("side").classList.toggle("open"); document.getElementById("backdrop").classList.toggle("open"); };
-document.getElementById("backdrop").onclick=closeSide;
-document.getElementById("drawerX").onclick=()=>document.getElementById("v-tree").classList.remove("open");
-function render(){ document.querySelectorAll("[data-i]").forEach(el=>el.textContent=t(el.dataset.i)); document.getElementById("chartControls").hidden=(view!=="tree"); if(window.innerWidth<=900) closeSide(); document.getElementById("lang-pl").setAttribute("aria-pressed",L==="pl"?"true":"false"); document.getElementById("lang-en").setAttribute("aria-pressed",L==="en"?"true":"false"); document.documentElement.lang=L;
-  buildNav(); VIEWS.forEach(v=>document.getElementById("v-"+v).hidden=(view!==v));
-  if(view==="tree"){ buildStart(); drawChart(); drawDrawer(); if(!render.userActed) document.getElementById("v-tree").classList.remove("open"); } if(view==="stories") drawStories(); if(view==="docs") drawDocs(); if(view==="map") drawMap(); if(view==="time") drawTime(); if(view==="about") drawAbout(); setHash(); }
-function setMain(id,opts={}){ if(!P[id]) return; render.userActed=true; lastMain=main; main=id; if(view!=="tree") view="tree"; if(opts.mode) mode=opts.mode; render(); }
-function buildStart(){ const s=document.getElementById("start"); const direct=[["alex","Alexander"],["patricia","Patricia"],["greg","Grzegorz"],["barbara","Barbara"],["henryk","Henryk Kowalczyk"],["teresa","Teresa Dramińska"],["stefan","Stefan Prełowski"],["helena","Helena Zakierska"],["waclaw_k","Wacław Kowalczyk 1899"],["antoni_k","Antoni Kowalczyk ~1819"],["andrzej_k","Andrzej Kowalczyk (18th c.)"],["antoni_dram","Antoni Dramiński 1897"],["jakub_dram","Jakub Dramiński (m. 1857)"],["julian_z1909","Julian Zakierski 1909"],["waclaw_z","Wacław Zakierski (Steklin)"],["marian_zd1","Marian Zakierski ~1857"],["mikolaj_z","Mikołaj Zakierski ~1818"],["leonard_hinc","Leonard Hinc ~1847"],["marcin_hinc1","Marcin Hinc ~1775"]].filter(o=>P[o[0]]);
-  const related=[["bronislaw_k","Kowalczyk: Bronisław 1889 (cousins)"],["julian_d1866","Dramiński: Julian 1866 (Gralewo)"],["kajetan_d1773","Dramiński: Kajetan 1773 (Gralewo)"],["wladyslaw_dion","Dramiński: Władysław (Ciechanów)"],["stefan_p1910","Prełowski: Stefan 1910 (Chełmno)"],["stanislaw_p1900","Prełowski: Stanisław 1900 (Szczecin)"],["stanislaus_p","Prełowski: Stanisław (Dobrcz)"],["adam_pr1891","Prelewski: Adam 1891 (Czernikowo)"],["jozefat_z1854","Zakierski: Józefat (Dobrzejewice)"],["jan_z1841","Zakierski: Jan ~1841 (Steklinek)"],["gabryel_z","Zakierski: Gabryel ~1739"]].filter(o=>P[o[0]]);
-  const cur=(direct.some(o=>o[0]===main)||related.some(o=>o[0]===main))?"":`<option value="${main}" selected>${esc(P[main].g.split(" ")[0]+" "+(P[main].m||P[main].s))}</option>`;
-  s.innerHTML=cur+`<optgroup label="${t("direct")}">`+direct.map(([id,n])=>`<option value="${id}" ${id===main?"selected":""}>${esc(n)}</option>`).join("")+`</optgroup><optgroup label="${t("related")}">`+related.map(([id,n])=>`<option value="${id}" ${id===main?"selected":""}>${esc(n)}</option>`).join("")+"</optgroup>"; s.onchange=()=>setMain(s.value); }
-document.getElementById("mode-tree").onclick=()=>{mode="tree";render();}; document.getElementById("mode-fan").onclick=()=>{mode="fan";render();};
-document.getElementById("up").onclick=()=>{ upDepth=Math.min(upDepth+1,8); render(); }; document.getElementById("down").onclick=()=>{ downDepth=Math.min(downDepth+1,4); render(); };
-document.getElementById("upMinus").onclick=()=>{ upDepth=Math.max(upDepth-1,1); render(); }; document.getElementById("downMinus").onclick=()=>{ downDepth=Math.max(downDepth-1,0); render(); };
-document.getElementById("fit").onclick=()=>fit&&fit(); document.getElementById("zin").onclick=()=>zoomBy&&zoomBy(1.35); document.getElementById("zout").onclick=()=>zoomBy&&zoomBy(1/1.35);
-document.getElementById("maxBtn").onclick=()=>{ upDepth=8; downDepth=3; render(); };
-// ================= HOURGLASS =================
-const CW=(window.innerWidth<700)?190:230, CH=74, GX=(window.innerWidth<700)?14:26, GY=56;
-let fit=null, zoomBeh=null, zoomBy=null, chartK=null, firstDraw=true;
 function wheelHandler(svg,zb){ return e=>{ e.preventDefault(); if(e.ctrlKey||e.metaKey){ const f=Math.exp(-e.deltaY*0.01); const r=svg.node().getBoundingClientRect(); svg.call(zb.scaleBy,f,[e.clientX-r.left,e.clientY-r.top]); } else { const t=d3.zoomTransform(svg.node()); svg.call(zb.translateBy,-e.deltaX/t.k,-e.deltaY/t.k); } }; }
-function ancTree(id,depth){ const p=P[id]; const n={id,depth,children:[]}; if(depth<upDepth){ const f=p.f?ancTree(p.f,depth+1):{id:null,role:"f",pid:id,depth:depth+1,children:[]}; const m=p.mo?ancTree(p.mo,depth+1):{id:null,role:"m",pid:id,depth:depth+1,children:[]}; if(p.f||p.mo||depth===0) n.children=[f,m]; } return n; }
-function descTree(id,depth){ const n={id,depth,children:[]}; if(depth<downDepth){ (kids[id]||[]).sort((a,b)=>(yr(P[a].b)||0)-(yr(P[b].b)||0)).forEach(c=>n.children.push(descTree(c,depth+1))); } return n; }
-function drawChart(){
-  document.getElementById("mode-tree").setAttribute("aria-pressed",mode==="tree"?"true":"false"); document.getElementById("mode-fan").setAttribute("aria-pressed",mode==="fan"?"true":"false");
-  document.getElementById("stepUp").hidden=false; document.getElementById("stepDown").hidden=mode!=="tree"; document.getElementById("upN").textContent=upDepth; document.getElementById("downN").textContent=downDepth;
-  const svg=d3.select("#svg"); svg.selectAll("*").remove();
-  const W=svg.node().clientWidth||1000, H=svg.node().clientHeight||700; svg.attr("viewBox",`0 0 ${W} ${H}`);
-  const g=svg.append("g"); const gl=svg.append("g").attr("class","glabels").style("pointer-events","none");
-  zoomBeh=d3.zoom().scaleExtent([.25,3]).filter(e=>{ if(e.type==="wheel") return false; if(e.type.startsWith("touch")) return e.touches&&e.touches.length>1; return !e.ctrlKey&&!e.button; }).on("zoom",e=>{ chartK=e.transform.k; g.attr("transform",e.transform); gl.attr("transform",`translate(10,${e.transform.y+(window.innerWidth<=900?52:0)}) scale(${e.transform.k})`); }); svg.call(zoomBeh).on("dblclick.zoom",null);
-  svg.on("wheel",wheelHandler(svg,zoomBeh),{passive:false});
-  zoomBy=f=>svg.transition().duration(200).call(zoomBeh.scaleBy,f);
-  if(mode==="fan") return drawFan(svg,g,W,H);
-  // ancestors (above) and descendants (below)
-  const A=d3.hierarchy(ancTree(main,0)); const D=d3.hierarchy(descTree(main,0));
-  d3.tree().nodeSize([CW+GX,CH+GY])(A); d3.tree().nodeSize([CW+GX,CH+GY])(D);
-  const nodes=[]; const links=[];
-  A.descendants().forEach(n=>{ nodes.push({d:n,x:n.x,y:-n.y}); if(n.parent) links.push({a:n.parent,b:n,up:true}); });
-  D.descendants().forEach(n=>{ if(n.depth===0) return; nodes.push({d:n,x:n.x,y:n.y}); links.push({a:n.parent,b:n,up:false}); });
-  // spouse of main beside
-  const mp=P[main]; const spId=(mp.sp||[])[0]; let spNode=null; if(spId){ spNode={x:CW+GX,y:0,id:spId}; }
-  // generation labels
-  const glabs=[]; for(let d=1;d<=upDepth;d++) glabs.push({y:-d*(CH+GY),k:["","g_parents","g_grand","g_great","g_2","g_3","g_4","g_5","g_6"][d]||"g_6"}); for(let d=1;d<=downDepth;d++) glabs.push({y:d*(CH+GY),k:d===1?"g_children":"g_gc"});
-  const minX=Math.min(...nodes.map(n=>n.x))-CW/2-20, maxX=Math.max(...nodes.map(n=>n.x),spNode?spNode.x:0)+CW/2+20;
-  gl.selectAll(".gen").data(glabs).join("text").attr("class","gen").attr("x",0).attr("y",d=>d.y-CH/2-10).text(d=>t(d.k).toUpperCase());
-  const pathY=(a,b,up)=>{ const x1=a.x, y1=up?-a.y-CH/2:a.y+CH/2, x2=b.x, y2=up?-b.y+CH/2:b.y-CH/2; const my=(y1+y2)/2; return `M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}`; };
-  g.selectAll(".link").data(links).join("path").attr("class",l=>{ const cid=l.up?l.a.data.id:l.b.data.id; const pid=l.up?l.b.data.id:l.a.data.id; const lk=cid&&P[cid]?P[cid].lk:null; const direct=cid&&pid&&DIRECT.has(cid)&&DIRECT.has(pid); return "link"+(lk==="possible"?" pos":lk==="probable"?" prob":"")+(direct?" direct":""); }).attr("d",l=>pathY(l.a,l.b,l.up));
-  if(spNode){ g.append("path").attr("class","mar").attr("d",`M${CW/2},0 L${spNode.x-CW/2},0`); g.append("circle").attr("cx",(CW/2+spNode.x-CW/2)/2).attr("cy",0).attr("r",5).attr("fill","var(--surface)").attr("stroke","var(--brick)").attr("stroke-width",2); }
-  const all=nodes.map(n=>({x:n.x,y:n.y,id:n.d.data.id,gap:!n.d.data.id,role:n.d.data.role,pid:n.d.data.pid})); if(spNode) all.push({x:spNode.x,y:0,id:spNode.id,sp:true});
-  const node=g.selectAll(".node").data(all).join("g").attr("class",n=>"node"+(n.gap?" gap":"")+(n.id===main?" main":"")).attr("transform",n=>`translate(${n.x-CW/2},${n.y-CH/2})`).attr("tabindex",0).attr("role","button")
-    .on("click",(e,n)=>{ if(n.gap){ drawDrawer({gap:n}); return; } if(n.id===main) drawDrawer(); else setMain(n.id); }).on("keydown",(e,n)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); if(!n.gap) setMain(n.id); } });
-  node.append("rect").attr("class","card").attr("width",CW).attr("height",CH).attr("rx",10);
-  node.filter(n=>!n.gap).append("rect").attr("x",0).attr("y",0).attr("width",6).attr("height",CH).attr("rx",3).attr("fill",n=>STC[P[n.id].st]);
-  node.append("circle").attr("cx",34).attr("cy",CH/2).attr("r",20).attr("fill",n=>n.gap?"var(--bg)":LINEC[lineOf(P[n.id])]).attr("stroke",n=>n.gap?"var(--rule)":"none").attr("stroke-dasharray",n=>n.gap?"3 2":"0");
-  node.append("text").attr("class","ini").attr("x",34).attr("y",CH/2+6).attr("text-anchor","middle").text(n=>n.gap?"?":initials(P[n.id]));
-  node.append("text").attr("class","nm").attr("x",64).attr("y",24).text(n=>n.gap?t(n.role==="f"?"father":"mother"):clip(P[n.id].g,18));
-  node.append("text").attr("class","ln").attr("x",64).attr("y",46).text(n=>n.gap?t("unknown_parent"):clip(P[n.id].m?P[n.id].m:P[n.id].s,16));
-  node.append("text").attr("class","dt").attr("x",64).attr("y",64).text(n=>n.gap?"":dates(P[n.id]));
-  node.filter(n=>!n.gap&&DIRECT.has(n.id)).append("text").attr("class","badge").attr("x",CW-8).attr("y",CH-8).attr("text-anchor","end").text("★ "+t("directbadge").toUpperCase());
-  showBanner();
-  const dxOpen=()=>(window.innerWidth>900&&document.getElementById("v-tree").classList.contains("open"))?-200:0;
-  const fitK=()=>{ const b=g.node().getBBox(); const kmin=W<700?Math.min(1,(W-24)/(CW*2+GX)):0.72; return Math.max(Math.min(W/(b.width+60),H/(b.height+60),1.15),kmin); };
-  fit=()=>{ const k=fitK(); chartK=k; svg.transition().duration(400).call(zoomBeh.transform,d3.zoomIdentity.translate(W/2+dxOpen(),H/2).scale(k)); };
-  { const k=chartK||fitK(); chartK=k; const tr=d3.zoomIdentity.translate(W/2+dxOpen(),H/2).scale(k); if(firstDraw){ svg.call(zoomBeh.transform,tr); firstDraw=false; } else { svg.transition().duration(350).call(zoomBeh.transform,tr); } }
-  document.getElementById("crumb").textContent=(lastMain&&P[lastMain]?`${P[lastMain].g} ${P[lastMain].s} › `:"")+fullname(P[main]);
-  document.getElementById("legend").innerHTML=Object.entries(STC).filter(([k])=>k!=="unknown").map(([k,c])=>`<span><i style="background:${c}"></i>${t("st_"+k)}</span>`).join("")+`<span><i style="background:transparent;border:2px dashed var(--rule);width:10px;height:10px"></i>${L==="pl"?"linia przerywana: powiązanie możliwe":"dashed: possible link"}</span>`;
-}
-function showBanner(){ let b=document.getElementById("banner"); if(!b){ b=document.createElement("div"); b.id="banner"; b.className="banner"; document.querySelector(".chart").appendChild(b); } if(DIRECT.has(main)){ b.hidden=true; } else { const p=P[main]; b.hidden=false; b.innerHTML=`<b>${t("notconn_h")}</b> · ${t("ln_"+lineOf(p))}. ${t("notconn_p")}`; } }
-function clip(s,n){ s=s||""; return s.length>n?s.slice(0,n-1)+"…":s; }
-function dates(p){ const b=yr(p.b), d=yr(p.d); const bp=p.bp?p.bp.split(",")[0].split(";")[0].replace(/\s*\(.*\)/,""):""; return [b?("* "+b+(d?" – † "+d:"")):(d?"† "+d:""), bp].filter(Boolean).join(" · "); }
-// ================= FAN =================
-function drawFan(svg,g,W,H){
-  const deepest=(id,d)=>{ const p=P[id]; let m=d; if(p.f) m=Math.max(m,deepest(p.f,d+1)); if(p.mo) m=Math.max(m,deepest(p.mo,d+1)); return m; }; const GENS=Math.min(7,Math.max(3,deepest(main,0)));
-  function anc(id,depth){ const p=id?P[id]:null; const n={id,depth,children:[]}; if(depth<GENS){ n.children=[anc(p&&p.f?p.f:null,depth+1),anc(p&&p.mo?p.mo:null,depth+1)]; n.children.forEach(c=>c.value=1); } else n.value=1; return n; }
-  const root=d3.hierarchy(anc(main,0)).sum(d=>d.children&&d.children.length?0:1);
-  const R=Math.min(W/2-20,H-60); const ring=[70,80,78,74,70,66,62,58];
-  const rs=[0]; for(let i=0;i<=GENS;i++) rs.push(rs[i]+ring[i]*(R/ (ring.slice(0,GENS+1).reduce((a,b)=>a+b,0))));
-  d3.partition().size([Math.PI,1])(root);
-  const cx=W/2, cy=H-30; g.attr("transform",`translate(${cx},${cy})`); zoomBeh.on("zoom",e=>{ chartK=e.transform.k; g.attr("transform",`translate(${cx+e.transform.x},${cy+e.transform.y}) scale(${e.transform.k})`); });
-  const arc=d3.arc().startAngle(d=>d.x0-Math.PI/2).endAngle(d=>d.x1-Math.PI/2).innerRadius(d=>rs[d.depth]).outerRadius(d=>rs[d.depth+1]-2);
-  const nodes=root.descendants().filter(d=>d.depth>0);
-  const w=g.selectAll(".wedge").data(nodes).join("path").attr("class",d=>"wedge"+(d.data.id?"":" gap")).attr("d",arc).attr("fill",d=>d.data.id?LINEC[lineOf(P[d.data.id])]:"var(--bg)").attr("opacity",d=>d.data.id?(P[d.data.id].st==="verified"||P[d.data.id].st==="family"?1:P[d.data.id].st==="probable"?.8:.6):1)
-    .on("click",(e,d)=>{ if(d.data.id) setMain(d.data.id,{mode:"fan"}); });
-  w.append("title").text(d=>d.data.id?fullname(P[d.data.id])+" · "+t("st_"+P[d.data.id].st):t("gap_note"));
-  // labels
-  g.selectAll(".wl").data(nodes.filter(d=>d.data.id)).join("text").attr("class",d=>"wl"+(d.depth>3?" sm":"")).attr("transform",d=>{ const th=((d.x0+d.x1)/2)*180/Math.PI-180; const r=(rs[d.depth]+rs[d.depth+1])/2; return `rotate(${th}) translate(${r},0) rotate(${th<-90?180:0})`; }).attr("text-anchor","middle").attr("dy",d=>d.depth<=2?"-.2em":".35em")
-    .text(d=>{ const p=P[d.data.id]; const ringW=rs[d.depth+1]-rs[d.depth]; const arcLen=(d.x1-d.x0)*(rs[d.depth]+rs[d.depth+1])/2; const s=d.depth<=2?p.g.split(" ")[0]+" "+(p.m||p.s):(p.m||p.s); const maxC=Math.floor(ringW/7.5); if(arcLen<18) return ""; return s.length>maxC?s.slice(0,Math.max(3,maxC-1))+"…":s; });
-  g.selectAll(".wld").data(nodes.filter(d=>d.data.id&&d.depth<=2)).join("text").attr("class","wld").attr("transform",d=>{ const th=((d.x0+d.x1)/2)*180/Math.PI-180; const r=(rs[d.depth]+rs[d.depth+1])/2; return `rotate(${th}) translate(${r},0) rotate(${th<-90?180:0})`; }).attr("text-anchor","middle").attr("dy","1.1em").text(d=>{ const p=P[d.data.id]; const b=yr(p.b),dd=yr(p.d); return b?b+(dd?"–"+dd:""):""; });
-  // centre
-  showBanner(); const mp=P[main]; g.append("circle").attr("r",rs[1]-4).attr("fill",LINEC[lineOf(mp)]).attr("stroke","var(--brick)").attr("stroke-width",3).style("cursor","pointer").on("click",()=>drawDrawer());
-  g.append("text").attr("class","ini").attr("y",-6).attr("text-anchor","middle").attr("font-size",28).attr("fill","#fff").attr("font-family","var(--display)").attr("font-weight",700).text(initials(mp));
-  g.append("text").attr("y",16).attr("text-anchor","middle").attr("fill","#fff").attr("font-size",13).attr("font-family","var(--body)").text(mp.g.split(" ")[0]);
-  // children chips below centre
-  const ch=(kids[main]||[]); if(ch.length){ const cg=g.append("g").attr("transform",`translate(0,${rs[1]+14})`); ch.slice(0,6).forEach((c,i)=>{ const x=(i-(Math.min(ch.length,6)-1)/2)*118; const b=cg.append("g").attr("transform",`translate(${x},0)`).style("cursor","pointer").on("click",()=>setMain(c,{mode:"fan"})); b.append("rect").attr("x",-55).attr("y",-12).attr("width",110).attr("height",24).attr("rx",12).attr("fill","var(--surface2)").attr("stroke","var(--rule)"); b.append("text").attr("text-anchor","middle").attr("y",5).attr("font-size",13).attr("fill","var(--fg)").attr("font-family","var(--body)").text("▼ "+clip(P[c].g.split(" ")[0],12)); }); }
-  fit=()=>{ const k=Math.min(1,(W-20)/(2*R+40)); chartK=k; svg.transition().duration(400).call(zoomBeh.transform,d3.zoomIdentity.translate(0,(H-30)*(1-k)).scale(k)); };
-  { const k=Math.min(1,(W-20)/(2*R+40)); chartK=k; svg.call(zoomBeh.transform,d3.zoomIdentity.translate(0,(H-30)*(1-k)).scale(k)); }
-  document.getElementById("crumb").textContent=fullname(mp)+" · "+GENS+" "+t("gens_n");
-  document.getElementById("legend").innerHTML=Object.entries(LINEC).map(([k,c])=>`<span><i style="background:${c}"></i>${t("ln_"+k)}</span>`).join("")+`<span>${L==="pl"?"jaśniejsze = mniej pewne":"paler = less certain"}</span>`;
-}
-// ================= DRAWER =================
-function drawDrawer(o){
-  const d=document.getElementById("drawer");
-  if(o&&o.gap){ const pp=P[o.gap.pid]; d.innerHTML=`<div class="mono" style="background:var(--surface2);color:var(--muted);border:2px dashed var(--rule)">?</div><h2>${t(o.gap.role==="f"?"father":"mother")}</h2><div class="maiden">${esc(pp.g)} ${esc(pp.s)}</div><div class="tags"><span class="tag" style="background:var(--unknown)">${t("st_unknown")}</span></div><p>${t("gap_note")}</p><p class="note">${L==="pl"?"Która kwerenda to wyjaśni, opisano w zakładce „Źródła i co dalej”.":"Which record request will answer this is listed under 'Sources & next steps'."}</p>`; document.getElementById("v-tree").classList.add("open"); return; }
-  const p=P[main]; const sibs=sibsOf(main); const ch=(kids[main]||[]).slice().sort((a,b)=>(yr(P[a].b)||0)-(yr(P[b].b)||0));
-  const chip=id=>`<button data-go="${id}">${esc(P[id].g.split(" (")[0])} ${esc(P[id].m||P[id].s)}</button>`;
-  const docs=DOCS.filter(x=>(x.people||[]).includes(main)); const ph=(p.ph||[]).map(f=>"scans/"+f);
-  const k=main===home?null:kinship(home,main);
-  d.innerHTML=`<div class="mono" style="background:${LINEC[lineOf(p)]}">${esc(initials(p))}</div>
-  <h2>${esc(p.g)}</h2><div class="maiden">${p.m?esc(p.s)+" · "+t("nee")+" "+esc(p.m):esc(p.s)}</div>
-  ${k?`<p class="kin">${esc(k)} <span style="color:var(--muted);font-style:normal;font-size:.8rem">(${t("rel_home").toLowerCase()} ${esc(P[home].g.split(" ")[0])})</span></p>`:""}
-  ${(()=>{ const path=pathToHome(main); if(path&&path.length>1) return `<div class="note" style="margin-bottom:6px">${t("lineto")}:</div><div class="chips" style="margin-bottom:10px">${path.map((id,i)=>`<button data-go="${id}" ${id===main?'style="border-color:var(--brick);font-weight:700"':""}>${i?"↓ ":""}${esc(P[id].g.split(" ")[0])}</button>`).join("")}</div>`; if(!DIRECT.has(main)) return `<div class="note" style="margin-bottom:10px;border-left:3px solid var(--ochre);padding-left:10px"><b>${t("notconn_h")}.</b> ${t("notconn_p")}</div>`; return ""; })()}
-  <div class="tags"><span class="tag" style="background:${STC[p.st]}">${t("st_"+p.st)}</span>${p.lk&&(p.f||p.mo)?`<span class="tag o">${t("lk")}: ${t("st_"+p.lk).toLowerCase()}</span>`:""}<span class="tag o" style="border-color:${LINEC[lineOf(p)]}">${t("ln_"+lineOf(p))}</span></div>
-  <dl>${p.b?`<dt>${t("born")}</dt><dd>${esc(p.b)}${p.bq?' <span style="color:var(--muted)">(?)</span>':""}</dd>`:""}${p.bp?`<dt>${t("place")}</dt><dd>${esc(p.bp)}${p.bpq?' <span style="color:var(--muted)">(?)</span>':""}</dd>`:""}${p.d?`<dt>${t("died")}</dt><dd>${esc(p.d)}${p.dp?", "+esc(p.dp):""}</dd>`:""}
-  ${(p.sp||[]).length?`<dt>${t("spouse")}</dt><dd class="chips">${p.sp.map(chip).join("")}</dd>`:""}
-  ${(p.f||p.mo)?`<dt>${t("parents")}</dt><dd class="chips">${[p.f,p.mo].filter(Boolean).map(chip).join("")}</dd>`:""}
-  ${sibs.length?`<dt>${t("siblings")}</dt><dd class="chips">${sibs.map(chip).join("")}</dd>`:""}
-  ${ch.length?`<dt>${t("children")}</dt><dd class="chips">${ch.map(chip).join("")}</dd>`:""}</dl>
-  ${p.n?`<p>${tx(p.n)}</p>`:""}
-  ${(docs.length||ph.length)?`<div class="thumbs">${docs.map(x=>`<button data-doc="${x.id}" title="${esc(tx(x.t))}"><img loading="lazy" src="${x.file}" alt=""></button>`).join("")}${ph.filter(f=>!docs.some(x=>x.file===f)).map(f=>`<button data-img="${f}"><img loading="lazy" src="${f}" alt=""></button>`).join("")}</div>`:""}
-  <div class="acts"><button class="pri" data-mode="${mode==="tree"?"fan":"tree"}">${mode==="tree"?t("infan"):t("focus")}</button><button data-home="1">${L==="pl"?"Licz pokrewieństwo od tej osoby":"Count relationships from here"}</button></div>
-  <div class="src">${t("src")}: ${p.st==="family"&&!p.src?t("src_family"):esc(p.src||"")}</div>`;
-  document.getElementById("v-tree").classList.add("open"); d.scrollTop=0;
-  d.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>setMain(b.dataset.go));
-  d.querySelectorAll("[data-doc]").forEach(b=>b.onclick=()=>openLB(DOCS.findIndex(x=>x.id===b.dataset.doc),DOCS));
-  d.querySelectorAll("[data-img]").forEach(b=>b.onclick=()=>openLB(0,[{file:b.dataset.img,t:{en:fullname(p),pl:fullname(p)},d:{en:"",pl:""},src:p.src||""}]));
-  d.querySelector("[data-mode]").onclick=e=>{ mode=e.target.dataset.mode; render(); };
-  d.querySelector("[data-home]").onclick=()=>{ home=main; render(); };
-}
 // ================= LIGHTBOX =================
 let LBlist=[], LBi=0, LBz=1, LBpan={x:0,y:0};
 const lb=document.getElementById("lb");
@@ -1023,7 +955,6 @@ function drawAbout(){ const v=document.getElementById("v-about"); const nv=PEOPL
   <div class="todo"><b>5. ${pl?"Rozmowy":"Conversations"}</b> · ${pl?"Helena: imiona rodziców i dziadków, Steklin czy Szkleniec, kim są Wacław i Irena z Podgórza, Julian (zm. 1994) i Czesław (zm. 2002). Wiesław: czy rodzice Henryka to Bronisław i Aleksandra, rodzeństwo Czesław, Marianna, Janina, Zofia, Honorata. Wojciech Tomasz Prełowski, Chełmno, Rybacka 3.":"Helena: her parents' and grandparents' names, Steklin or Szkleniec, who Wacław and Irena of Podgórz were, Julian (d. 1994) and Czesław (d. 2002). Wiesław: were Henryk's parents Bronisław and Aleksandra, siblings Czesław, Marianna, Janina, Zofia, Honorata. Wojciech Tomasz Prełowski, Chełmno, Rybacka 3."}</div>
   <div class="todo"><b>6. ${pl?"Archiwa do odwiedzenia lub napisania":"Archives to visit or write to"}</b> · ${pl?"Archiwum Diecezjalne w Toruniu (chrzty Chełmno 1900–1912: dzieci NN Prełowskiego i Marty Szczęsnej); Archiwum Diecezjalne w Pelplinie / GenBaza (Dobrcz 1897–1912); AP Toruń O/Włocławek przez genealogiawarchiwach.pl (Czernikowo 1911–1925, Zakierscy i Prelewscy); AP Siedlce (Kałuszyn i Grębków, ślub Antoniego Kowalczyka ok. 1848–56); AP Mława (Gralewo 1772–1813, Raciąż 1839); Arolsen Archives — zapytanie o los Stefana Prełowskiego po kwietniu 1945 r.; IPN — karta źródłowa Czesława Kowalczyka; FamilySearch (bezpłatne konto) — skany Kruszyn, Płonnego, Lembargu dla Zakierskich.":"Toruń Diocesan Archive (Chełmno baptisms 1900–1912: children of NN Prełowski and Marta Szczęsna); Pelplin Diocesan Archive / GenBaza (Dobrcz 1897–1912); State Archive Toruń, Włocławek branch via genealogiawarchiwach.pl (Czernikowo 1911–1925, Zakierski and Prelewski); State Archive Siedlce (Kałuszyn and Grębków, Antoni Kowalczyk's marriage c. 1848–56); State Archive Mława (Gralewo 1772–1813, Raciąż 1839); Arolsen Archives, an inquiry on Stefan Prełowski's fate after April 1945; IPN, the source card for Czesław Kowalczyk; FamilySearch (free account), scans of Kruszyny, Płonne and Lembarg for the Zakierskis."}</div>
   <p class="note" style="margin-top:18px">${pl?"Folder projektu: Greg / 0. AI / 32. Family Tree — raporty z kwerend, surowe eksporty, skany i zdjęcia w pełnej rozdzielczości.":"Project folder: Greg / 0. AI / 32. Family Tree — research reports, raw exports, scans and full-resolution images."}</p>`; }
-// ================= TOUR =================
 const TOUR=[
  {p:"helena",mode:"tree",t:{pl:"Zaczynamy od Heleny, urodzonej 9 sierpnia 1936 r. w Osówce. Kliknij dowolną osobę, aby uczynić ją środkiem drzewa; przyciski ▲ i ▼ dodają pokolenia.",en:"We start with Helena, born 9 August 1936 at Osówka. Click anyone to make them the centre of the tree; ▲ and ▼ add generations."}},
  {p:"julian_z1909",mode:"tree",t:{pl:"Jej ojciec Julian Zakierski, urodzony w Steklinie w 1909 r., syn Wacława i Julianny z Hinców. Od tego aktu linia biegnie potwierdzonymi zapisami aż do XVIII wieku.",en:"Her father Julian Zakierski, born at Steklin in 1909, son of Wacław and Julianna née Hinc. From this record the line runs on verified entries back into the 18th century."}},
@@ -1036,17 +967,347 @@ const TOUR=[
  {p:"antoni_dram",mode:"fan",t:{pl:"Wachlarz Antoniego Dramińskiego: Zawidz, Kosemin, śluby 1922, 1892, 1857 i rodziny Wiśniewskich, Karczewskich, Chyżyńskich, Naguszewskich.",en:"Antoni Dramiński's fan: Zawidz, Kosemin, marriages of 1922, 1892 and 1857, and the Wiśniewski, Karczewski, Chyżyński and Naguszewski families."}},
  {p:"alex",mode:"tree",t:{pl:"Alexander i Patricia, urodzeni w Mississaudze: dziewięć pokoleń od Jerzego Dramińskiego. Puste pola to pytania do Heleny i Wiesława. Teraz zwiedzaj sam.",en:"Alexander and Patricia, born in Mississauga: nine generations from Jerzy Dramiński. The empty boxes are questions for Helena and Wiesław. Now explore on your own."}}
 ];
+// ===================== v5 CORE =====================
+Object.assign(T,{
+ tagline:{pl:"Drzewo rodzinne · 1720–2026",en:"Family tree · 1720–2026"},
+ v_start:{pl:"Start",en:"Home"}, v_tree:{pl:"Drzewo",en:"Tree"}, v_more:{pl:"Więcej",en:"More"},
+ m_family:{pl:"Rodzina",en:"Family"}, m_anc:{pl:"Przodkowie",en:"Ancestors"}, m_desc:{pl:"Potomkowie",en:"Descendants"}, m_fan:{pl:"Wachlarz",en:"Fan"},
+ gens_lbl:{pl:"Pokolenia",en:"Generations"}, all:{pl:"Wszystkie",en:"All"},
+ search_ph:{pl:"Szukaj osoby, np. Kajetan",en:"Search a person, e.g. Kajetan"}, no_res:{pl:"Nikogo nie znaleziono",en:"No one found"},
+ sib_unknown:{pl:"Rodzeństwo",en:"Siblings"}, sib_unknown2:{pl:"jeszcze nieznane",en:"not yet known"},
+ more_sibs:{pl:"rodzeństwa więcej",en:"more siblings"},
+ par_f:{pl:"Ojciec",en:"Father"}, par_m:{pl:"Matka",en:"Mother"}, par_unk:{pl:"jeszcze nieznany",en:"not yet found"}, par_unkf:{pl:"jeszcze nieznana",en:"not yet found"},
+ make_root:{pl:"Drzewo od tej osoby",en:"Centre tree here"}, show_desc:{pl:"Potomkowie",en:"Descendants"}, show_fan:{pl:"Wachlarz",en:"Fan"}, count_from:{pl:"Licz pokrewieństwo od tej osoby",en:"Count relationships from here"},
+ legend:{pl:"Legenda",en:"Legend"}, lg_direct:{pl:"linia prosta do Grzegorza i Barbary",en:"direct line to Greg and Barbara"}, lg_dash:{pl:"przerywana: powiązanie niepewne",en:"dashed: link not yet proven"},
+ home_lines:{pl:"Cztery linie rodziny",en:"Four family lines"}, home_start:{pl:"Zacznij od",en:"Start with"}, home_found:{pl:"Najważniejsze odkrycia",en:"Key discoveries"}, home_open:{pl:"Czego jeszcze szukamy",en:"What we are still looking for"},
+ see_all:{pl:"Wszystkie odkrycia",en:"All discoveries"}, oldest:{pl:"Najstarszy przodek",en:"Oldest ancestor"}, gens_back:{pl:"pokoleń",en:"generations"}, since:{pl:"od roku",en:"since"}, ppl_line:{pl:"osób",en:"people"},
+ couple_gb:{pl:"Grzegorz i Barbara",en:"Greg and Barbara"}, couple_sub:{pl:"rodzeństwo, rodzice, dziadkowie",en:"siblings, parents, grandparents"}, story:{pl:"Opowieść",en:"Guided story"}, story_sub:{pl:"8 kroków przez drzewo",en:"8 steps through the tree"},
+ hint_tree:{pl:"Kliknij osobę. Przewijaj, aby się przesuwać; + i − przybliżają.",en:"Click a person. Scroll to move; + and − zoom."},
+ status_open:{pl:"Pochodzenie w trakcie ustalania",en:"Origin still being traced"},
+ notconn:{pl:"Ta rodzina nie jest jeszcze połączona z Twoją linią.",en:"This family is not yet connected to your line."}, notconn2:{pl:"To ci sami ludzie tego nazwiska z tych samych parafii, zapisani w aktach; więź z Twoją linią potwierdzi dopiero kolejny akt.",en:"Same surname, same parishes, verified records; the tie to your line awaits one more document."},
+ tree_of:{pl:"drzewo",en:"tree"}, unk_title:{pl:"Rodzeństwo jeszcze nieznane",en:"Siblings not yet known"},
+ unk_body:{pl:"Dzieci urodzone po ok. 1920 r. nie są w publicznych indeksach, a ich akty są w urzędach stanu cywilnego. Najszybciej pomoże rodzina: kto pamięta braci i siostry tej osoby?",en:"Children born after about 1920 are not in the public indexes; their records sit in the civil registry offices. The family is the fastest source: who remembers this person's brothers and sisters?"},
+ gap_title_f:{pl:"Ojciec jeszcze nieznany",en:"Father not yet found"}, gap_title_m:{pl:"Matka jeszcze nieznana",en:"Mother not yet found"},
+ wife:{pl:"żona",en:"wife"}, husband:{pl:"mąż",en:"husband"},
+ your_line:{pl:"Droga do Grzegorza i Barbary",en:"Line to Greg and Barbara"}
+});
+// ---------- helpers ----------
+const LMETA=[
+ {ln:"kowalczyk",root:"henryk",fam:{pl:"Kowalczykowie",en:"The Kowalczyks"},side:{pl:"Ojciec Grzegorza",en:"Greg's father"},pl:{pl:"Groszki pod Kałuszynem, Mazowsze",en:"Groszki near Kałuszyn, Mazowsze"},img:"img/ketrzyn_rastenburg_pocztowka_stary_rynek.jpg"},
+ {ln:"draminski",root:"teresa",fam:{pl:"Dramińscy",en:"The Dramińskis"},side:{pl:"Matka Grzegorza",en:"Greg's mother"},pl:{pl:"Kosemin, parafia Zawidz",en:"Kosemin, Zawidz parish"},img:"scans/grave-mragowo-antoni-zofia-draminscy-1.jpg"},
+ {ln:"prelowski",root:"stefan",fam:{pl:"Prełowscy",en:"The Prełowskis"},side:{pl:"Ojciec Barbary",en:"Barbara's father"},pl:{pl:"Toruń · korzenie w trakcie ustalania",en:"Toruń · roots still being traced"},img:"img/torun_1975_ulica_szeroka.jpg"},
+ {ln:"zakierski",root:"helena",fam:{pl:"Zakierscy i Hincowie",en:"The Zakierskis and Hincs"},side:{pl:"Matka Barbary",en:"Barbara's mother"},pl:{pl:"Steklin i Osówka, parafia Czernikowo",en:"Steklin and Osówka, Czernikowo parish"},img:"img/czernikowo_kosciol_sw_bartlomieja_2008_a.jpg"}
+];
+const birthY=id=>yr(P[id]&&P[id].b);
+const byBirth=(a,b)=>(birthY(a)||9999)-(birthY(b)||9999);
+const lc=p=>LINEC[lineOf(p)]||"var(--lp)";
+const years=p=>{ const b=yr(p.b), d=yr(p.d); if(b&&d) return b+" – "+d; if(b) return (L==="pl"?"ur. ":"b. ")+b; if(d) return "† "+d; return ""; };
+const place1=p=>(p.bp||"").replace(/\s*\(.*?\)/g,"").split(/[,;]/)[0].replace(/^par\.\s*/,"").trim();
+const childrenOf=(a,b)=>PEOPLE.filter(q=>(q.f===a||q.mo===a)&&(!b||q.f===b||q.mo===b)).map(q=>q.id).sort(byBirth);
+function ancList(id){ const out=[]; const walk=(x,g)=>{ if(!x) return; out.push({id:x,g}); const p=P[x]; walk(p.f,g+1); walk(p.mo,g+1); }; walk(id,0); return out; }
+function deepest(id){ return Math.max(...ancList(id).map(o=>o.g)); }
+function descDeep(id,s=new Set()){ if(s.has(id)) return 0; s.add(id); const k=kids[id]||[]; return k.length?1+Math.max(...k.map(c=>descDeep(c,s))):0; }
+const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/ł/g,"l").replace(/Ł/g,"L").toLowerCase();
+const icon=n=>({start:'<path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/>',tree:'<rect x="9" y="2" width="6" height="5" rx="1.2"/><rect x="2" y="17" width="6" height="5" rx="1.2"/><rect x="16" y="17" width="6" height="5" rx="1.2"/><path d="M12 7v4M5 17v-3h14v3"/>',stories:'<path d="M12 2.5l2.8 6.2 6.7.6-5.1 4.5 1.6 6.6L12 17l-6 3.4 1.6-6.6-5.1-4.5 6.7-.6z"/>',docs:'<path d="M6 2.5h8.5L19 7v14.5H6z"/><path d="M14 2.5V7h5M9 12h7M9 16h7"/>',map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',time:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',about:'<path d="M5 4h14M5 9h14M5 14h14M5 19h9"/>',more:'<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>'}[n]||"");
+const ico=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${icon(n)}</svg>`;
+// ---------- state ----------
+let view="start", root="greg", mode="family", sel=null, home="greg", S=null, natW=0, natH=0, offX=0, offY=0, firstTree=true;
+const depth={family:2,anc:4,desc:3,fan:5};
+const expanded=new Set();
+let CW=196, CH=72, GX=16, GY=60, CG=56, RG=14, PAD=40;
+function dims(){ const ph=innerWidth<700; const f=(parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--fs"))||18)/18; document.documentElement.style.setProperty("--cf",f.toFixed(3));
+  CW=Math.round((ph?172:214)*f); CH=Math.round(76*f); GX=Math.round((ph?12:16)*f); GY=Math.round(58*f); CG=Math.round(52*f); RG=Math.round(12*f); PAD=Math.round(36*f); }
+// ===================== LAYOUTS =====================
+function famLayout(){
+  const D=depth.family, nodes=[], edges=[], pos={};
+  const rowY=l=>PAD+(D-l)*(CH+GY);
+  function groupOf(X,role,l){ const p=P[X]; let ids=[X];
+    if(p.f||p.mo){ ids=PEOPLE.filter(q=>(p.f&&q.f===p.f)||(p.mo&&q.mo===p.mo)).map(q=>q.id); if(!ids.includes(X)) ids.push(X); }
+    ids.sort(byBirth); let others=ids.filter(i=>i!==X).map(id=>({t:"p",id}));
+    if(others.length>5&&!expanded.has(X)){ const n=others.length-4; others=others.slice(0,4); others.push({t:"more",pid:X,n}); }
+    if(!others.length&&(p.f||p.mo)&&DIRECT.has(X)&&l>0) others.push({t:"unk",pid:X});
+    const me={t:"p",id:X};
+    if(role==="f") return [...others,me]; if(role==="m") return [me,...others];
+    const all=[...ids.filter(i=>i!==X||true)].map(id=>({t:"p",id})); // centre role: birth order including X
+    if(ids.length>6&&!expanded.has(X)){ const o=ids.filter(i=>i!==X); const keep=o.slice(0,4); const res=[...keep,X].sort(byBirth).map(id=>({t:"p",id})); res.push({t:"more",pid:X,n:o.length-4}); return res; }
+    return all; }
+  function build(X,l,role){ const p=P[X]; const items=(l<D)?groupOf(X,role,l):[{t:"p",id:X}];
+    const gw=items.length*(CW+GX)-GX; let F=null,M=null;
+    if(l<D){ if(p.f) F=build(p.f,l+1,"f"); if(p.mo) M=build(p.mo,l+1,"m"); }
+    const pw=(F?F.w:0)+(M?M.w:0)+(F&&M?GX*2:0);
+    return {X,l,role,items,gw,F,M,pw,w:Math.max(gw,pw)}; }
+  function connect(t,gx,y){ const fp=t.F?pos[t.F.X]:null, mp=t.M?pos[t.M.X]:null; if(!fp&&!mp) return;
+    let dropX,topY; const dirC=t.X&&DIRECT.has(t.X)&&((t.F&&DIRECT.has(t.F.X))||(t.M&&DIRECT.has(t.M.X)));
+    if(fp&&mp){ const y1=fp.y+CH/2; edges.push({d:`M${fp.x+CW},${y1}H${mp.x}`,c:"mar"+(dirC?" direct":"")}); dropX=(fp.x+CW+mp.x)/2; topY=y1; edges.push({ring:[dropX,y1]}); }
+    else { const q=fp||mp; dropX=q.x+CW/2; topY=q.y+CH; }
+    const barY=y-GY/2; const cx=t.items.map((it,i)=>gx+i*(CW+GX)+CW/2);
+    const xs=cx.concat([dropX]); edges.push({d:`M${Math.min(...xs)},${barY}H${Math.max(...xs)}`,c:"e sib"});
+    edges.push({d:`M${dropX},${topY}V${barY}`,c:"e"+(dirC?" direct":"")});
+    t.items.forEach((it,i)=>{ const isX=it.id&&it.id===t.X; const lk=isX?P[it.id].lk:null; let c="e "+(isX?"":"sib")+(isX&&dirC?" direct":"")+(lk==="possible"?" pos":lk==="probable"?" prob":"");
+      if(isX) edges.push({d:`M${dropX},${barY}H${cx[i]}V${y}`,c}); else edges.push({d:`M${cx[i]},${barY}V${y}`,c}); }); }
+  function place(t,x0,align){ const cx=x0+t.w/2;
+    if(t.F||t.M){ let px=cx-t.pw/2; if(t.F){ place(t.F,px,"r"); px+=t.F.w+GX*2; } if(t.M) place(t.M,px,"l"); }
+    const gx=align==="r"?x0+t.w-t.gw:align==="l"?x0:cx-t.gw/2; const y=rowY(t.l);
+    t.items.forEach((it,i)=>{ const x=gx+i*(CW+GX); const n={...it,x,y,w:CW,h:CH};
+      if(it.t==="p"){ n.k="p:"+it.id; pos[it.id]={x,y}; n.main=it.id===t.X; n.xp=(t.l===D&&it.id===t.X&&(P[it.id].f||P[it.id].mo))?"up":null; } else n.k=it.t+":"+it.pid;
+      nodes.push(n); });
+    connect(t,gx,y); }
+  // root couple and children
+  const rp=P[root]; const sp=(rp.sp||[])[0]; let top;
+  if(sp){ const FX=rp.x==="F"?sp:root, MX=rp.x==="F"?root:sp; const F=build(FX,0,"f"), M=build(MX,0,"m"); const items=childrenOf(FX,MX).map(id=>({t:"p",id}));
+    const pw=F.w+M.w+GX*2; const gw=items.length?items.length*(CW+GX)-GX:0; top={X:null,l:-1,items,gw,F,M,pw,w:Math.max(pw,gw)}; }
+  else { const F=build(root,0,"c"); const items=childrenOf(root).map(id=>({t:"p",id})); const gw=items.length?items.length*(CW+GX)-GX:0; top={X:null,l:-1,items,gw,F,M:null,pw:F.w,w:Math.max(F.w,gw)}; }
+  if(top.items.length) place(top,PAD,"c"); else { let px=PAD+top.w/2-top.pw/2; place(top.F,px,"r"); if(top.M) place(top.M,px+top.F.w+GX*2,"l"); if(top.M){ const fp=pos[top.F.X], mp=pos[top.M.X]; const y1=fp.y+CH/2; edges.push({d:`M${fp.x+CW},${y1}H${mp.x}`,c:"mar"+(DIRECT.has(top.F.X)&&DIRECT.has(top.M.X)?" direct":"")}); edges.push({ring:[(fp.x+CW+mp.x)/2,y1]}); } }
+  // kids' own spouses are not drawn here; their children appear in Descendants
+  const maxX=Math.max(...nodes.map(n=>n.x+n.w)), maxY=Math.max(...nodes.map(n=>n.y+n.h));
+  return {nodes,edges,W:maxX+PAD,H:maxY+PAD,focus:{...pos[root],w:CW,h:CH}}; }
+
+function ancLayout(){
+  const D=depth.anc, nodes=[], edges=[], pos={}; let cur=0; const SH=0.62;
+  const X=g=>PAD+g*(CW+CG), Y=r=>PAD+r*(CH+RG);
+  function add(id,g,r,extra={}){ const n={t:"p",id,k:"p:"+id,x:X(g),y:Y(r),w:CW,h:CH,...extra}; nodes.push(n); pos[id]=n; return n; }
+  function stub(pid,role,g,r){ const n={t:"gap",pid,role,k:"gap:"+pid+":"+role,x:X(g),y:Y(r),w:Math.round(CW*.86),h:Math.round(CH*.62)}; nodes.push(n); return n; }
+  function elbow(a,b,cls){ const x1=a.x+a.w, y1=a.y+a.h/2, x2=b.x, y2=b.y+b.h/2, mx=x1+CG/2; edges.push({d:`M${x1},${y1}H${mx}V${y2}H${x2}`,c:cls}); }
+  function place(id,g){ const p=P[id];
+    if(g>=D||(!p.f&&!p.mo)){ const r=cur; cur+=1; add(id,g,r,{xp:(g>=D&&(p.f||p.mo))?"right":null}); return r; }
+    const rs=[p.f,p.mo].map((pid,i)=>{ if(pid) return {r:place(pid,g+1),pid}; const r=cur; cur+=SH; return {r,stub:true,role:i?"m":"f"}; });
+    const r=(rs[0].r+rs[1].r)/2+(rs.some(o=>o.stub)?(rs[0].stub?SH/2-.5:0)+(rs[1].stub?-(SH/2)+.5:0):0)*0; const me=add(id,g,r);
+    rs.forEach(o=>{ const tgt=o.stub?stub(id,o.role,g+1,o.r):pos[o.pid]; const lk=p.lk; const dir=DIRECT.has(id)&&o.pid&&DIRECT.has(o.pid); elbow(me,tgt,"e"+(dir?" direct":"")+(o.stub?" sib":"")+(lk==="possible"?" pos":lk==="probable"?" prob":"")); });
+    return r; }
+  const rp=P[root], sp=(rp.sp||[])[0];
+  if(root==="greg"||root==="barbara"){ // couple root with children on the left
+    const a=place("greg",1); cur+=.5; const b=place("barbara",1); const ch=childrenOf("greg","barbara"); const mid=(a+b)/2; const start=mid-(ch.length-1)/2;
+    ch.forEach((c,i)=>{ const n=add(c,0,start+i); elbow(n,pos.greg,"e direct"); elbow(n,pos.barbara,"e direct"); }); }
+  else place(root,0);
+  const minY=Math.min(...nodes.map(n=>n.y)); if(minY<PAD) nodes.forEach(n=>n.y+=PAD-minY), edges.forEach(e=>{});
+  const maxX=Math.max(...nodes.map(n=>n.x+n.w)), maxY=Math.max(...nodes.map(n=>n.y+n.h));
+  return {nodes,edges,W:maxX+PAD,H:maxY+PAD,focus:pos[root]}; }
+
+function descLayout(){
+  const D=depth.desc, nodes=[], edges=[], pos={}; let cur=0; const seen=new Set();
+  const X=g=>PAD+g*(CW+CG), Y=r=>PAD+r*(CH+RG);
+  function place(id,g){ seen.add(id); const k=(kids[id]||[]).filter(c=>!seen.has(c)).sort(byBirth); const p=P[id];
+    if(!k.length||g>=D){ const r=cur; cur+=1; const n={t:"p",id,k:"p:"+id,x:X(g),y:Y(r),w:CW,h:CH,sp:1,xp:(g>=D&&k.length)?"right":null}; nodes.push(n); pos[id]=n; return r; }
+    const rs=k.map(c=>place(c,g+1)); const r=(rs[0]+rs[rs.length-1])/2; const n={t:"p",id,k:"p:"+id,x:X(g),y:Y(r),w:CW,h:CH,sp:1}; nodes.push(n); pos[id]=n;
+    k.forEach(c=>{ const b=pos[c]; const x1=n.x+n.w, y1=n.y+n.h/2, x2=b.x, y2=b.y+b.h/2, mx=x1+CG/2; const lk=P[c].lk; edges.push({d:`M${x1},${y1}H${mx}V${y2}H${x2}`,c:"e"+(DIRECT.has(c)&&DIRECT.has(id)?" direct":"")+(lk==="possible"?" pos":lk==="probable"?" prob":"")}); });
+    return r; }
+  place(root,0);
+  const maxX=Math.max(...nodes.map(n=>n.x+n.w)), maxY=Math.max(...nodes.map(n=>n.y+n.h));
+  return {nodes,edges,W:maxX+PAD,H:maxY+PAD,focus:pos[root]}; }
+
+// ===================== RENDER TREE =====================
+const scroller=()=>document.getElementById("scroller");
+const cardMap=new Map(); let gen=0;
+function cardHTML(n){
+  if(n.t==="unk") return `<div class="mono">?</div><div class="tx"><div class="s">${t("sib_unknown")}</div><div class="d">${t("sib_unknown2")}</div></div>`;
+  if(n.t==="more") return `<div class="tx" style="align-items:center"><div class="s" style="color:var(--brick)">+ ${n.n}</div><div class="d">${t("more_sibs")}</div></div>`;
+  if(n.t==="gap") return `<div class="mono">?</div><div class="tx"><div class="s">${t(n.role==="f"?"par_f":"par_m")}</div><div class="d">${t(n.role==="f"?"par_unk":"par_unkf")}</div></div>`;
+  const p=P[n.id]; const spn=n.sp&&(p.sp||[]).length?" · ∞ "+(P[p.sp[0]].g.split(" ")[0]):"";
+  const sur=p.m?`${esc(p.s)} <i>${t("nee")} ${esc(p.m)}</i>`:esc(p.s);
+  const d=[years(p),place1(p)].filter(Boolean).join(" · ")+spn;
+  const xp=n.xp?`<span class="xp" data-xp="1" title="${n.xp==="up"?"+1":"+1"}">${n.xp==="up"?"▲":"›"}</span>`:"";
+  return `<span class="dot" style="--st:${STC[p.st]}"></span><div class="mono">${esc(initials(p))}</div><div class="tx"><div class="g">${esc(p.g)}</div><div class="s">${sur}</div><div class="d">${esc(d)}</div></div>${xp}`; }
+function renderTree(o={}){
+  dims(); gen++;
+  const sc=scroller(), edgesEl=document.getElementById("edges"), cardsEl=document.getElementById("cards");
+  document.getElementById("gN").textContent=depth[mode]; document.getElementById("gMinus").disabled=depth[mode]<=1; document.getElementById("gPlus").disabled=depth[mode]>=(mode==="fan"?8:10);
+  let lay;
+  if(mode==="fan") lay=fanLayout(); else lay=mode==="family"?famLayout():mode==="anc"?ancLayout():descLayout();
+  natW=lay.W; natH=lay.H;
+  const canvas=document.getElementById("canvas"); canvas.style.width=natW+"px"; canvas.style.height=natH+"px";
+  edgesEl.setAttribute("width",natW); edgesEl.setAttribute("height",natH); edgesEl.setAttribute("viewBox",`0 0 ${natW} ${natH}`);
+  const seen=new Set(); const instant=o.instant||firstTree;
+  (lay.nodes||[]).forEach(n=>{ let el=cardMap.get(n.k); const fresh=!el; if(fresh){ el=document.createElement("div"); el.className="card"; el.style.opacity=0; el.style.width=n.w+"px"; el.style.height=n.h+"px"; const f=(!instant&&o.from)?cardMap.get(o.from):null; if(f&&!f._dead){ el.style.left=f.style.left; el.style.top=f.style.top; } else { el.style.left=n.x+"px"; el.style.top=n.y+"px"; } cardsEl.appendChild(el); void el.offsetWidth; cardMap.set(n.k,el); }
+    el._dead=0; seen.add(n.k);
+    const p=n.id?P[n.id]:null;
+    el.className="card"+(n.t==="unk"||n.t==="gap"?" ghost":"")+(n.t==="more"?" morec":"")+(n.t==="gap"?" stub":"")+(p&&DIRECT.has(n.id)?" direct":"")+(n.id===root?" root":"")+(n.id&&n.id===sel?" sel":"");
+    el.style.setProperty("--lc",p?lc(p):"var(--rule)");
+    el.style.width=n.w+"px"; el.style.height=n.h+"px";
+    if(instant){ el.style.transition="none"; }
+    el.style.left=n.x+"px"; el.style.top=n.y+"px";
+    el.innerHTML=cardHTML(n); el.title=p?fullname(p):"";
+    el.onclick=e=>{ if(e.target.closest("[data-xp]")){ depth[mode]=Math.min(depth[mode]+1,10); renderTree(); return; } if(n.t==="more"){ expanded.add(n.pid); renderTree(); return; } if(n.t==="unk"){ openGap("unk",n.pid); return; } if(n.t==="gap"){ openGap(n.role,n.pid); return; } select(n.id); };
+    el.ondblclick=()=>{ if(n.id) setRoot(n.id); };
+    if(instant) requestAnimationFrame(()=>{ el.style.transition=""; el.style.opacity=1; }); else requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.style.opacity=1; }));
+  });
+  for(const [k,el] of cardMap){ if(!seen.has(k)){ el.style.opacity=0; el.style.pointerEvents="none"; const g0=gen; el._dead=g0; setTimeout(()=>{ if(el._dead===g0){ el.remove(); cardMap.delete(k);} },400);} else el.style.pointerEvents=""; }
+  // edges
+  const svgHTML=lay.svg||((lay.edges||[]).map(e=>e.ring?`<circle class="ring" cx="${e.ring[0]}" cy="${e.ring[1]}" r="5"/>`:`<path class="${e.c}" d="${e.d}"/>`).join(""));
+  if(instant||mode==="fan"){ edgesEl.innerHTML=svgHTML; edgesEl.classList.remove("fade"); if(mode==="fan") bindFan(); }
+  else { edgesEl.classList.add("fade"); const g0=gen; setTimeout(()=>{ if(g0!==gen) return; edgesEl.innerHTML=svgHTML; edgesEl.classList.remove("fade"); },380); }
+  // scale + scroll
+  if(S===null||o.refit) S=fitScale();
+  applyScale();
+  const f=sel&&lay.nodes&&lay.nodes.find(n=>n.id===sel)?lay.nodes.find(n=>n.id===sel):lay.focus;
+  if(f&&o.scroll!==false) scrollToNode(f, instant);
+  firstTree=false;
+  renderWho(); renderBanner(); renderLegend(); updHash();
+}
+function fitScale(){ const sc=scroller(); const cw=sc.clientWidth, ch=sc.clientHeight; const ph=innerWidth<700; const k=Math.min(cw/natW,ch/natH)*.97; const kmin=ph?.78:.86; return Math.max(Math.min(k,1.1),kmin); }
+function applyScale(){ const sc=scroller(); const cw=sc.clientWidth, ch=sc.clientHeight; const w=natW*S, h=natH*S; offX=Math.max(0,(cw-w)/2); offY=Math.max(0,(ch-h)/2);
+  const sz=document.getElementById("sizer"); sz.style.width=Math.max(w,cw)+"px"; sz.style.height=Math.max(h,ch)+"px";
+  document.getElementById("canvas").style.transform=`translate(${offX}px,${offY}px) scale(${S})`; document.getElementById("zpct").textContent=Math.round(S*100)+"%"; }
+function zoomAt(ns,fx,fy){ const sc=scroller(); ns=Math.max(.3,Math.min(1.8,ns)); if(Math.abs(ns-S)<1e-4) return; const cx=(sc.scrollLeft+fx-offX)/S, cy=(sc.scrollTop+fy-offY)/S; S=ns; applyScale(); sc.scrollLeft=cx*S+offX-fx; sc.scrollTop=cy*S+offY-fy; }
+function zoomBtn(f){ const sc=scroller(); const steps=6; const s0=S, s1=Math.max(.3,Math.min(1.8,S*f)); let i=0; const fx=sc.clientWidth/2, fy=sc.clientHeight/2; const tick=()=>{ i++; const e=1-Math.pow(1-i/steps,2); zoomAt(s0+(s1-s0)*e,fx,fy); if(i<steps) requestAnimationFrame(tick); }; tick(); }
+function scrollToNode(n,instant){ const sc=scroller(); if(!n||!isFinite(n.x)) return; n={w:CW,h:CH,...n}; const dw=(innerWidth>900&&document.getElementById("v-tree").classList.contains("open"))?430:0; const dh=(innerWidth<=900&&document.getElementById("v-tree").classList.contains("open"))?sc.clientHeight*.55:0;
+  const left=offX+(n.x+n.w/2)*S-(sc.clientWidth-dw)/2, top=offY+(n.y+n.h/2)*S-(sc.clientHeight-dh)/2; sc.scrollTo({left:Math.max(0,left),top:Math.max(0,top),behavior:instant?"auto":"smooth"}); }
+// interactions on the scroller
+(function(){ const sc=scroller();
+  sc.addEventListener("wheel",e=>{ if(e.ctrlKey||e.metaKey){ e.preventDefault(); const r=sc.getBoundingClientRect(); zoomAt(S*Math.exp(-e.deltaY*0.012),e.clientX-r.left,e.clientY-r.top); } },{passive:false});
+  let g0=null; sc.addEventListener("gesturestart",e=>{ e.preventDefault(); g0=S; }); sc.addEventListener("gesturechange",e=>{ e.preventDefault(); const r=sc.getBoundingClientRect(); zoomAt(g0*e.scale,e.clientX-r.left,e.clientY-r.top); });
+  let pin=null; sc.addEventListener("touchstart",e=>{ if(e.touches.length===2){ const [a,b]=e.touches; pin={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),s:S}; } },{passive:true});
+  sc.addEventListener("touchmove",e=>{ if(e.touches.length===2&&pin){ e.preventDefault(); const [a,b]=e.touches; const d=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY); const r=sc.getBoundingClientRect(); zoomAt(pin.s*d/pin.d,(a.clientX+b.clientX)/2-r.left,(a.clientY+b.clientY)/2-r.top); } },{passive:false});
+  sc.addEventListener("touchend",()=>{ pin=null; });
+  let drag=null; sc.addEventListener("pointerdown",e=>{ if(e.pointerType!=="mouse"||e.button!==0||e.target.closest(".card,.wedge,button")) return; drag={x:e.clientX,y:e.clientY,l:sc.scrollLeft,t:sc.scrollTop,m:false}; });
+  window.addEventListener("pointermove",e=>{ if(!drag) return; const dx=e.clientX-drag.x, dy=e.clientY-drag.y; if(!drag.m&&Math.hypot(dx,dy)>4){ drag.m=true; sc.classList.add("drag"); } if(drag.m){ sc.scrollLeft=drag.l-dx; sc.scrollTop=drag.t-dy; } });
+  window.addEventListener("pointerup",()=>{ if(drag){ sc.classList.remove("drag"); drag=null; } });
+  document.getElementById("zin").onclick=()=>zoomBtn(1.25); document.getElementById("zout").onclick=()=>zoomBtn(1/1.25);
+  document.getElementById("zfit").onclick=()=>{ S=fitScale(); applyScale(); const n=lastFocus(); if(n) scrollToNode(n); };
+  let rt=null; window.addEventListener("resize",()=>{ clearTimeout(rt); rt=setTimeout(()=>{ if(view==="tree") renderTree({instant:true}); },150); });
+})();
+function lastFocus(){ const el=cardMap.get("p:"+(sel||root)); if(!el) return null; return {x:parseFloat(el.style.left),y:parseFloat(el.style.top),w:parseFloat(el.style.width),h:parseFloat(el.style.height)}; }
+
+// ===================== FAN =====================
+let fanData=null;
+function fanLayout(){ const G=Math.min(depth.fan,Math.max(2,deepest(root))); const W=1000, R=480, H=R+70;
+  function a(id,d){ const p=id?P[id]:null; const n={id,d}; if(d<G){ n.children=[a(p&&p.f||null,d+1),a(p&&p.mo||null,d+1)]; } else n.value=1; return n; }
+  const h=d3.hierarchy(a(root,0)).sum(d=>d.children?0:1); d3.partition().size([Math.PI,1])(h);
+  const inner=74, ring=(R-inner)/G; const r0=d=>inner+(d-1)*ring, r1=d=>inner+d*ring-2;
+  const arc=d3.arc().startAngle(d=>d.x0-Math.PI/2).endAngle(d=>d.x1-Math.PI/2).innerRadius(d=>r0(d.depth)).outerRadius(d=>r1(d.depth)).padAngle(.004);
+  const cx=W/2, cy=R+20; let s=`<g transform="translate(${cx},${cy})">`;
+  h.descendants().filter(d=>d.depth>0).forEach(d=>{ const id=d.data.id; const p=id?P[id]:null;
+    s+=`<path class="wedge${id?"":" gap"}${id&&id===sel?" sel":""}" data-id="${id||""}" d="${arc(d)}" fill="${p?lc(p):"transparent"}" opacity="${p?(p.st==="possible"?.55:p.st==="probable"?.78:1):1}"><title>${p?esc(fullname(p)+" · "+years(p)):""}</title></path>`;
+    if(!p) return; const am=(d.x0+d.x1)/2-Math.PI/2; const rm=(r0(d.depth)+r1(d.depth))/2; const x=rm*Math.sin(am), y=-rm*Math.cos(am);
+    const arcLen=(d.x1-d.x0)*rm; const fs=d.depth<=2?15:d.depth<=4?13:11.5;
+    if(d.depth<=2&&arcLen>90){ const nm=esc(p.g.split(" ")[0]); const sn=esc(p.m||p.s); s+=`<text class="wl" x="${x}" y="${y-8}" text-anchor="middle" font-size="${fs}">${nm}</text><text class="wl" x="${x}" y="${y+9}" text-anchor="middle" font-size="${fs}">${sn}</text><text class="wld" x="${x}" y="${y+25}" text-anchor="middle" font-size="12">${esc(years(p))}</text>`; }
+    else { let th=am*180/Math.PI-90; if(th<-90) th+=180; const maxC=Math.floor((r1(d.depth)-r0(d.depth))/(fs*.56)); let lab=(d.depth<=4?p.g.split(" ")[0]+" ":"")+(p.m||p.s); if(lab.length>maxC) lab=(p.m||p.s); if(lab.length>maxC) lab=lab.slice(0,Math.max(3,maxC-1))+"…"; if(arcLen>fs*1.1) s+=`<text class="wl" transform="translate(${x},${y}) rotate(${th})" text-anchor="middle" dy=".35em" font-size="${fs}">${esc(lab)}</text>`; } });
+  const rp=P[root]; s+=`<circle r="${inner-6}" fill="${lc(rp)}" stroke="var(--brick)" stroke-width="3" class="wedge" data-id="${root}"/><text class="wl" y="-4" text-anchor="middle" font-size="22" font-family="var(--display)">${esc(initials(rp))}</text><text class="wld" y="18" text-anchor="middle" font-size="13">${esc(rp.g.split(" ")[0])}</text>`;
+  // generation labels on the baseline
+  for(let d=1; d<=G; d++){ const r=(r0(d)+r1(d))/2; s+=`<text x="${-r}" y="22" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--mono)">${d}</text><text x="${r}" y="22" text-anchor="middle" font-size="11" fill="var(--muted)" font-family="var(--mono)">${d}</text>`; }
+  s+=`</g>`; return {nodes:[],edges:[],svg:s,W,H,focus:{x:W/2-40,y:cy-60,w:80,h:80}}; }
+function bindFan(){ document.querySelectorAll("#edges .wedge[data-id]").forEach(w=>{ const id=w.dataset.id; if(!id) return; w.onclick=()=>select(id); w.ondblclick=()=>setRoot(id); }); }
+
+// ===================== CHROME: who / banner / legend / modes =====================
+function renderModes(){ const m=document.getElementById("modes"); m.innerHTML=["family","anc","desc","fan"].map(k=>`<button data-m="${k}" aria-pressed="${mode===k}">${t("m_"+k)}</button>`).join(""); m.querySelectorAll("button").forEach(b=>b.onclick=()=>{ mode=b.dataset.m; S=null; renderModes(); renderTree({refit:true}); }); }
+function renderWho(){ const p=P[root]; const w=document.getElementById("who"); w.innerHTML=`<div class="mono" style="background:${lc(p)}">${esc(initials(p))}</div><div style="min-width:0"><div class="sub">${t("m_"+mode)}</div><div class="nm">${esc(p.g.split(" ")[0]+" "+(p.m||p.s))}</div></div>`; w.style.cursor="pointer"; w.onclick=()=>select(root); }
+function renderBanner(){ const b=document.getElementById("banner"); if(DIRECT.has(root)){ b.hidden=true; return; } b.hidden=false; const p=P[root]; const anc=ancList(root).map(o=>o.id); const desc=new Set(); const walk=x=>(kids[x]||[]).forEach(c=>{ if(!desc.has(c)){ desc.add(c); walk(c);} }); walk(root);
+  const conn=[...desc].find(x=>DIRECT.has(x));
+  b.innerHTML=`${mode!=="desc"?`<button class="btn pri" id="bDesc">${t("show_desc")} →</button>`:""}<span style="flex:1;min-width:0"><b>${t("notconn")}</b> ${t("notconn2")}</span>`; const bd=document.getElementById("bDesc"); if(bd) bd.onclick=()=>{ mode="desc"; S=null; renderModes(); renderTree({refit:true}); }; }
+function renderLegend(){ const w=document.getElementById("legendw"); if(w._closed){ w.innerHTML=`<button class="legbtn" id="legOpen">${t("legend")}</button>`; document.getElementById("legOpen").onclick=()=>{ w._closed=false; renderLegend(); }; return; }
+  w.innerHTML=`<div class="legend">${Object.entries(LINEC).map(([k,c])=>`<span><i style="background:${c}"></i>${t("ln_"+k)}</span>`).join("")}<span><i class="ln"></i>${t("lg_direct")}</span><span><i class="ld"></i>${t("lg_dash")}</span><span><i style="background:${STC.verified}"></i>${t("st_verified")}</span><span><i style="background:${STC.family}"></i>${t("st_family")}</span><span><i style="background:${STC.probable}"></i>${t("st_probable")}</span><span><i style="background:${STC.possible}"></i>${t("st_possible")}</span><button class="x" id="legX">✕</button></div>`; document.getElementById("legX").onclick=()=>{ w._closed=true; renderLegend(); }; }
+// ===================== DRAWER =====================
+function mini(id,role){ const p=P[id]; return `<button class="mini" data-go="${id}"><span class="mono" style="background:${lc(p)}">${esc(initials(p))}</span><span class="t"><b>${esc(p.g.split(" (")[0]+" "+(p.m||p.s))}</b><small>${esc([role,years(p)].filter(Boolean).join(" · "))}</small></span></button>`; }
+function openDrawer(){ document.getElementById("v-tree").classList.add("open"); }
+function closeDrawer(){ document.getElementById("v-tree").classList.remove("open"); sel=null; document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel")); document.querySelectorAll(".wedge.sel").forEach(c=>c.classList.remove("sel")); }
+function select(id){ sel=id; document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel")); const el=cardMap.get("p:"+id); if(el) el.classList.add("sel"); document.querySelectorAll(".wedge").forEach(w=>w.classList.toggle("sel",w.dataset.id===id)); drawDrawer(); openDrawer(); if(el&&innerWidth<=900){ const n=lastFocus(); if(n) scrollToNode(n); } updHash(); }
+function openGap(kind,pid){ const d=document.getElementById("drawer"); const p=P[pid];
+  const title=kind==="unk"?t("unk_title"):t(kind==="f"?"gap_title_f":"gap_title_m");
+  d.innerHTML=`<button class="dx" id="dX" aria-label="${t("close")}">✕</button><div class="dhead"><div class="mono" style="background:transparent;border:2px dashed var(--rule);color:var(--muted)">?</div><div><h2>${title}</h2><div class="sub">${esc(fullname(p))}</div></div></div><p class="dnote">${kind==="unk"?t("unk_body"):t("gap_note")}</p><p class="note">${L==="pl"?"Które dokumenty to wyjaśnią, opisano w zakładce „Źródła i co dalej”.":"Which documents will answer this is listed under 'Sources & next steps'."}</p><div class="dsec"><h5>${esc(p.g.split(" ")[0])}</h5><div class="minis">${mini(pid,"")}</div></div>`;
+  d.querySelector("#dX").onclick=closeDrawer; d.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>goPerson(b.dataset.go)); openDrawer(); }
+function goPerson(id){ if(cardMap.get("p:"+id)&&!cardMap.get("p:"+id)._dead) { select(id); const n=lastFocus(); if(n) scrollToNode(n); } else { root=id; sel=id; renderTree({from:"p:"+(sel||root)}); drawDrawer(); openDrawer(); } }
+function drawDrawer(){ const d=document.getElementById("drawer"); const id=sel; if(!id||!P[id]) return; const p=P[id];
+  const sibs=sibsOf(id).sort(byBirth); const ch=(kids[id]||[]).slice().sort(byBirth); const docs=DOCS.filter(x=>(x.people||[]).includes(id)); const ph=(p.ph||[]).map(f=>"scans/"+f).filter(f=>!docs.some(x=>x.file===f));
+  const k=id===home?null:kinship(home,id); const path=pathToHome(id);
+  const dy=p.d?(/before|przed/i.test(p.d)?(L==="pl"?"przed ":"before ")+yr(p.d):(yr(p.d)||p.d)):""; const life=(p.b||p.d)?`${yr(p.b)||"?"}${dy?" – "+dy:""}`:"";
+  d.innerHTML=`<button class="dx" id="dX" aria-label="${t("close")}">✕</button>
+  <div class="dhead"><div class="mono" style="background:${lc(p)}">${esc(initials(p))}</div><div><h2>${esc(p.g)}</h2><div class="sub">${esc(p.s)}${p.m?" · "+t("nee")+" "+esc(p.m):""}</div></div></div>
+  ${life?`<div class="life">${esc(life)} ${place1(p)?`<span>· ${esc(place1(p))}</span>`:""}</div>`:""}
+  ${k?`<p class="kin">${esc(k)} <span class="note" style="font-style:normal">· ${t("rel_home").toLowerCase()} ${esc(P[home].g.split(" ")[0])}</span></p>`:""}
+  <div class="tags"><span class="tag"><i style="background:${STC[p.st]}"></i>${t("st_"+p.st)}</span>${p.lk&&(p.f||p.mo)?`<span class="tag">${t("lk")}: ${t("st_"+p.lk).toLowerCase()}</span>`:""}<span class="tag"><i style="background:${lc(p)}"></i>${t("ln_"+lineOf(p))}</span></div>
+  ${path&&path.length>1?`<div class="dsec"><h5>${t("your_line")}</h5><div class="path">${path.map((x,i)=>`${i?'<span class="ar">→</span>':""}<button data-go="${x}" class="${x===id?"me":""}">${esc(P[x].g.split(" ")[0])}</button>`).join("")}</div></div>`:(!DIRECT.has(id)?`<p class="note" style="border-left:3px solid var(--ochre);padding-left:10px"><b>${t("notconn")}</b> ${t("notconn2")}</p>`:"")}
+  <dl class="dl" style="margin-top:12px">${p.b?`<dt>${t("born")}</dt><dd>${esc(p.b)}${p.bq?' <span class="note">(?)</span>':""}${p.bp?", "+esc(p.bp):""}</dd>`:(p.bp?`<dt>${t("place")}</dt><dd>${esc(p.bp)}</dd>`:"")}${p.d?`<dt>${t("died")}</dt><dd>${esc(p.d)}${p.dp?", "+esc(p.dp):""}</dd>`:""}</dl>
+  ${p.n?`<p class="dnote">${esc(tx(p.n))}</p>`:""}
+  ${(p.f||p.mo)?`<div class="dsec"><h5>${t("parents")}</h5><div class="minis">${[p.f,p.mo].filter(Boolean).map(x=>mini(x,P[x].x==="M"?t("par_f"):t("par_m"))).join("")}</div></div>`:""}
+  ${(p.sp||[]).length?`<div class="dsec"><h5>${t("spouse")}</h5><div class="minis">${p.sp.map(x=>mini(x,P[x].x==="M"?t("husband"):t("wife"))).join("")}</div></div>`:""}
+  ${sibs.length?`<div class="dsec"><h5>${t("siblings")} · ${sibs.length}</h5><div class="minis">${sibs.map(x=>mini(x,"")).join("")}</div></div>`:""}
+  ${ch.length?`<div class="dsec"><h5>${t("children")} · ${ch.length}</h5><div class="minis">${ch.map(x=>mini(x,"")).join("")}</div></div>`:""}
+  ${(docs.length||ph.length)?`<div class="dsec"><h5>${t("docs")}</h5><div class="thumbs">${docs.map(x=>`<button data-doc="${x.id}" title="${esc(tx(x.t))}"><img loading="lazy" src="${x.file}" alt=""></button>`).join("")}${ph.map(f=>`<button data-img="${f}"><img loading="lazy" src="${f}" alt=""></button>`).join("")}</div></div>`:""}
+  <div class="dacts">${id!==root||mode==="fan"?`<button class="btn pri" data-act="root">${t("make_root")}</button>`:""}${ch.length?`<button class="btn" data-act="desc">${t("show_desc")}</button>`:""}${(p.f||p.mo)?`<button class="btn" data-act="fan">${t("show_fan")}</button>`:""}${id!==home?`<button class="btn" data-act="home">${t("count_from")}</button>`:""}</div>
+  <div class="src">${t("src")}: ${p.st==="family"&&!p.src?t("src_family"):esc(p.src||"")}</div>`;
+  d.scrollTop=0; d.querySelector("#dX").onclick=closeDrawer;
+  d.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>goPerson(b.dataset.go));
+  d.querySelectorAll("[data-doc]").forEach(b=>b.onclick=()=>openLB(DOCS.findIndex(x=>x.id===b.dataset.doc),DOCS));
+  d.querySelectorAll("[data-img]").forEach(b=>b.onclick=()=>openLB(0,[{file:b.dataset.img,t:{en:fullname(p),pl:fullname(p)},d:{en:"",pl:""},src:p.src||""}]));
+  d.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{ const a=b.dataset.act; if(a==="root"){ if(mode==="fan") mode="family"; setRoot(id); } if(a==="desc"){ mode="desc"; renderModes(); setRoot(id,true); } if(a==="fan"){ mode="fan"; renderModes(); setRoot(id,true); } if(a==="home"){ home=id; drawDrawer(); } });
+}
+function setRoot(id,refit){ const from="p:"+id; root=id; sel=id; expanded.clear(); renderModes(); renderTree({from,refit:!!refit}); drawDrawer(); openDrawer(); }
+// keep reused code working
+function setMain(id,opts={}){ if(!P[id]) return; if(opts.mode) mode=opts.mode==="fan"?"fan":"family"; root=id; sel=id; go("tree"); drawDrawer(); openDrawer(); }
+// ===================== SEARCH =====================
+(function(){ const q=document.getElementById("q"), res=document.getElementById("res"); let act=0, list=[];
+  const idx=PEOPLE.map(p=>({id:p.id,k:norm(`${p.g} ${p.s} ${p.m||""} ${p.bp||""}`)}));
+  function show(){ const v=norm(q.value).trim(); if(!v){ res.hidden=true; return; } const parts=v.split(/\s+/); list=idx.filter(o=>parts.every(w=>o.k.includes(w))).map(o=>o.id).sort((a,b)=>(DIRECT.has(b)-DIRECT.has(a))||byBirth(a,b)).slice(0,14); act=0;
+    res.innerHTML=list.length?list.map((id,i)=>{ const p=P[id]; return `<button data-id="${id}" class="${i===act?"act":""}"><span class="dt" style="background:${lc(p)}"></span><span>${esc(p.g.split(" (")[0])} <b>${esc(p.s)}</b>${p.m?` <i class="note">${t("nee")} ${esc(p.m)}</i>`:""}</span><span class="y">${esc([yr(p.b),place1(p)].filter(Boolean).join(" · "))}</span></button>`; }).join(""):`<div class="none">${t("no_res")}</div>`; res.hidden=false;
+    res.querySelectorAll("button").forEach(b=>b.onclick=()=>pick(b.dataset.id)); }
+  function pick(id){ res.hidden=true; q.value=""; q.blur(); goPerson(id); }
+  q.addEventListener("input",show); q.addEventListener("focus",show);
+  q.addEventListener("keydown",e=>{ if(res.hidden) return; if(e.key==="ArrowDown"){ act=Math.min(act+1,list.length-1); e.preventDefault(); } else if(e.key==="ArrowUp"){ act=Math.max(act-1,0); e.preventDefault(); } else if(e.key==="Enter"){ if(list[act]) pick(list[act]); return; } else if(e.key==="Escape"){ res.hidden=true; return; } else return; res.querySelectorAll("button").forEach((b,i)=>b.classList.toggle("act",i===act)); });
+  document.addEventListener("click",e=>{ if(!e.target.closest(".search")) res.hidden=true; });
+})();
+document.getElementById("gPlus").onclick=()=>{ depth[mode]=Math.min(depth[mode]+1,mode==="fan"?8:10); renderTree(); };
+document.getElementById("gMinus").onclick=()=>{ depth[mode]=Math.max(depth[mode]-1,1); renderTree(); };
+document.getElementById("gAll").onclick=()=>{ depth[mode]=mode==="fan"?8:mode==="desc"?Math.max(2,descDeep(root)):Math.max(2,deepest(root)+(mode==="family"?1:0)); expanded.clear(); PEOPLE.forEach(p=>expanded.add(p.id)); S=null; renderTree({refit:true}); };
+
+// ===================== START PAGE =====================
+function drawStart(){ const v=document.getElementById("v-start");
+  const nv=PEOPLE.filter(p=>p.st==="verified").length; const maxG=Math.max(deepest("greg"),deepest("barbara"))+1;
+  const lines=LMETA.map(m=>{ const a=ancList(m.root); const g=Math.max(...a.map(o=>o.g))+2; const ys=a.map(o=>birthY(o.id)).filter(Boolean); const y0=Math.min(...ys); const deep=a.filter(o=>o.g===Math.max(...a.map(z=>z.g))).sort((x,y)=>byBirth(x.id,y.id))[0]; const cnt=PEOPLE.filter(p=>p.ln===m.ln).length; return {...m,g,y0,old:deep.id,cnt,a:a.length}; });
+  const st=(id,label,sub,extra="")=>{ const p=P[id]; return `<button class="startb" data-root="${id}" ${extra}><span class="mono" style="background:${lc(p)}">${esc(initials(p))}</span><span>${label}<small>${sub}</small></span></button>`; };
+  v.innerHTML=`<div class="hero"><div><h1>Kowalczyk <em>&amp;</em><br>Prełowski</h1><p>${t("lede")}</p></div>
+   <div class="kpis"><div><b>${PEOPLE.length}</b><span>${t("people")}</span></div><div><b>${nv}</b><span>${t("verified")}</span></div><div><b>${maxG}</b><span>${t("gens_n")}</span></div></div></div>
+   <div class="sec"><h3>${t("home_start")}</h3><div class="starts">
+    ${st("greg",t("couple_gb"),t("couple_sub"),'data-mode="family"')}
+    ${st("alex","Alexander",esc(L==="pl"?"wszyscy przodkowie":"all ancestors"),'data-mode="anc"')}
+    ${st("patricia","Patricia",esc(L==="pl"?"wachlarz przodków":"ancestor fan"),'data-mode="fan"')}
+    ${st("helena","Helena",esc(L==="pl"?"jej rodzina i rodzeństwo":"her family and siblings"),'data-mode="family"')}
+    <button class="startb play" id="startTour"><span class="mono" style="background:rgba(255,255,255,.2)">▶</span><span>${t("story")}<small>${t("story_sub")}</small></span></button></div></div>
+   <div class="sec"><h3>${t("home_lines")}</h3><div class="lines">${lines.map(m=>`<article class="lcard" style="--lc:${LINEC[m.ln]}"><div class="im" style="background-image:url('${m.img}')"></div><div class="b"><div class="k">${tx(m.side)}</div><h4>${tx(m.fam)}</h4><div class="pl">${tx(m.pl)}</div>
+     <div class="st"><div><b>${m.g}</b><span>${t("gens_back")}</span></div><div><b>${isFinite(m.y0)?"~"+m.y0:"–"}</b><span>${t("since")}</span></div><div><b>${m.a}</b><span>${L==="pl"?"przodków":"ancestors"}</span></div></div>
+     <div class="old">${m.ln==="prelowski"?`<span class="note">${t("status_open")}</span>`:`${t("oldest")}: <b>${esc(P[m.old].g.split(" ")[0]+" "+(P[m.old].m||P[m.old].s))}</b>${birthY(m.old)?` <span class="note">ok. ${birthY(m.old)}</span>`:""}`}</div>
+     <div class="acts"><button class="btn pri" data-root="${m.root}" data-mode="family">${t("m_family")}</button><button class="btn" data-root="${m.root}" data-mode="anc">${t("m_anc")}</button><button class="btn" data-root="${m.root}" data-mode="fan">${t("m_fan")}</button></div></div></article>`).join("")}</div></div>
+   <div class="sec"><h3>${t("home_found")}</h3><div class="grid">${STORIES.slice(0,3).map(s=>`<article class="story"><img loading="lazy" src="${s.img}" alt=""><div class="b"><div class="k"><span class="status" style="background:${STC[s.st]}"></span>${t("st_"+s.st)} · ${t("ln_"+s.ln)}</div><h4>${esc(tx(s.t))}</h4><div class="acts"><button class="pri" data-p="${s.p}">${t("focus")}</button></div></div></article>`).join("")}</div><div style="margin-top:14px"><button class="btn" id="allStories">${t("see_all")} →</button></div></div>
+   <div class="sec"><h3>${t("home_open")}</h3>
+    <div class="todo"><b>USC Toruń</b> · ${L==="pl"?"akt małżeństwa Stefana i Heleny: rodzice i miejsce urodzenia Stefana, nazwisko panieńskie Zofii.":"Stefan and Helena's marriage act: Stefan's parents and birthplace, Zofia's maiden name."}</div>
+    <div class="todo"><b>USC Kałuszyn</b> · ${L==="pl"?"akt ślubu Wacława Kowalczyka i Marianny Buczyńskiej: potwierdza Wacława z 1899 r. i otwiera linię Buczyńskich.":"Wacław Kowalczyk and Marianna Buczyńska's marriage act: confirms the Wacław born 1899 and opens the Buczyński line."}</div>
+    <div class="todo"><b>${L==="pl"?"Rodzina":"Family"}</b> · ${L==="pl"?"rodzeństwo Henryka i Teresy: dzieci urodzone po 1920 r. nie są w indeksach. Wiesław i Helena mogą pamiętać imiona.":"Henryk's and Teresa's siblings: children born after 1920 are not indexed. Wiesław and Helena may remember the names."}</div>
+    <div style="margin-top:14px"><button class="btn" id="goAbout">${t("v_about")} →</button></div></div>`;
+  v.querySelectorAll("[data-root]").forEach(b=>b.onclick=()=>{ mode=b.dataset.mode||"family"; root=b.dataset.root; sel=null; S=null; expanded.clear(); go("tree",{refit:true}); });
+  v.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>setMain(b.dataset.p));
+  document.getElementById("startTour").onclick=()=>tourGo(0); document.getElementById("allStories").onclick=()=>go("stories"); document.getElementById("goAbout").onclick=()=>go("about"); }
+
+// ===================== NAV =====================
+const NAVS=[["start","start"],["tree","tree"],["stories","stories"],["docs","docs"],["map","map"],["time","time"],["about","about"]];
+function renderNav(){ document.getElementById("railnav").innerHTML=NAVS.map(([v,i])=>`<button class="navb" data-v="${v}" aria-current="${view===v}">${ico(i)}<span>${t("v_"+v)}</span></button>`).join("");
+  const tabs=[["start","start"],["tree","tree"],["stories","stories"],["docs","docs"],["more","more"]];
+  document.getElementById("tabbar").innerHTML=tabs.map(([v,i])=>`<button data-v="${v}" aria-current="${view===v||(v==="more"&&["map","time","about"].includes(view))}">${ico(i)}<span>${t(v==="more"?"v_more":"v_"+v)}</span></button>`).join("");
+  document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{ if(b.dataset.v==="more") openSheet(); else go(b.dataset.v); }); }
+function openSheet(){ const sh=document.getElementById("sheet"), sc=document.getElementById("scrim"); sh.innerHTML=[["map","map"],["time","time"],["about","about"]].map(([v,i])=>`<button class="navb" data-sv="${v}">${ico(i)}<span>${t("v_"+v)}</span></button>`).join("")+`<div class="seg full" style="margin-top:8px"><button data-l="pl" aria-pressed="${L==="pl"}">Polski</button><button data-l="en" aria-pressed="${L==="en"}">English</button></div><div class="seg full"><button data-f="18">A</button><button data-f="20">A+</button><button data-f="22">A++</button></div>`;
+  sh.hidden=false; sc.hidden=false; const close=()=>{ sh.hidden=true; sc.hidden=true; }; sc.onclick=close;
+  sh.querySelectorAll("[data-sv]").forEach(b=>b.onclick=()=>{ close(); go(b.dataset.sv); }); sh.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{ close(); setLang(b.dataset.l); }); sh.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ close(); setFs(b.dataset.f); }); }
+function go(v,o={}){ view=v; ["start","tree","stories","docs","map","time","about"].forEach(x=>document.getElementById("v-"+x).hidden=(x!==v)); renderNav();
+  if(v!=="tree") window.scrollTo(0,0);
+  if(v==="start") drawStart(); if(v==="stories") drawStories(); if(v==="docs") drawDocs(); if(v==="map") drawMap(); if(v==="time") drawTime(); if(v==="about") drawAbout();
+  if(v==="tree"){ renderModes(); renderTree({refit:!!o.refit||firstTree,instant:true}); if(!sel) closeDrawer(); showHint(); }
+  updHash(); }
+function showHint(){ const h=document.getElementById("hintc"); try{ if(localStorage.getItem("ft-hint")) return; localStorage.setItem("ft-hint","1"); }catch(e){} h.textContent=t("hint_tree"); h.hidden=false; h.style.opacity=1; setTimeout(()=>{ h.style.opacity=0; setTimeout(()=>h.hidden=true,500); },5200); }
+function updHash(){ try{ const h=view==="tree"?`t-${root}-${mode}-${depth[mode]}${sel&&sel!==root?"-"+sel:""}`:view; history.replaceState(null,"","#"+h); }catch(e){} }
+function readHash(){ const h=(location.hash||"").slice(1); if(!h) return; if(h.startsWith("t-")||h.startsWith("p-")){ const a=h.split("-"); if(P[a[1]]) root=a[1]; const m=a[2]; if(["family","anc","desc","fan"].includes(m)) mode=m; if(m==="tree") mode="family"; if(a[3]&&+a[3]) depth[mode]=+a[3]; if(a[4]&&P[a[4]]) sel=a[4]; view="tree"; } else if(["start","stories","docs","map","time","about"].includes(h)) view=h; }
+// ===================== TOUR =====================
 let ti=-1; const tourEl=document.getElementById("tour");
-function tourGo(i){ if(i<0||i>=TOUR.length){ tourEl.hidden=true; ti=-1; return; } ti=i; const s=TOUR[i]; upDepth=Math.max(upDepth,3); setMain(s.p,{mode:s.mode}); document.getElementById("tourK").textContent=`${t("tour_of")} ${i+1} / ${TOUR.length}`; document.getElementById("tourP").textContent=tx(s.t); tourEl.hidden=false; }
-document.getElementById("tourBtn").onclick=()=>tourGo(0); document.getElementById("tourNext").onclick=()=>tourGo(ti+1); document.getElementById("tourPrev").onclick=()=>tourGo(Math.max(0,ti-1)); document.getElementById("tourX").onclick=()=>tourGo(-1);
-document.addEventListener("keydown",e=>{ if(ti>=0&&!lb.open){ if(e.key==="ArrowRight") tourGo(ti+1); if(e.key==="ArrowLeft") tourGo(Math.max(0,ti-1)); if(e.key==="Escape") tourGo(-1); } });
-// ================= LANG / SIZE / BOOT =================
-document.getElementById("lang-pl").onclick=()=>{ L="pl"; try{localStorage.setItem("ft-lang","pl");}catch(e){} render(); };
-document.getElementById("lang-en").onclick=()=>{ L="en"; try{localStorage.setItem("ft-lang","en");}catch(e){} render(); };
-document.querySelectorAll("[data-fs]").forEach(b=>{ b.onclick=()=>{ document.documentElement.style.setProperty("--fs",b.dataset.fs+"px"); document.querySelectorAll("[data-fs]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false")); try{localStorage.setItem("ft-fs",b.dataset.fs);}catch(e){} if(view==="tree") drawChart(); }; });
-try{ const fs=localStorage.getItem("ft-fs"); if(fs){ document.documentElement.style.setProperty("--fs",fs+"px"); document.querySelectorAll("[data-fs]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.fs===fs?"true":"false")); } else document.querySelector('[data-fs="18"]').setAttribute("aria-pressed","true"); }catch(e){}
-readHash(); window.addEventListener("hashchange",()=>{ readHash(); render(); }); window.addEventListener("resize",()=>{ if(view==="tree") drawChart(); });
-render();
+function tourGo(i){ if(i<0||i>=TOUR.length){ tourEl.hidden=true; ti=-1; return; } ti=i; const s=TOUR[i]; mode=s.mode==="fan"?"fan":"family"; if(mode==="family") depth.family=Math.max(depth.family,2); root=s.p; sel=s.p; expanded.clear(); if(view!=="tree") go("tree",{refit:true}); else { renderModes(); renderTree({refit:true,from:"p:"+s.p}); } drawDrawer(); if(innerWidth>900) openDrawer(); document.getElementById("tourK").textContent=`${t("tour_of")} ${i+1} / ${TOUR.length}`; document.getElementById("tourP").textContent=tx(s.t); tourEl.hidden=false; }
+document.getElementById("tourNext").onclick=()=>tourGo(ti+1); document.getElementById("tourPrev").onclick=()=>tourGo(Math.max(0,ti-1)); document.getElementById("tourX").onclick=()=>tourGo(-1);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!lb.open){ if(ti>=0) tourGo(-1); else closeDrawer(); } if(ti>=0&&!lb.open){ if(e.key==="ArrowRight") tourGo(ti+1); if(e.key==="ArrowLeft") tourGo(Math.max(0,ti-1)); } });
+// ===================== LANG / SIZE / BOOT =====================
+function applyStatic(){ document.querySelectorAll("[data-i]").forEach(el=>el.textContent=t(el.dataset.i)); document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph)); document.documentElement.lang=L; document.getElementById("lang-pl").setAttribute("aria-pressed",L==="pl"); document.getElementById("lang-en").setAttribute("aria-pressed",L==="en"); }
+function setLang(l){ L=l; try{localStorage.setItem("ft-lang",l);}catch(e){} applyStatic(); go(view); if(sel&&view==="tree") drawDrawer(); }
+function setFs(f){ document.documentElement.style.setProperty("--fs",f+"px"); document.querySelectorAll("[data-fs]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.fs===f)); try{localStorage.setItem("ft-fs",f);}catch(e){} if(view==="tree"){ S=null; renderTree({refit:true}); } }
+document.getElementById("lang-pl").onclick=()=>setLang("pl"); document.getElementById("lang-en").onclick=()=>setLang("en");
+document.querySelectorAll("[data-fs]").forEach(b=>b.onclick=()=>setFs(b.dataset.fs));
+document.getElementById("brand").onclick=()=>go("start");
+try{ const fs=localStorage.getItem("ft-fs"); if(fs&&["18","20","22"].includes(fs)) document.documentElement.style.setProperty("--fs",fs+"px"); document.querySelectorAll("[data-fs]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.fs===(fs||"18"))); }catch(e){}
+readHash(); applyStatic(); go(view,{refit:true}); if(view==="tree"&&sel){ drawDrawer(); openDrawer(); }
+window.addEventListener("hashchange",()=>{ const v0=view; readHash(); if(view!==v0||view==="tree") go(view,{refit:true}); });
+
 </script>
 
 </body>
