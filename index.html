@@ -926,7 +926,7 @@ function ancList(id){ const out=[]; const walk=(x,g)=>{ if(!x) return; out.push(
 function deepest(id){ return Math.max(...ancList(id).map(o=>o.g)); }
 function descDeep(id,s=new Set()){ if(s.has(id)) return 0; s.add(id); const k=kids[id]||[]; return k.length?1+Math.max(...k.map(c=>descDeep(c,s))):0; }
 const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/ł/g,"l").replace(/Ł/g,"L").toLowerCase();
-const icon=n=>({start:'<path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/>',tree:'<rect x="9" y="2" width="6" height="5" rx="1.2"/><rect x="2" y="17" width="6" height="5" rx="1.2"/><rect x="16" y="17" width="6" height="5" rx="1.2"/><path d="M12 7v4M5 17v-3h14v3"/>',stories:'<path d="M12 2.5l2.8 6.2 6.7.6-5.1 4.5 1.6 6.6L12 17l-6 3.4 1.6-6.6-5.1-4.5 6.7-.6z"/>',docs:'<path d="M6 2.5h8.5L19 7v14.5H6z"/><path d="M14 2.5V7h5M9 12h7M9 16h7"/>',map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',time:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',about:'<path d="M5 4h14M5 9h14M5 14h14M5 19h9"/>',place:'<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',gallery:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',more:'<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>'}[n]||"");
+const icon=n=>({connect:'<circle cx="12" cy="4.5" r="2.5"/><circle cx="4.5" cy="19.5" r="2.5"/><circle cx="19.5" cy="19.5" r="2.5"/><path d="M10.9 6.7L5.6 17.3M13.1 6.7l5.3 10.6"/>',start:'<path d="M3 11l9-8 9 8v10h-6v-6H9v6H3z"/>',tree:'<rect x="9" y="2" width="6" height="5" rx="1.2"/><rect x="2" y="17" width="6" height="5" rx="1.2"/><rect x="16" y="17" width="6" height="5" rx="1.2"/><path d="M12 7v4M5 17v-3h14v3"/>',stories:'<path d="M12 2.5l2.8 6.2 6.7.6-5.1 4.5 1.6 6.6L12 17l-6 3.4 1.6-6.6-5.1-4.5 6.7-.6z"/>',docs:'<path d="M6 2.5h8.5L19 7v14.5H6z"/><path d="M14 2.5V7h5M9 12h7M9 16h7"/>',map:'<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/>',time:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',about:'<path d="M5 4h14M5 9h14M5 14h14M5 19h9"/>',place:'<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',gallery:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',more:'<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>'}[n]||"");
 const ico=n=>`<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${icon(n)}</svg>`;
 // ---------- state ----------
 let view="start", root="greg", mode="family", sel=null, home="greg", S=null, natW=0, natH=0, offX=0, offY=0, firstTree=true;
@@ -1281,11 +1281,11 @@ const NAVS=[["start","start"],["tree","tree"],["places","place"],["media","galle
 const VIEWLIST=["start","tree","places","media","stories","time","about"];
 function renderNav(){ document.getElementById("railnav").innerHTML=NAVS.map(([v,i])=>`<button class="navb" data-v="${v}" aria-current="${view===v}">${ico(i)}<span>${t("v_"+v)}</span></button>`).join("");
   const tabs=[["start","start"],["tree","tree"],["places","place"],["media","gallery"],["more","more"]];
-  document.getElementById("tabbar").innerHTML=tabs.map(([v,i])=>`<button data-v="${v}" aria-current="${view===v||(v==="more"&&["stories","time","about"].includes(view))}">${ico(i)}<span>${t(v==="more"?"v_more":"v_"+v)}</span></button>`).join("");
+  document.getElementById("tabbar").innerHTML=tabs.map(([v,i])=>`<button data-v="${v}" aria-current="${view===v||(v==="more"&&["connect","stories","time","about"].includes(view))}">${ico(i)}<span>${t(v==="more"?"v_more":"v_"+v)}</span></button>`).join("");
   document.getElementById("tabbar").insertAdjacentHTML("beforeend",`<button class="langb" id="tabLang" aria-label="${L==="pl"?"Switch to English":"Przełącz na polski"}"><span class="lt">${L==="pl"?"EN":"PL"}</span><span>${L==="pl"?"English":"Polski"}</span></button>`);
   document.getElementById("tabLang").onclick=()=>setLang(L==="pl"?"en":"pl");
   document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{ if(b.dataset.v==="more") openSheet(); else go(b.dataset.v); }); }
-function openSheet(){ const sh=document.getElementById("sheet"), sc=document.getElementById("scrim"); sh.classList.remove("tall"); sh.innerHTML=[["stories","stories"],["time","time"],["about","about"]].map(([v,i])=>`<button class="navb" data-sv="${v}">${ico(i)}<span>${t("v_"+v)}</span></button>`).join("")+`<button class="navb" id="shLeg"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span>${t("legend")}</span></button><div class="seg full" style="margin-top:8px"><button data-l="pl" aria-pressed="${L==="pl"}">Polski</button><button data-l="en" aria-pressed="${L==="en"}">English</button></div><div class="seg full"><button data-f="18">A</button><button data-f="20">A+</button><button data-f="22">A++</button></div>`;
+function openSheet(){ const sh=document.getElementById("sheet"), sc=document.getElementById("scrim"); sh.classList.remove("tall"); sh.innerHTML=[["connect","connect"],["stories","stories"],["time","time"],["about","about"]].map(([v,i])=>`<button class="navb" data-sv="${v}">${ico(i)}<span>${t("v_"+v)}</span></button>`).join("")+`<button class="navb" id="shLeg"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span>${t("legend")}</span></button><div class="seg full" style="margin-top:8px"><button data-l="pl" aria-pressed="${L==="pl"}">Polski</button><button data-l="en" aria-pressed="${L==="en"}">English</button></div><div class="seg full"><button data-f="18">A</button><button data-f="20">A+</button><button data-f="22">A++</button></div>`;
   sh.hidden=false; sc.hidden=false; const close=()=>{ sh.hidden=true; sc.hidden=true; }; sc.onclick=close;
   sh.querySelectorAll("[data-sv]").forEach(b=>b.onclick=()=>{ close(); go(b.dataset.sv); }); sh.querySelectorAll("[data-l]").forEach(b=>b.onclick=()=>{ close(); setLang(b.dataset.l); }); sh.querySelectorAll("[data-f]").forEach(b=>b.onclick=()=>{ close(); setFs(b.dataset.f); });
   document.getElementById("shLeg").onclick=()=>{ sh.innerHTML=`<h3 style="margin:0 0 4px;font-family:var(--display);font-size:1.4rem">${t("legend")}</h3>${legendHTML(false)}<button class="btn" id="shBack" style="margin-top:8px">‹ ${t("back")}</button>`; document.getElementById("shBack").onclick=openSheet; }; }
@@ -1554,6 +1554,240 @@ function lbExtra(x){ const v=document.getElementById("lbV"), img=document.getEle
   const pl=(x.places||[]).filter(p=>PI[p]); s.innerHTML=bits.join(" · ")+(pl.length?`<div class="lbpl">${pl.map(p=>`<button class="btn" data-lbpl="${p}">${t("lb_place")}: ${esc(pName(p))}</button>`).join("")}</div>`:"");
   s.querySelectorAll("[data-lbpl]").forEach(b=>b.onclick=()=>{ lb.close(); go("places",{id:b.dataset.lbpl}); }); }
 lb.addEventListener("close",()=>document.querySelectorAll("#lbV .lbvid").forEach(e=>e.remove()));
+
+// ===================== v7: LIVES RIVER (timeline), HOW ARE WE RELATED (connect), ANCESTOR SPOTLIGHT (home) =====================
+Object.assign(T,{
+ v_connect:{pl:"Pokrewieństwo",en:"How we're related"},
+ rl_h:{pl:"Jak jesteśmy spokrewnieni?",en:"How are we related?"},
+ rl_p:{pl:"Wybierz dwie osoby. Drzewo pokaże drogę między nimi: w górę do wspólnego przodka i w dół do drugiej osoby.",en:"Pick any two people. The tree finds the route between them: up to the ancestor they share, then down to the other person."},
+ rl_from:{pl:"Od",en:"From"}, rl_to:{pl:"Do",en:"To"}, rl_swap:{pl:"Zamień",en:"Swap"},
+ rl_q1:{pl:"Alexander i najstarszy przodek",en:"Alexander and the oldest ancestor"}, rl_q2:{pl:"Grzegorz i Barbara",en:"Greg and Barbara"}, rl_q3:{pl:"Patricia i Helena",en:"Patricia and Helena"}, rl_q4:{pl:"Losowy przodek",en:"A random ancestor"},
+ rl_common:{pl:"Wspólny przodek",en:"Shared ancestor"}, rl_gens:{pl:"pokoleń w górę",en:"generations up"}, rl_down:{pl:"w dół",en:"down"},
+ rl_apart:{pl:"lat między urodzinami",en:"years between their births"}, rl_steps:{pl:"kroków w drzewie",en:"steps through the tree"},
+ rl_tree:{pl:"Pokaż w drzewie",en:"Show in the tree"}, rl_same:{pl:"Wybierz dwie różne osoby.",en:"Pick two different people."},
+ rl_none:{pl:"Te osoby nie są jeszcze połączone w drzewie. Brakujący akt może to zmienić.",en:"These two are not connected in the tree yet. One missing record could change that."},
+ rl_marr:{pl:"Spokrewnieni przez małżeństwo. Droga przez drzewo:",en:"Related by marriage. The route through the tree:"},
+ rl_btn:{pl:"Jak jesteśmy spokrewnieni?",en:"How are we related?"},
+ rl_is:{pl:"to dla",en:"is"},
+ rv_h:{pl:"Życia w czasie",en:"Lives across time"},
+ rv_p:{pl:"Każdy pasek to jedno życie, od urodzin do śmierci, na tle historii Polski. Pełny kolor: linia prosta Grzegorza i Barbary. Jasny: ich krewni. Rozmyty koniec: data nieznana. Najedź na oś, aby zobaczyć, kto żył w danym roku.",en:"Each bar is one life, from birth to death, set against Polish history. Solid colour: Greg's and Barbara's direct line. Pale: their relatives. A fading end: the date is not known. Move along the chart to see who was alive in any year."},
+ rv_direct:{pl:"Linia prosta",en:"Direct line"}, rv_everyone:{pl:"Wszyscy",en:"Everyone"}, rv_alive:{pl:"żyje w drzewie",en:"alive in the tree"},
+ rv_events:{pl:"Wydarzenia",en:"Events"},
+ sp_h:{pl:"Poznaj przodka",en:"Meet an ancestor"}, sp_today:{pl:"Tego dnia",en:"On this day"}, sp_next:{pl:"Następny przodek",en:"Another ancestor"},
+ sp_born:{pl:"urodził się",en:"was born"}, sp_bornF:{pl:"urodziła się",en:"was born"}, sp_died:{pl:"zmarł",en:"died"}, sp_diedF:{pl:"zmarła",en:"died"}
+});
+
+// ---------- shared ----------
+const x7nm=p=>p.g.split(" (")[0].split(" ")[0]+" "+(p.m||p.s);
+const x7spRev={}; PEOPLE.forEach(p=>(p.sp||[]).forEach(s=>{ (x7spRev[s]=x7spRev[s]||new Set()).add(p.id); }));
+const x7spouses=id=>[...new Set([...(P[id].sp||[]),...(x7spRev[id]||[])])].filter(x=>P[x]);
+const x7css=`
+.rv-head{display:flex;flex-wrap:wrap;align-items:end;gap:12px 20px;margin:6px 0 12px}
+.rv-head h3{margin:0}
+.rv-head .note{flex:1 1 380px;max-width:70ch;margin:0}
+.rv-wrap{position:relative;overflow-x:auto;overflow-y:hidden;border-radius:14px;border:1.5px solid var(--rule2);background:var(--surface);margin-bottom:34px;-webkit-overflow-scrolling:touch}
+.rv{position:relative;cursor:crosshair}
+.rv-era{position:absolute;top:0;bottom:0;border-left:1px solid var(--rule2)}
+.rv-era:nth-child(even){background:color-mix(in srgb,var(--surface2) 70%,transparent)}
+.rv-era span{position:absolute;top:8px;left:8px;right:4px;font-family:var(--display);font-style:italic;font-weight:600;font-size:1rem;line-height:1.1;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv-war{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--brick) 16%,transparent) 0 2px,transparent 2px 7px);border-left:1px solid color-mix(in srgb,var(--brick) 40%,transparent);border-right:1px solid color-mix(in srgb,var(--brick) 40%,transparent)}
+.rv-tick{position:absolute;top:34px;bottom:0;border-left:1px dashed color-mix(in srgb,var(--rule) 55%,transparent)}
+.rv-tick span{position:absolute;top:0;left:4px;font-size:.72rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.rv-gh{position:absolute;left:10px;font-family:var(--display);font-weight:700;font-size:1.15rem;line-height:1;display:flex;align-items:center;gap:8px;white-space:nowrap;pointer-events:none}
+.rv-gh i{width:12px;height:12px;border-radius:3px;background:var(--c)}
+.rv-b{position:absolute;height:20px;border:0;border-radius:5px;padding:0 6px;font:700 .7rem/20px var(--body);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;
+  background:color-mix(in srgb,var(--c) 24%,var(--surface));color:var(--fg)}
+.rv-b.dir{background:var(--c);color:#fff}
+.rv-b.possible{background:transparent;color:var(--fg);outline:1.5px dashed var(--c);outline-offset:-1.5px}
+.rv-b.fe{-webkit-mask-image:linear-gradient(90deg,#000 55%,transparent);mask-image:linear-gradient(90deg,#000 55%,transparent)}
+.rv-b.fs{-webkit-mask-image:linear-gradient(270deg,#000 55%,transparent);mask-image:linear-gradient(270deg,#000 55%,transparent);text-align:right}
+.rv-b.alive::after{content:"";position:absolute;right:0;top:0;bottom:0;width:4px;background:var(--brick)}
+.rv-b:hover,.rv-b:focus-visible{z-index:3;box-shadow:0 0 0 2px var(--fg)}
+.rv.dim .rv-b:not(.dir){opacity:.12;pointer-events:none}
+.rv-cur{position:absolute;top:0;bottom:0;width:0;border-left:2px solid var(--brick);pointer-events:none;z-index:4}
+.rv-cur span{position:absolute;top:30px;left:6px;background:var(--fg);color:var(--bg);border-radius:8px;padding:5px 9px;font-size:.78rem;line-height:1.25;white-space:nowrap}
+.rv-cur span b{font-family:var(--display);font-size:1.25rem;display:block}
+.rv-cur.flip span{left:auto;right:6px}
+.seg.sm button{min-height:38px}
+/* connect */
+.rl-picks{display:flex;flex-wrap:wrap;align-items:end;gap:10px;margin:10px 0 12px}
+.rl-pick{flex:1 1 240px;position:relative}
+.rl-pick label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin:0 0 4px 2px}
+.rl-pick input{width:100%;min-height:50px;padding:8px 12px 8px 50px;border-radius:12px;border:1.5px solid var(--rule);background:var(--surface);color:var(--fg);font:inherit;font-weight:700}
+.rl-pick .mono{position:absolute;left:8px;bottom:7px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;pointer-events:none}
+.rl-pick .results{top:calc(100% + 4px)}
+.rl-swap{min-height:50px;min-width:50px;font-size:1.2rem}
+.rl-quick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.rl-quick button{border:1.5px solid var(--rule2);background:transparent;border-radius:999px;padding:7px 14px;min-height:40px;font-weight:700;font-size:.85rem;cursor:pointer}
+.rl-quick button:hover{border-color:var(--brick);color:var(--brick)}
+.rl-ans{padding:4px 0 18px;border-bottom:2px solid var(--brick);margin-bottom:22px}
+.rl-ans .big{font-family:var(--display);font-weight:700;font-size:clamp(2.2rem,6vw,3.6rem);line-height:1;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.rl-ans .sent{font-size:1.05rem;margin:10px 0 0;max-width:62ch}
+.rl-facts{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:14px}
+.rl-facts div{border-left:3px solid var(--rule);padding-left:10px}
+.rl-facts b{display:block;font-family:var(--display);font-size:1.7rem;line-height:1;font-variant-numeric:tabular-nums}
+.rl-facts span{font-size:.8rem;color:var(--muted)}
+.rl-stage{position:relative;margin:0 auto 26px}
+.rl-stage svg{position:absolute;inset:0;overflow:visible;pointer-events:none}
+.rl-stage path{fill:none;stroke:var(--brick);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:rlDraw 1.1s ease-out forwards}
+@keyframes rlDraw{to{stroke-dashoffset:0}}
+.rl-c{position:absolute;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;border:1.5px solid var(--rule2);background:var(--surface);text-align:left;cursor:pointer;font:inherit;color:var(--fg);box-shadow:0 1px 0 var(--rule2)}
+.rl-c:hover{border-color:var(--brick)}
+.rl-c .mono{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:700;flex:none;font-size:.95rem}
+.rl-c .t{min-width:0;line-height:1.2}
+.rl-c b{display:block;font-family:var(--display);font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-c small{display:block;font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rl-c .k{color:var(--brick);font-weight:700}
+.rl-c.end{border-color:var(--fg);border-width:2px}
+.rl-c.apex{border-color:var(--brick);border-width:2px;background:color-mix(in srgb,var(--brick) 7%,var(--surface))}
+.rl-c.apex .k{color:var(--brick)}
+.rl-gen{position:absolute;left:0;font-size:.7rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.rl-chain{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-bottom:26px}
+.rl-chain .rl-c{position:relative;width:min(340px,100%)}
+.rl-link{margin:0 0 0 26px;padding:6px 0 6px 18px;border-left:2.5px solid var(--brick);font-size:.8rem;font-weight:700;color:var(--brick)}
+.rl-acts{display:flex;gap:10px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){.rl-stage path{animation:none;stroke-dashoffset:0}}
+/* spotlight */
+.spot{display:grid;grid-template-columns:minmax(0,280px) minmax(0,1fr);gap:0;border-radius:16px;overflow:hidden;border:1.5px solid var(--rule2);background:var(--surface)}
+.spot .ph{background:var(--rule2) center/cover no-repeat;min-height:220px;position:relative;border-right:6px solid var(--c)}
+.spot .bd{padding:20px 24px 22px;display:flex;flex-direction:column;gap:8px}
+.spot .today{align-self:flex-start;background:var(--brick);color:#fff;border-radius:999px;padding:3px 12px;font-size:.8rem;font-weight:700}
+.spot h4{margin:0;font-family:var(--display);font-weight:700;font-size:clamp(1.8rem,4vw,2.5rem);line-height:1}
+.spot .lf{color:var(--muted);font-size:.95rem}
+.spot .kn{font-family:var(--display);font-style:italic;font-size:1.25rem;color:var(--brick)}
+.spot p{margin:0;max-width:64ch}
+.spot .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:6px}
+@media (max-width:700px){.spot{grid-template-columns:1fr}.spot .ph{min-height:170px;border-right:0;border-bottom:6px solid var(--c)}}
+`;
+document.head.insertAdjacentHTML("beforeend","<style>"+x7css+"</style>");
+document.querySelector("main.stage").insertAdjacentHTML("beforeend",'<section id="v-connect" class="view page panel" hidden></section>');
+VIEWLIST.push("connect"); NAVS.splice(2,0,["connect","connect"]);
+
+// ===================== LIVES RIVER =====================
+const RV={direct:true};
+const RV_ERAS=[{s:1650,e:1772,pl:"Rzeczpospolita Obojga Narodów",en:"Polish–Lithuanian Commonwealth"},{s:1772,e:1795,pl:"Rozbiory",en:"Partitions"},{s:1795,e:1918,pl:"Pod zaborami",en:"Under partition"},{s:1918,e:1939,pl:"II Rzeczpospolita",en:"Second Republic"},{s:1939,e:1945,pl:"Okupacja",en:"Occupation"},{s:1945,e:1989,pl:"PRL",en:"People's Poland"},{s:1989,e:2100,pl:"Wolna Polska",en:"Free Poland"}];
+const RV_WARS=[{s:1914,e:1918,pl:"I wojna światowa",en:"First World War"},{s:1939,e:1945,pl:"II wojna światowa",en:"Second World War"}];
+function rvData(){ const out=[]; PEOPLE.forEach(p=>{ if(p.liv) return; const b=yr(p.b), d=yr(p.d); if(!b&&!d) return; let s=b, e=d, fs=false, fe=false, alive=false;
+  if(!s){ s=d-55; fs=true; } if(!e){ if(b>1925){ e=2026; alive=true; } else { e=Math.min(s+55,2026); fe=true; } } if(e<=s) e=s+1;
+  out.push({id:p.id,s,e,fs,fe,alive,ln:lineOf(p),dir:DIRECT.has(p.id),st:p.st}); }); return out; }
+function drawRiver(host){ const pl=L==="pl", data=rvData(); const Y0=Math.floor(Math.min(...data.map(d=>d.s))/10)*10-10, Y1=2032;
+  const W=Math.max(host.clientWidth||0,1120), k=W/(Y1-Y0), X=y=>Math.round((y-Y0)*k);
+  const LH=24, GH=34, TOP=58; let y=TOP; const groups=[], bars=[];
+  LMETA.forEach(m=>{ const rows=data.filter(d=>d.ln===m.ln&&(!RV.direct||d.dir)).sort((a,b)=>(b.dir-a.dir)||a.s-b.s); if(!rows.length) return;
+    groups.push({m,y}); y+=GH; const lanes=[];
+    rows.forEach(d=>{ const x0=X(d.s), x1=Math.max(X(d.e),x0+22); let li=lanes.findIndex(r=>r<x0-6); if(li<0){ li=lanes.length; lanes.push(0); } lanes[li]=x1; bars.push({...d,x0,x1,top:y+li*LH}); });
+    y+=lanes.length*LH+14; });
+  const H=y+8, ticks=[]; for(let t0=Math.ceil(Y0/50)*50;t0<Y1;t0+=50) ticks.push(t0);
+  const tip=d=>{ const p=P[d.id]; const kk=d.id===home?"":kinship(home,d.id)||""; return `${x7nm(p)}, ${years(p)}${kk?" — "+kk:""}`; };
+  host.innerHTML=`<div class="rv${RV.direct?" dim":""}" style="width:${W}px;height:${H}px">
+   ${RV_ERAS.filter(e=>e.e>Y0).map(e=>{ const a=X(Math.max(e.s,Y0)), b=X(Math.min(e.e,Y1)); return `<div class="rv-era" style="left:${a}px;width:${b-a}px">${b-a>70?`<span>${esc(e[L])}</span>`:""}</div>`; }).join("")}
+   ${RV_WARS.map(e=>`<div class="rv-war" title="${esc(e[L])}" style="left:${X(e.s)}px;width:${X(e.e)-X(e.s)}px"></div>`).join("")}
+   ${ticks.map(t0=>`<div class="rv-tick" style="left:${X(t0)}px"><span>${t0}</span></div>`).join("")}
+   ${groups.map(g=>`<div class="rv-gh" style="top:${g.y+8}px;--c:${LINEC[g.m.ln]}"><i></i>${esc(tx(g.m.fam))}</div>`).join("")}
+   ${bars.map(d=>`<button class="rv-b${d.dir?" dir":""}${d.st==="possible"?" possible":""}${d.fe?" fe":""}${d.fs?" fs":""}${d.alive?" alive":""}" data-id="${d.id}" title="${esc(tip(d))}" style="left:${d.x0}px;top:${d.top}px;width:${d.x1-d.x0}px;--c:${LINEC[d.ln]}">${esc(x7nm(P[d.id]))}</button>`).join("")}
+   <div class="rv-cur" hidden><span></span></div></div>`;
+  const rv=host.firstChild, cur=rv.querySelector(".rv-cur");
+  rv.querySelectorAll(".rv-b").forEach(b=>b.onclick=()=>setMain(b.dataset.id));
+  rv.addEventListener("pointermove",e=>{ if(e.pointerType==="touch") return; const r=rv.getBoundingClientRect(), x=e.clientX-r.left, yy=Math.round(Y0+x/k); if(yy<Y0||yy>2026){ cur.hidden=true; return; }
+    const n=data.filter(d=>(!RV.direct||d.dir)&&d.s<=yy&&yy<=d.e&&!d.fe&&!d.fs).length; const era=RV_ERAS.find(e=>yy>=e.s&&yy<e.e), war=RV_WARS.find(e=>yy>=e.s&&yy<=e.e);
+    cur.hidden=false; cur.style.left=x+"px"; cur.classList.toggle("flip",x>r.width-220);
+    cur.firstChild.innerHTML=`<b>${yy}</b>${esc(war?war[L]:era?era[L]:"")}<br>${n} ${t("rv_alive")}`; });
+  rv.addEventListener("pointerleave",()=>cur.hidden=true);
+  if(host.clientWidth<W) host.scrollLeft=X(1840)-40; }
+const x7drawTime=drawTime;
+drawTime=function(){ x7drawTime(); const v=document.getElementById("v-time"); const h=v.querySelector("h3");
+  const box=document.createElement("div"); box.innerHTML=`<div class="rv-head"><h3>${t("rv_h")}</h3><p class="note">${t("rv_p")}</p><div class="seg sm" role="group"><button id="rvDir" aria-pressed="${RV.direct}">${t("rv_direct")}</button><button id="rvAll" aria-pressed="${!RV.direct}">${t("rv_everyone")} (${rvData().length})</button></div></div><div class="rv-wrap" id="rvWrap"></div><h3 style="font-size:1.7rem">${t("rv_events")}</h3>`;
+  if(h){ h.after(...box.childNodes); } else v.prepend(...box.childNodes);
+  const wrap=document.getElementById("rvWrap"); drawRiver(wrap);
+  document.getElementById("rvAll").onclick=()=>{ RV.direct=false; drawTime(); }; document.getElementById("rvDir").onclick=()=>{ RV.direct=true; drawTime(); }; };
+
+// ===================== HOW ARE WE RELATED =====================
+const RL={a:"alex",b:null};
+const x7oldest=()=>[...DIRECT].filter(x=>P[x]&&birthY(x)).sort(byBirth)[0];
+function rlCommon(a,b){ const A=ancMap(a),B=ancMap(b); let best=null; for(const x in A) if(B[x]!==undefined){ const s=A[x]+B[x]; if(!best||s<best.s||(s===best.s&&P[x].x==="M"&&P[best.x].x!=="M")) best={x,s,up:A[x],down:B[x]}; }
+  if(best){ const sp=x7spouses(best.x).find(y=>A[y]===best.up&&B[y]===best.down); best.sp=sp||null; } return best; }
+function rlUp(a,x){ const prev={[a]:null}, q=[a]; while(q.length){ const c=q.shift(); if(c===x) break; for(const n of [P[c].f,P[c].mo]) if(n&&P[n]&&!(n in prev)){ prev[n]=c; q.push(n); } } if(!(x in prev)) return null; const out=[]; for(let c=x;c!=null;c=prev[c]) out.unshift(c); return out; }
+function rlChain(a,b){ const prev={[a]:null}, how={}, q=[a]; while(q.length){ const c=q.shift(); if(c===b) break; const p=P[c];
+  const nb=[[p.f,"par"],[p.mo,"par"],...(kids[c]||[]).map(x=>[x,"kid"]),...x7spouses(c).map(x=>[x,"sp"])]; for(const [n,h] of nb) if(n&&P[n]&&!(n in prev)){ prev[n]=c; how[n]=h; q.push(n); } }
+  if(!(b in prev)) return null; const out=[]; for(let c=b;c!=null;c=prev[c]) out.unshift({id:c,h:how[c]}); return out; }
+const rlRole=(id,h)=>{ const m=P[id].x==="M", pl=L==="pl"; return h==="par"?(pl?(m?"↑ ojciec":"↑ matka"):(m?"↑ father":"↑ mother")):h==="kid"?(pl?(m?"↓ syn":"↓ córka"):(m?"↓ son":"↓ daughter")):(pl?(m?"↔ mąż":"↔ żona"):(m?"↔ husband":"↔ wife")); };
+function rlCard(id,cls,kk,style){ const p=P[id]; return `<button class="rl-c ${cls}" data-go="${id}" style="${style||""}"><span class="mono" style="background:${lc(p)}">${esc(initials(p))}</span><span class="t"><b>${esc(x7nm(p))}</b><small>${kk?`<span class="k">${esc(kk)}</span>${years(p)?" · ":""}`:""}${esc(years(p))}</small></span></button>`; }
+function rlPicker(which){ const id=RL[which], p=P[id]; return `<div class="rl-pick"><label for="rl-${which}">${t(which==="a"?"rl_from":"rl_to")}</label><span class="mono" style="background:${p?lc(p):"var(--rule)"}">${p?esc(initials(p)):"?"}</span><input id="rl-${which}" type="search" autocomplete="off" value="${p?esc(x7nm(p)):""}" placeholder="${esc(t("search_ph"))}"><div class="results" hidden></div></div>`; }
+function rlBindPicker(which){ const inp=document.getElementById("rl-"+which), res=inp.parentNode.querySelector(".results"); let act=0, list=[];
+  const show=()=>{ const q=norm(inp.value.trim()); list=PEOPLE.filter(p=>!q||norm(p.g+" "+p.s+" "+(p.m||"")).includes(q)).sort((x,y)=>(DIRECT.has(y.id)-DIRECT.has(x.id))||byBirth(x.id,y.id)).slice(0,9);
+    res.innerHTML=list.length?list.map((p,i)=>`<button data-i="${i}" class="${i===act?"act":""}"><span class="dt" style="background:${lc(p)}"></span>${esc(x7nm(p))}<span class="y">${esc(years(p))}</span></button>`).join(""):`<div class="none">${t("no_res")}</div>`; res.hidden=false;
+    res.querySelectorAll("button").forEach(b=>b.onmousedown=e=>{ e.preventDefault(); pick(list[+b.dataset.i].id); }); };
+  const pick=id=>{ RL[which]=id; res.hidden=true; drawConnect(); updHash(); };
+  inp.onfocus=()=>{ inp.select(); act=0; show(); }; inp.oninput=()=>{ act=0; show(); }; inp.onblur=()=>setTimeout(()=>res.hidden=true,120);
+  inp.onkeydown=e=>{ if(e.key==="ArrowDown"||e.key==="ArrowUp"){ e.preventDefault(); act=Math.max(0,Math.min(list.length-1,act+(e.key==="ArrowDown"?1:-1))); show(); } if(e.key==="Enter"&&list[act]) pick(list[act].id); if(e.key==="Escape"){ res.hidden=true; inp.blur(); } }; }
+function drawConnect(){ const v=document.getElementById("v-connect"), pl=L==="pl"; if(!RL.a||!P[RL.a]) RL.a="alex"; if(!RL.b||!P[RL.b]) RL.b=x7oldest();
+  const a=RL.a, b=RL.b, A=P[a], B=P[b];
+  let body="";
+  if(a===b) body=`<p class="note">${t("rl_same")}</p>`;
+  else { const c=rlCommon(a,b), k=kinship(a,b)||"";
+    const yA=birthY(a), yB=birthY(b);
+    const sent=pl?`${esc(x7nm(B))} ${t("rl_is")} ${esc(x7nm(A))}: <b>${esc(k)}</b>.`:`${esc(x7nm(B))} is ${esc(x7nm(A))}'s <b>${esc(k)}</b>.`;
+    if(c){ const facts=[`<div><b>${c.up}</b><span>${t("rl_gens")}${c.down?`, ${c.down} ${t("rl_down")}`:""}</span></div>`];
+      if(yA&&yB) facts.push(`<div><b>${Math.abs(yA-yB)}</b><span>${t("rl_apart")}</span></div>`);
+      if(c.up&&c.down) facts.push(`<div><b style="font-size:1.25rem;line-height:1.35">${esc(x7nm(P[c.x]))}${c.sp?` & ${esc(P[c.sp].g.split(" ")[0])}`:""}</b><span>${t("rl_common")}${birthY(c.x)?`, ${fmtYear(P[c.x].b)}`:""}</span></div>`);
+      body=`<div class="rl-ans"><p class="big">${esc(cap1(k))}</p><p class="sent">${sent}</p><div class="rl-facts">${facts.join("")}</div></div><div class="rl-stage" id="rlStage"></div>`;
+      v.innerHTML=head()+body+acts(c); bindAll(); layoutLambda(c); return; }
+    const ch=rlChain(a,b);
+    if(ch){ body=`<div class="rl-ans"><p class="big">${esc(cap1(k))}</p><p class="sent">${t("rl_marr")}</p>${ch.length>2?`<div class="rl-facts"><div><b>${ch.length-1}</b><span>${t("rl_steps")}</span></div></div>`:""}</div><div class="rl-chain">${ch.map((s,i)=>(i?`<div class="rl-link">${esc(rlRole(s.id,s.h))}</div>`:"")+rlCard(s.id,(i===0||i===ch.length-1)?"end":"",i?kinship(a,s.id)||"":"")).join("")}</div>`; }
+    else body=`<div class="rl-ans"><p class="sent">${t("rl_none")}</p></div>`; }
+  v.innerHTML=head()+body+acts(null); bindAll();
+  function head(){ return `<h2 class="h">${t("rl_h")}</h2><p class="lead">${t("rl_p")}</p><div class="rl-picks">${rlPicker("a")}<button class="btn rl-swap" id="rlSwap" aria-label="${t("rl_swap")}" title="${t("rl_swap")}">⇄</button>${rlPicker("b")}</div>
+    <div class="rl-quick"><button data-q="1">${t("rl_q1")}</button><button data-q="2">${t("rl_q2")}</button><button data-q="3">${t("rl_q3")}</button><button data-q="4">🎲 ${t("rl_q4")}</button></div>`; }
+  function acts(c){ return `<div class="rl-acts">${c&&c.up&&c.down?`<button class="btn pri" id="rlTree">${t("rl_tree")}</button>`:c?`<button class="btn pri" id="rlTree">${t("rl_tree")}</button>`:""}</div>`; }
+  function bindAll(){ rlBindPicker("a"); rlBindPicker("b");
+    document.getElementById("rlSwap").onclick=()=>{ [RL.a,RL.b]=[RL.b,RL.a]; drawConnect(); updHash(); };
+    v.querySelectorAll("[data-q]").forEach(x=>x.onclick=()=>{ const q=x.dataset.q; if(q==="1"){ RL.a="alex"; RL.b=x7oldest(); } if(q==="2"){ RL.a="greg"; RL.b="barbara"; } if(q==="3"){ RL.a="patricia"; RL.b="helena"; }
+      if(q==="4"){ const pool=[...DIRECT].filter(x=>P[x]&&!P[x].liv&&ancMap("alex")[x]>=3); RL.a="alex"; RL.b=pool[Math.floor(Math.random()*pool.length)]; } drawConnect(); updHash(); });
+    v.querySelectorAll("[data-go]").forEach(x=>x.onclick=()=>setMain(x.dataset.go));
+    const tb=document.getElementById("rlTree"); if(tb) tb.onclick=()=>{ const c=rlCommon(RL.a,RL.b); if(!c) return; const top=c.x; mode="desc"; depth.desc=Math.max(depth.desc,c.up,c.down,1); root=top; sel=RL.b; expanded.clear(); S=null; go("tree",{refit:true}); drawDrawer(); openDrawer(); }; }
+  function layoutLambda(c){ const st=document.getElementById("rlStage"); const left=c.up?rlUp(a,c.x).reverse():[c.x], right=c.down?rlUp(b,c.x).reverse():[c.x];
+    // left/right run apex → person; index = generations below the apex
+    const two=c.up>0&&c.down>0, Wv=Math.min((v.querySelector(".rl-ans")||st).offsetWidth||360,760), gap=two?16:0, cw=two?Math.min(300,(Wv-gap)/2):Math.min(340,Wv), ch=58, vg=30, rows=Math.max(c.up,c.down)+1;
+    const cx=Wv/2, xL=two?cx-gap/2-cw:cx-cw/2, xR=two?cx+gap/2:cx-cw/2, xA=cx-Math.min(cw*1.15,Wv)/2, wA=Math.min(cw*1.15,Wv);
+    const yOf=i=>i*(ch+vg); st.style.width=Wv+"px"; st.style.height=(rows*(ch+vg)-vg)+"px";
+    const cards=[], paths=[]; const apexKin=kinship(a,c.x)||"";
+    cards.push(rlCard(c.x,"apex"+(c.x===a||c.x===b?" end":""),c.x===a?(pl?"początek":"start"):apexKin+(c.sp?` · & ${P[c.sp].g.split(" ")[0]}`:""),`left:${xA}px;top:0;width:${wA}px;height:${ch}px`));
+    const leg=(arr,x,isB)=>arr.slice(1).forEach((id,i)=>{ const r=i+1; const last=r===arr.length-1; const kk=id===a?(pl?"początek":"start"):kinship(a,id)||""; cards.push(rlCard(id,last?"end":"",kk,`left:${x}px;top:${yOf(r)}px;width:${cw}px;height:${ch}px`)); });
+    leg(left,xL,false); if(two) leg(right,xR,true); else if(c.down) leg(right,xR,true);
+    const mid=x=>x+cw/2; const legPath=(arr,x)=>{ if(arr.length<2) return; const x0=cx, y0=ch, x1=mid(x), y1=yOf(1); paths.push(two?`M${x0} ${y0} V${y0+vg/2} H${x1} V${y1}`:`M${x1} ${y0} V${y1}`); for(let r=1;r<arr.length-1;r++) paths.push(`M${x1} ${yOf(r)+ch} V${yOf(r+1)}`); };
+    legPath(left,xL); legPath(right,xR);
+    st.innerHTML=`<svg width="${Wv}" height="${rows*(ch+vg)}">${paths.map((d,i)=>`<path d="${d}" style="animation-delay:${i*0.08}s"/>`).join("")}</svg>${cards.join("")}`;
+    st.querySelectorAll("path").forEach(p=>{ const len=Math.ceil(p.getTotalLength()); p.style.setProperty("--len",len); });
+    st.querySelectorAll("[data-go]").forEach(x=>x.onclick=()=>setMain(x.dataset.go)); }
+}
+
+// ===================== ANCESTOR SPOTLIGHT (home) =====================
+let x7spot=null;
+function spotPool(){ return [...DIRECT].filter(x=>{ const p=P[x]; return p&&!p.liv&&p.st!=="family"&&(p.n||p.b); }); }
+function spotToday(){ const now=new Date(), md=now.getDate()+" "+["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][now.getMonth()];
+  for(const x of spotPool()){ const p=P[x]; for(const [f,kind] of [["b","b"],["d","d"]]){ const m=String(p[f]||"").match(/^(\d{1,2}) ([A-Z][a-z]{2})[a-z]* (\d{4})/); if(m&&(+m[1]+" "+m[2])===md) return {id:x,kind,date:p[f]}; } } return null; }
+function spotHTML(){ const pool=spotPool(); if(!pool.length) return ""; const td=spotToday(); if(!x7spot){ if(td) x7spot=td.id; else { const d=new Date(); const seed=d.getFullYear()*400+d.getMonth()*31+d.getDate(); x7spot=pool[seed%pool.length]; } }
+  const id=x7spot, p=P[id], pl=L==="pl"; const doc=DOCS.find(x=>(x.people||[]).includes(id)); const lm=LMETA.find(m=>m.ln===lineOf(p));
+  const img=doc?doc.file:(p.ph&&p.ph[0]?"scans/"+p.ph[0]:lm&&lm.img); const k=kinship(home,id)||"";
+  const note=p.n?tx(p.n):""; const first=note?(note.match(/^.{40,260}?[.!?](\s|$)/)||[note.slice(0,240)])[0].trim():"";
+  const isToday=td&&td.id===id; const place=place1(p);
+  return `<div class="sec"><h3>${t("sp_h")}</h3><article class="spot" style="--c:${lc(p)}"><div class="ph" role="img" aria-label="${esc(doc?tx(doc.t):x7nm(p))}" style="background-image:url('${thumb(img)}')"></div><div class="bd">
+   ${isToday?`<span class="today">${t("sp_today")}: ${esc(fmtDate(td.date))}, ${esc(x7nm(p).split(" ")[0])} ${t((td.kind==="b"?"sp_born":"sp_died")+(p.x==="F"?"F":""))}</span>`:""}
+   <h4>${esc(p.g.split(" (")[0])} ${esc(p.m||p.s)}</h4><div class="lf">${esc([years(p),place].filter(Boolean).join(", "))}</div>
+   ${k?`<div class="kn">${esc(cap1(k))} ${pl?"Grzegorza":"to Greg"}</div>`:""}${first?`<p>${esc(first)}</p>`:""}
+   <div class="acts"><button class="btn pri" id="spOpen">${t("focus")}</button><button class="btn" id="spRel">${t("rl_btn")}</button><button class="btn" id="spNext">${t("sp_next")}</button></div></div></article></div>`; }
+const x7drawStart=drawStart;
+drawStart=function(){ x7drawStart(); const v=document.getElementById("v-start"); const secs=v.querySelectorAll(".sec"); const at=secs[0]||v.lastChild; at.insertAdjacentHTML("afterend",spotHTML()); bindSpot(); };
+function bindSpot(){ const o=document.getElementById("spOpen"); if(!o) return; o.onclick=()=>setMain(x7spot); document.getElementById("spRel").onclick=()=>go("connect",{a:"alex",b:x7spot});
+  document.getElementById("spNext").onclick=()=>{ const pool=spotPool(); let n=x7spot; while(n===x7spot&&pool.length>1) n=pool[Math.floor(Math.random()*pool.length)]; x7spot=n; const art=document.querySelector("#v-start .spot").closest(".sec"); art.outerHTML=spotHTML(); bindSpot(); }; }
+
+// ===================== wiring: nav, hash, drawer =====================
+const x7go=go; go=function(v,o={}){ if(v==="connect"){ if(o.a&&P[o.a]) RL.a=o.a; if(o.b&&P[o.b]) RL.b=o.b; } x7go(v,o); if(view==="connect") drawConnect(); };
+const x7upd=updHash; updHash=function(){ if(view==="connect"){ try{ history.replaceState(null,"","#rel-"+RL.a+"~"+RL.b); }catch(e){} return; } x7upd(); };
+const x7read=readHash; readHash=function(){ const h=(location.hash||"").slice(1); if(h==="connect"||h.startsWith("rel-")){ const [a,b]=h.slice(4).split("~"); if(P[a]) RL.a=a; if(P[b]) RL.b=b; view="connect"; return; } x7read(); };
+const x7drawer=drawDrawer; drawDrawer=function(){ x7drawer(); const id=sel, ac=document.querySelector("#dbody .dacts"); if(!ac||!id||id===home) return;
+  ac.insertAdjacentHTML("beforeend",`<button class="btn" id="dRel">${ico("connect")} ${t("rl_btn")}</button>`); document.getElementById("dRel").onclick=()=>go("connect",{a:home,b:id}); };
+let x7rs; window.addEventListener("resize",()=>{ clearTimeout(x7rs); x7rs=setTimeout(()=>{ if(view==="connect") drawConnect(); if(view==="time") drawTime(); },200); });
 
 // ===================== LANG / SIZE / BOOT =====================
 function applyStatic(){ document.querySelectorAll("[data-i]").forEach(el=>el.textContent=t(el.dataset.i)); document.querySelectorAll("[data-ph]").forEach(el=>el.placeholder=t(el.dataset.ph)); document.documentElement.lang=L; document.getElementById("lang-pl").setAttribute("aria-pressed",L==="pl"); document.getElementById("lang-en").setAttribute("aria-pressed",L==="en"); }
